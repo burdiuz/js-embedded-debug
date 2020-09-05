@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Embedded Console WebSocket proxy frame</title>
+    <script>
+      const socket = new WebSocket(`ws://${location.host}/broadcaster`);
+
+      const receiveMessage = ({ type, data }) => {
+        window.postMessage({ type, data, received: true });
+        console.log('Receive:', type, data);
+      };
+
+      const broadcastMessage = ({ data }) => {
+        if (!data || (typeof data === 'object' && data.received)) {
+          return;
+        }
+
+        console.log('Broadcast:', data);
+        socket.send(data);
+      };
+
+      window.addEventListener('message', broadcastMessage);
+
+      socket.addEventListener('open', receiveMessage);
+      socket.addEventListener('close', receiveMessage);
+      socket.addEventListener('error', receiveMessage);
+      socket.addEventListener('message', receiveMessage);
+
+      window.receive = receiveMessage;
+      window.broadcast = broadcastMessage;
+    </script>
+  </head>
+</html>

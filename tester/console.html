@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Debug Console Window</title>
+    <link rel="stylesheet" href="./console.css" />
+    <script src="./console.js"></script>
+    <style>
+      html,
+      body,
+      .root {
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        height: 100%;
+        overflow: visible;
+      }
+
+      .root,
+      .left,
+      .right {
+        display: flex;
+        align-items: stretch;
+      }
+
+      .left,
+      .right {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        border: 1px solid #efefef;
+      }
+
+      .console {
+        flex: 1;
+      }
+
+      .console-left, .console-right {
+        overflow-y: scroll;
+        overflow-x: hidden;
+      }
+
+      h3 {
+        text-align: center;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="root">
+      <div class="left">
+        <h3>Message Port</h3>
+        <div class="console console-left"></div>
+        <input
+          type="text"
+          placeholder="Send command via Message Port"
+          class="input-left"
+        />
+      </div>
+      <div class="right">
+        <h3>Shared Worker</h3>
+        <div class="console console-right"></div>
+        <input
+          type="text"
+          placeholder="Send command via Shared Worker"
+          class="input-right"
+        />
+      </div>
+    </div>
+  </body>
+  <script>
+    const Command = {
+      INIT_FRAME: 'init-frame',
+      EXEC: 'exec',
+      EXEC_RESPONSE: 'exec/response',
+    };
+
+    const mpConsole = DOMConsole.create(
+      document.querySelector('.console-left')
+    );
+    mpConsole.warn('Message Port console started');
+
+    const swConsole = DOMConsole.create(
+      document.querySelector('.console-right')
+    );
+    swConsole.warn('Shared Worker console started');
+
+    window.addEventListener('message', ({ data }) => {
+      try {
+        const { type, value } = JSON.parse(data);
+
+        if (type === Command.EXEC_RESPONSE) {
+          mpConsole.addConverted('log', value);
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    });
+
+    if (window.SharedWorker) {
+      let worker;
+      try {
+        worker = new SharedWorker('./shared-worker.js');
+        worker.port.start();
+
+        worker.port.addEventListener('message', ({ data }) => {
+          try {
+            const { type, value } = JSON.parse(data);
+
+            if (type === Command.EXEC_RESPONSE) {
+              swConsole.addConverted('log', value);
+            }
+          } catch (error) {
+            console.log(error);
+          }
+        });
+      } catch (error) {
+        console.log(error);
+      }
+
+      document
+        .querySelector('.input-right')
+        .addEventListener('keyup', ({ key }) => {
+          if (key !== 'Enter') {
+            return;
+          }
+          const {
+            target: { value },
+          } = event;
+
+          event.target.value = '';
+          swConsole.info(value);
+          worker.port.postMessage(
+            JSON.stringify({ type: Command.EXEC, value })
+          );
+        });
+    } else {
+      swConsole.error(
+        'Sorry, Shared Workers are not available on this platform.'
+      );
+    }
+
+    window.postMessage(JSON.stringify({ type: Command.INIT_FRAME }));
+
+    document
+      .querySelector('.input-left')
+      .addEventListener('keyup', ({ key }) => {
+        if (key !== 'Enter') {
+          return;
+        }
+        const {
+          target: { value },
+        } = event;
+
+        event.target.value = '';
+        mpConsole.info(value);
+        window.postMessage(JSON.stringify({ type: Command.EXEC, value }));
+      });
+  </script>
+</html>
