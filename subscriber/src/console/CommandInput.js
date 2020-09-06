@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
+import PropTypes from 'prop-types';
 import { Input, Button } from 'antd';
 
 const { TextArea } = Input;
 
-const CommandInput = ({ onExecute }) => {
+const CommandInput = ({ onSend }) => {
   const [text, setText] = useState('');
   const [multi, setMulti] = useState(false);
 
@@ -20,7 +21,7 @@ const CommandInput = ({ onExecute }) => {
             <Button onClick={() => setMulti(false)}>Single line</Button>
             <Button
               onClick={() => {
-                onExecute(text);
+                onSend(text);
                 setText('');
               }}
               style={{ marginLeft: '10px' }}
@@ -41,7 +42,7 @@ const CommandInput = ({ onExecute }) => {
           addonAfter={
             <span
               onClick={() => {
-                onExecute(text);
+                onSend(text);
                 setText('');
               }}
               style={{ cursor: 'pointer' }}
@@ -50,10 +51,20 @@ const CommandInput = ({ onExecute }) => {
             </span>
           }
           onChange={({ target: { value } }) => setText(value)}
+          onKeyUp={({ keyCode }) => {
+            if (keyCode === 13) {
+              onSend(text);
+              setText('');
+            }
+          }}
         />
       )}
     </div>
   );
+};
+
+CommandInput.propTypes = {
+  onSend: PropTypes.func.isRequired,
 };
 
 export default CommandInput;

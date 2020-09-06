@@ -85,6 +85,7 @@
     </div>
   </body>
   <script>
+    const ENTER_KEY_CODE = 13;
     const Command = {
       INIT_FRAME: 'init-frame',
       EXEC: 'exec',
@@ -149,12 +150,10 @@
 
       document
         .querySelector('.input-right')
-        .addEventListener('keyup', ({ key }) => {
-          if (key !== 'Enter') {
-            return;
+        .addEventListener('keyup', ({ key, keyCode }) => {
+          if (String(key) === 'Enter' || keyCode === ENTER_KEY_CODE) {
+            sendRight();
           }
-
-          sendRight();
         });
     } else {
       swConsole.error(
@@ -162,27 +161,30 @@
       );
     }
 
-    window.postMessage(JSON.stringify({ type: Command.INIT_FRAME }));
-
     const sendLeft = () => {
-      const input = document.querySelector('.input-left');
-      const { value } = input;
+      try{
+        const input = document.querySelector('.input-left');
+        const { value } = input;
 
         input.value = '';
         mpConsole.info(value);
-        window.postMessage(JSON.stringify({ type: Command.EXEC, value }));
+        window.postMessage(JSON.stringify({ type: Command.EXEC, value }), '*');
+        swConsole.log('Send left: ', value);
+      } catch(error) {
+        swConsole.error('Send error: ', error);
+      }
     };
 
     document.querySelector('.send-left').addEventListener('click', sendLeft);
 
     document
       .querySelector('.input-left')
-      .addEventListener('keyup', ({ key }) => {
-        if (key !== 'Enter') {
-          return;
+      .addEventListener('keyup', ({ key, keyCode }) => {
+        if (String(key) === 'Enter' || keyCode === ENTER_KEY_CODE) {
+          sendLeft();
         }
-
-        sendLeft();
       });
+
+    window.postMessage(JSON.stringify({ type: Command.INIT_FRAME }), '*');
   </script>
 </html>

@@ -1,8 +1,11 @@
 import React from 'react';
 import { Tabs } from 'antd';
 
-import ConsoleView from './ConsoleView';
-import CommandInput from './CommandInput';
+import ConsoleTabPane from './console/ConsoleTabPane';
+import CookiesTabPane from './cookies/CookiesTabPane';
+import LocalStorageTabPane from './local-storage/LocalStorageTabPane';
+import NetworkTabPane from './network/NetworkTabPane';
+import SessionStorageTabPane from './session-storage/SessionStorageTabPane';
 
 import logo from './logo.svg';
 
@@ -15,13 +18,20 @@ function App() {
     <Tabs defaultActiveKey="1" className="main-tabs">
       <TabPane tab="&nbsp;" key="0" disabled></TabPane>
       <TabPane tab="Console" key="1" className="console-tab">
-        <ConsoleView></ConsoleView>
-        <CommandInput></CommandInput>
+        <ConsoleTabPane />
       </TabPane>
-      <TabPane tab="Network" key="2"></TabPane>
-      <TabPane tab="Cookies" key="3"></TabPane>
-      <TabPane tab="Local Storage" key="4"></TabPane>
-      <TabPane tab="Session Storage" key="5"></TabPane>
+      <TabPane tab="Network" key="2">
+        <NetworkTabPane />
+      </TabPane>
+      <TabPane tab="Cookies" key="3">
+        <CookiesTabPane />
+      </TabPane>
+      <TabPane tab="Local Storage" key="4">
+        <LocalStorageTabPane />
+      </TabPane>
+      <TabPane tab="Session Storage" key="5">
+        <SessionStorageTabPane />
+      </TabPane>
       <TabPane tab="Redux" key="6"></TabPane>
       <TabPane tab="Info" key="7">
         <div className="App">

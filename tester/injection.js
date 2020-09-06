@@ -1,6 +1,10 @@
 (() => {
   const WORKER_PATH = './shared-worker.js';
   const CONSOLE_PATH = 'console.html';
+  const T_KEY_CODE = 84;
+  const Q_KEY_CODE = 81;
+  const ARROW_UP_KEY_CODE = 38;
+  const ARROW_DOWN_KEY_CODE = 40;
 
   const subscribers = [];
 
@@ -21,14 +25,14 @@
   };
 
   const sendCommand = (command, value) => {
-    subscribers.forEach((subscriber) => {
-      subscriber.postMessage(JSON.stringify({ type: command, value }));
-    });
+    subscribers.forEach((subscriber) =>
+      sendCommandTo(subscriber, command, value),
+    );
   };
 
   const sendCommandTo = (subscriber, command, value) => {
     console.log('Send response:', command, value);
-    subscriber.postMessage(JSON.stringify({ type: command, value }));
+    subscriber.postMessage(JSON.stringify({ type: command, value }), '*');
   };
 
   const evaluateCode = ({ value }, responseTarget) => {
@@ -137,19 +141,23 @@
   };
 
   const toggleConsoleFrame = () => {
-    if(frame) {
+    if (frame) {
       hideConsoleFrame();
     } else {
       displayConsoleFrame();
     }
   };
 
-  window.addEventListener('keyup', ({ key, ctrlKey, shiftKey }) => {
-    if (shiftKey && ctrlKey && key === 'ArrowUp') {
+  window.addEventListener('keyup', ({ key, ctrlKey, shiftKey, keyCode }) => {
+    if (
+      shiftKey &&
+      ctrlKey &&
+      (key === 'ArrowUp' || keyCode === ARROW_UP_KEY_CODE)
+    ) {
       openNewWindow();
     }
 
-    if (shiftKey && key.toUpperCase() === 'Q') {
+    if (shiftKey && (String(key).toUpperCase() === 'Q' || keyCode === Q_KEY_CODE)) {
       openNewWindow();
     }
   });
@@ -158,7 +166,7 @@
     const worker = new SharedWorker(WORKER_PATH);
 
     const subscriber = {
-      postMessage: (...args) => worker.port.postMessage(...args),
+      postMessage: (data) => worker.port.postMessage(data),
       addEventListener: (...args) => worker.port.addEventListener(...args),
       worker,
     };
@@ -169,12 +177,16 @@
     worker.port.start();
   }
 
-  window.addEventListener('keyup', ({ key, ctrlKey, shiftKey }) => {
-    if (ctrlKey && key === 'ArrowDown') {
+  window.addEventListener('keyup', ({ key, ctrlKey, shiftKey, keyCode }) => {
+    if (
+      shiftKey &&
+      ctrlKey &&
+      (key === 'ArrowDown' || keyCode === ARROW_DOWN_KEY_CODE)
+    ) {
       toggleConsoleFrame();
     }
 
-    if (ctrlKey && key.toUpperCase() === 'T') {
+    if (shiftKey && (String(key).toUpperCase() === 'T' || keyCode === T_KEY_CODE)) {
       toggleConsoleFrame();
     }
   });
