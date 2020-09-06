@@ -121,6 +121,7 @@
       height: '250px',
       borderTop: '1px solid #eee',
       boxShadow: '0 0 10px #00000066',
+      backgroundColor: '#ffffff',
     });
 
     document.body.appendChild(frame);
