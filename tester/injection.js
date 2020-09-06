@@ -170,11 +170,11 @@
   }
 
   window.addEventListener('keyup', ({ key, ctrlKey, shiftKey }) => {
-    if (shiftKey && ctrlKey && key === 'ArrowDown') {
+    if (ctrlKey && key === 'ArrowDown') {
       toggleConsoleFrame();
     }
 
-    if (shiftKey && key.toUpperCase() === 'T') {
+    if (ctrlKey && key.toUpperCase() === 'T') {
       toggleConsoleFrame();
     }
   });

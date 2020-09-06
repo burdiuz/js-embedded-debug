@@ -39,6 +39,16 @@
         overflow-x: hidden;
       }
 
+      .input-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .input-left, .input-right {
+        flex: 1;
+      }
+
       h3 {
         text-align: center;
       }
@@ -49,20 +59,28 @@
       <div class="left">
         <h3>Message Port</h3>
         <div class="console console-left"></div>
-        <input
-          type="text"
-          placeholder="Send command via Message Port"
-          class="input-left"
-        />
+        <div class="input-container">
+          <input
+            type="text"
+            placeholder="Send command via Message Port"
+            class="input-left"
+          />
+          <button
+          class="send-left">Send</button>
+        </div>
       </div>
       <div class="right">
         <h3>Shared Worker</h3>
         <div class="console console-right"></div>
+        <div class="input-container">
         <input
           type="text"
           placeholder="Send command via Shared Worker"
           class="input-right"
         />
+        <button
+        class="send-right">Send</button>
+      </div>
       </div>
     </div>
   </body>
@@ -116,21 +134,27 @@
         console.log(error);
       }
 
+      const sendRight = () => {
+        const input = document.querySelector('.input-right');
+        const { value } = input;
+
+          input.value = '';
+          swConsole.info(value);
+          worker.port.postMessage(
+            JSON.stringify({ type: Command.EXEC, value })
+          );
+      };
+
+      document.querySelector('.send-right').addEventListener('click', sendRight);
+
       document
         .querySelector('.input-right')
         .addEventListener('keyup', ({ key }) => {
           if (key !== 'Enter') {
             return;
           }
-          const {
-            target: { value },
-          } = event;
 
-          event.target.value = '';
-          swConsole.info(value);
-          worker.port.postMessage(
-            JSON.stringify({ type: Command.EXEC, value })
-          );
+          sendRight();
         });
     } else {
       swConsole.error(
@@ -140,19 +164,25 @@
 
     window.postMessage(JSON.stringify({ type: Command.INIT_FRAME }));
 
+    const sendLeft = () => {
+      const input = document.querySelector('.input-left');
+      const { value } = input;
+
+        input.value = '';
+        mpConsole.info(value);
+        window.postMessage(JSON.stringify({ type: Command.EXEC, value }));
+    };
+
+    document.querySelector('.send-left').addEventListener('click', sendLeft);
+
     document
       .querySelector('.input-left')
       .addEventListener('keyup', ({ key }) => {
         if (key !== 'Enter') {
           return;
         }
-        const {
-          target: { value },
-        } = event;
 
-        event.target.value = '';
-        mpConsole.info(value);
-        window.postMessage(JSON.stringify({ type: Command.EXEC, value }));
+        sendLeft();
       });
   </script>
 </html>

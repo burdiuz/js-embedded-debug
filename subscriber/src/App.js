@@ -19,7 +19,7 @@ function App() {
         <CommandInput></CommandInput>
       </TabPane>
       <TabPane tab="Network" key="2"></TabPane>
-      <TabPane tab="Coockies" key="3"></TabPane>
+      <TabPane tab="Cookies" key="3"></TabPane>
       <TabPane tab="Local Storage" key="4"></TabPane>
       <TabPane tab="Session Storage" key="5"></TabPane>
       <TabPane tab="Redux" key="6"></TabPane>
