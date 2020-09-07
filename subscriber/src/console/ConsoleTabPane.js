@@ -7,19 +7,19 @@ import { evalCommandSend, consoleInstanceSet } from 'store/actions/console';
 import ConsoleView from './ConsoleView';
 import CommandInput from './CommandInput';
 
-const ConsoleTabPane = ({ onEvalCommandSend, onConsoleInstanceSet }) => (
+const ConsoleTabPane = ({ commandSend, instanceSet }) => (
   <>
-    <ConsoleView onInit={onConsoleInstanceSet}></ConsoleView>
-    <CommandInput onSend={onEvalCommandSend}></CommandInput>
+    <ConsoleView onInit={instanceSet}></ConsoleView>
+    <CommandInput onSend={commandSend}></CommandInput>
   </>
 );
 
 ConsoleTabPane.propTypes = {
-  onEvalCommandSend: PropTypes.func.isRequired,
-  onConsoleInstanceSet: PropTypes.func.isRequired,
+  commandSend: PropTypes.func.isRequired,
+  instanceSet: PropTypes.func.isRequired,
 };
 
 export default connect(null, {
-  onEvalCommandSend: evalCommandSend,
-  onConsoleInstanceSet: consoleInstanceSet,
+  commandSend: evalCommandSend,
+  instanceSet: consoleInstanceSet,
 })(ConsoleTabPane);

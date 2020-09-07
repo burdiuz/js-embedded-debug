@@ -1,6 +1,7 @@
 import { createStore, applyMiddleware, compose } from 'redux';
 import reducer from './reducers';
 import sideEffectMiddleware from '@actualwave/redux-side-effect';
+import './effects';
 
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 
