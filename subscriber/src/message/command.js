@@ -1,4 +1,4 @@
-const Command = {
+export const Command = {
   INIT_FRAME: 'init-frame',
 
   CONSOLE_LOG: 'console-log',

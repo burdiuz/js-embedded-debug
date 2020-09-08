@@ -1,3 +1,4 @@
+import { take, select } from '@actualwave/redux-side-effect';
 import {
   EVAL_COMMAND_SEND,
   EVAL_COMMAND_RESPONSE,
@@ -5,20 +6,27 @@ import {
   CONSOLE_INSTANCE_SET,
 } from 'store/actions/console';
 import { getConsoleInstance } from 'store/selectors/console';
-import { take, select } from '@actualwave/redux-side-effect';
+import { Command } from 'message/command';
+import { getServiceInstance } from 'communication';
 
-take(EVAL_COMMAND_SEND, async ({payload}) => {
-  window.postMessage();
+take(EVAL_COMMAND_SEND, async ({ payload }) => {
+  const comm = getServiceInstance();
+  const msg = await select(getConsoleInstance);
+
+  msg.info(payload);
+  comm.send(Command.EVAL_COMMAND, { value: payload });
 });
 
-take(EVAL_COMMAND_RESPONSE, async (action) => {
+take(EVAL_COMMAND_RESPONSE, async ({ payload }) => {
+  const msg = await select(getConsoleInstance);
 
+  msg.pushRendered('log', payload);
 });
 
 take(CONSOLE_LOG_RECEIVED, async ({ payload: { type, args } }) => {
   const msg = await select(getConsoleInstance);
 
-  msg.push(type, ...args);
+  msg.pushRendered(type, ...args);
 });
 
 take(CONSOLE_INSTANCE_SET, async ({ payload: msg }) => {
