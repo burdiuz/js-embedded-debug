@@ -164,6 +164,34 @@ export const {
         break;
       case Command.DOM_START_LOOKUP:
         break;
+      case Command.READ_LOCAL_STORAGE:
+        const {
+          hash,
+          host,
+          hostname,
+          href,
+          origin,
+          password,
+          pathname,
+          port,
+          protocol,
+          search,
+          username,
+        } = window.location;
+        sendCommandTo(responseTarget, Command.READ_SESSION_STORAGE_RESPONSE, {
+          hash,
+          host,
+          hostname,
+          href,
+          origin,
+          password,
+          pathname,
+          port,
+          protocol,
+          search,
+          username,
+        });
+        break;
     }
   };
 

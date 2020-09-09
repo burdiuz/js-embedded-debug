@@ -5,7 +5,9 @@ import * as console from './console';
 import * as cookies from './cookies';
 import * as localStorage from './local-storage';
 import * as sessionStorage from './session-storage';
-import * as network from './network';
+import * as xhr from './xhr';
+import * as redux from './redux';
+import * as location from './location';
 
 const reducer = combineReducers(
   createReducers({
@@ -13,7 +15,9 @@ const reducer = combineReducers(
     cookies,
     localStorage,
     sessionStorage,
-    network,
+    xhr,
+    redux,
+    location,
   }),
 );
 

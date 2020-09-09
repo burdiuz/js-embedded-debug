@@ -10,14 +10,26 @@ import {
 import { getSessionStorageItems } from 'store/selectors/session-storage';
 import { StorageView, NewItem } from '../StorageView';
 
-const SessionStorageTabPane = ({ list, storageRead, storageSet, storageRemove }) => {
+const SessionStorageTabPane = ({
+  list,
+  storageRead,
+  storageSet,
+  storageRemove,
+}) => {
   useEffect(() => {
     storageRead();
   }, []);
 
   return (
     <StorageView list={list} save={storageSet} remove={storageRemove}>
-      <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          paddingRight: '5px',
+        }}
+      >
         <NewItem save={storageSet} />
         <Button type="primary" onClick={storageRead}>
           Refresh

@@ -5,6 +5,14 @@ export const Command = {
   EVAL_COMMAND: 'eval-command',
   EVAL_COMMAND_RESPONSE: 'eval-command/response',
 
+  READ_LOCATION: 'read-location',
+  READ_LOCATION_RESPONSE: 'read-location/response',
+  LOCATION_SET: 'location-set',
+  LOCATION_SET_HASH: 'location-set-hash',
+  LOCATION_RELOAD: 'location-reload',
+  HISTORY_BACK: 'history-back',
+  HISTORY_FORWARD: 'history-forward',
+
   READ_COOKIES: 'read-cookies',
   READ_COOKIES_RESPONSE: 'read-cookies/response',
   COOKIE_SET: 'cookie-set',
@@ -23,7 +31,7 @@ export const Command = {
   DOM_START_LOOKUP: 'dom-start-lookup',
   DOM_NODE_SELECTED: 'dom-node-selected',
 
-  NETWORK_UPDATE: 'network-update',
+  XHR_UPDATE: 'network-update',
 
   REDUX_ACTION: 'redux-action',
 };
