@@ -11,7 +11,9 @@ import {
 } from './communication';
 import createCommandDispatcher from './message/converter';
 
-communicationServiceFactory({ messagePort: window });
+communicationServiceFactory({
+  messagePort: { source: window, target: window.opener || window },
+});
 getServiceInstance().initialize(
   createCommandDispatcher((action) => store.dispatch(action)),
 );

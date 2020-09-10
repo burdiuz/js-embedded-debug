@@ -55,11 +55,13 @@ export const NewItem = ({ save }) => {
     >
       <Input
         value={name}
+        placeholder="Name"
         onChange={({ target: { value: newName } }) => setName(newName)}
         style={{ flex: '0 0 25%', marginRight: '10px' }}
       />
       <Input
         value={value}
+        placeholder="Value"
         onChange={({ target: { value: newValue } }) => setValue(newValue)}
       />
       <Button

@@ -1,0 +1,3 @@
+((EDConsole) => {
+
+})(window.EDConsole);

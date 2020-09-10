@@ -15,6 +15,10 @@ import logo from '../logo.svg';
 
 const { TabPane } = Tabs;
 
+/*
+ TODO: Make injection to tell console which modules are active to show only tabs which will get the communication
+*/
+
 const MainView = () => (
   <Tabs defaultActiveKey="console" className="main-tabs">
     <TabPane tab="&nbsp;" key="spacer" disabled></TabPane>

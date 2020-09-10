@@ -16,8 +16,8 @@ export const composeMessage = (command, data) => {
 export const isMessage = (str) =>
   str && typeof str === 'string' && str.length > UID_LENGTH;
 
-export const isOwnMessage = (str) => false;
-//  isMessage(str) && str.substr(0, UID_LENGTH) === CLIENT_UID;
+export const isOwnMessage = (str) =>
+  isMessage(str) && str.substr(0, UID_LENGTH) === CLIENT_UID;
 
 export const getMessageUID = (str) => str.substr(UID_LENGTH, UID_LENGTH);
 
@@ -27,7 +27,7 @@ export const parseMessage = (str) => {
   } catch (error) {
     return null;
   }
-}
+};
 
 export const readMessage = ({ data, detail }) => {
   const str = data || detail;
@@ -38,7 +38,7 @@ export const readMessage = ({ data, detail }) => {
 
   const uid = getMessageUID(str);
 
-  if(hasMessageUIDRegistered(uid)) {
+  if (hasMessageUIDRegistered(uid)) {
     return null;
   }
 
@@ -55,4 +55,4 @@ export const registerMessageUID = (uid) => {
   uids.add(uid);
 };
 
-export const hasMessageUIDRegistered = (uid) => false;// uids.has(uid);
+export const hasMessageUIDRegistered = (uid) => uids.has(uid);

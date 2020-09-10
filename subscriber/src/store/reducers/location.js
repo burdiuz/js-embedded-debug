@@ -2,7 +2,7 @@ const getInitialState = () => ({
   current: {},
 });
 
-export const locationkUpdateReceived = (state, { payload }) => ({
+export const locationUpdateReceived = (state, { payload }) => ({
   ...state,
   current: payload || {},
 });

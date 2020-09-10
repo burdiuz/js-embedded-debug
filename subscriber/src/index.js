@@ -8,8 +8,6 @@ import * as serviceWorker from './serviceWorker';
 
 import App from './App';
 
-import './injection';
-
 ReactDOM.render(
   <React.StrictMode>
     <App />

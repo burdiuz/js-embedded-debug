@@ -16,9 +16,13 @@ export const xhrkUpdateReceived = (state, { payload: request }) => {
     list[pos] = {
       ...list[pos],
       ...request,
+      updatedAt: new Date(),
     };
   } else {
-    list = [...list, request];
+    list = [
+      ...list,
+      { ...request, createdAt: new Date(), updatedAt: new Date() },
+    ];
   }
 
   return {

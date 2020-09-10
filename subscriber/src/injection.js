@@ -164,7 +164,7 @@ export const {
         break;
       case Command.DOM_START_LOOKUP:
         break;
-      case Command.READ_LOCAL_STORAGE:
+      case Command.READ_LOCATION:
         const {
           hash,
           host,
@@ -178,7 +178,7 @@ export const {
           search,
           username,
         } = window.location;
-        sendCommandTo(responseTarget, Command.READ_SESSION_STORAGE_RESPONSE, {
+        sendCommandTo(responseTarget, Command.READ_LOCATION_RESPONSE, {
           hash,
           host,
           hostname,
