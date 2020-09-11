@@ -28,10 +28,19 @@ export const Command = {
   SESSION_STORAGE_SET: 'session-storage-set',
   SESSION_STORAGE_REMOVE: 'session-storage-remove',
 
-  DOM_START_LOOKUP: 'dom-start-lookup',
-  DOM_NODE_SELECTED: 'dom-node-selected',
+  DOM_NODE_LOOKUP: 'dom-node-lookup',
+  DOM_NODE_LOOKUP_RESPONSE: 'dom-node-lookup/response',
+  DOM_QUERY_SELECTOR: 'dom-query-selector',
+  DOM_QUERY_SELECTOR_RESPONSE: 'dom-query-selector/response',
+  DOM_NODE_COMPUTED_STYLE: 'dom-node-computed-style',
+  DOM_NODE_COMPUTED_STYLE_RESPONSE: 'dom-node-computed-style/response',
+  DOM_NODE_SET_ATTRIBUTE: 'dom-node-set-attribute',
+  DOM_NODE_SET_STYLE: 'dom-node-set-style',
 
   XHR_UPDATE: 'network-update',
+
+  WEBSOCKET_UPDATED: 'websocket-updated',
+  WEBSOCKET_MESSAGE: 'websocket-message',
 
   REDUX_ACTION: 'redux-action',
 };

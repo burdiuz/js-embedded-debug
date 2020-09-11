@@ -110,7 +110,7 @@ const XhrRequest = ({ data }) => {
           <XhrRequestInfo
             title="Response"
             headers={data.responseHeaders}
-            body={data.responseBody}
+            body={data.responseText}
             style={{ borderLeft: '1px solid #eee' }}
           />
         </div>

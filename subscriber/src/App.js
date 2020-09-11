@@ -12,7 +12,7 @@ import {
 import createCommandDispatcher from './message/converter';
 
 communicationServiceFactory({
-  messagePort: { source: window, target: window.opener || window },
+  messagePort: { source: window, target: window.opener || window.top },
 });
 getServiceInstance().initialize(
   createCommandDispatcher((action) => store.dispatch(action)),

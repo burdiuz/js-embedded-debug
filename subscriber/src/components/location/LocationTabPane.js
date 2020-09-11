@@ -112,7 +112,7 @@ const LocationTabPane = ({
           value={hash}
           onChange={({ target: { value } }) => setHash(value)}
         />
-        <Button type="primary" onClick={() => updateHref(hash)}>
+        <Button type="primary" onClick={() => updateHash(hash)}>
           Apply
         </Button>
         <Button onClick={() => setHash(baseHash)} disabled={hash === baseHash}>

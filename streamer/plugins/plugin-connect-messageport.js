@@ -29,7 +29,6 @@
     }
 
     const message = Message.readMessage(event);
-    console.info(message);
 
     if (message && Message.getMessageCommand(message) === Command.INIT_FRAME) {
       EDConsole.subscribeToIncomingMessages(messageSubscriber);

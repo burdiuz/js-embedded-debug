@@ -32,16 +32,14 @@
 
     const info = (...args) => {
       cmdFn('info', args);
-      info.apply(console, args);
+      infoFn.apply(console, args);
     };
 
     Object.assign(console, {
       log,
       error,
       warn,
-      /*
       info,
-      */
     });
 
     if (!window.log) {
@@ -71,6 +69,6 @@
       }
 
       sendResponse(Command.EVAL_COMMAND_RESPONSE, response);
-    }
+    },
   );
 })(window.EDConsole);

@@ -5,8 +5,6 @@ export const factory = ({ source, target }) => {
   const send = (command, data = null) => {
     const str = composeMessage(command, data);
 
-    console.log(str);
-
     target.postMessage(str, '*');
   };
 

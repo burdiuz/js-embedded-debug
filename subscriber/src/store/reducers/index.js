@@ -8,6 +8,8 @@ import * as sessionStorage from './session-storage';
 import * as xhr from './xhr';
 import * as redux from './redux';
 import * as location from './location';
+import * as websockets from './websockets';
+import * as domelement from './domelement';
 
 const reducer = combineReducers(
   createReducers({
@@ -18,6 +20,8 @@ const reducer = combineReducers(
     xhr,
     redux,
     location,
+    websockets,
+    domelement,
   }),
 );
 

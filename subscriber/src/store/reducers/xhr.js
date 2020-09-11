@@ -7,7 +7,7 @@ export const xhrInfoClear = (state) => ({
   list: [],
 });
 
-export const xhrkUpdateReceived = (state, { payload: request }) => {
+export const xhrUpdateReceived = (state, { payload: request }) => {
   let { list = [] } = state;
   const pos = list.findIndex(({ index }) => index === request.index);
 

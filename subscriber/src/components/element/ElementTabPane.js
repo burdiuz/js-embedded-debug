@@ -1,7 +1,245 @@
-import React from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
+import { Button, Input, Divider, Breadcrumb } from 'antd';
+import { AimOutlined, CheckOutlined } from '@ant-design/icons';
 import { connect } from 'react-redux';
+import {
+  domNodeLookup,
+  domQuerySelector,
+  domNodeSetAttribute,
+  domNodeSetStyle,
+  domNodeComputedStyle,
+} from 'store/actions/domelement';
+import {
+  getCurrentDomelementSelectors,
+  getCurrentDomelementAttributes,
+  getCurrentDomelementStyles,
+  getCurrentDomelementName,
+  getDomelementComputedStyles,
+} from 'store/selectors/domelement';
 
-const NetworkTabPane = () => <span>Work in progress...</span>;
+const Prop = ({ name, value: baseValue, change }) => {
+  const [value, setValue] = useState(baseValue);
+  const [edit, setEdit] = useState(false);
+  const inputRef = useRef(null);
 
-export default connect((state) => ({}), {})(NetworkTabPane);
+  useEffect(() => {
+    if (edit && inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [edit]);
+
+  return (
+    <div style={{ display: 'flex' }} onClick={() => setEdit(true)}>
+      <div
+        style={{
+          flex: '1 1 150px',
+          fontWeight: 'bold',
+          textAlign: 'right',
+          marginRight: '5px',
+        }}
+      >
+        {name}:
+      </div>
+      <div style={{ flex: '4 1 200px' }}>
+        {edit ? (
+          <Input
+            ref={inputRef}
+            value={value}
+            size="small"
+            onChange={({ target: { value } }) => setValue(value)}
+            onPressEnter={() => {
+              if (value !== baseValue) {
+                change([name, value]);
+              }
+              setEdit(false);
+            }}
+            addonAfter={
+              <CheckOutlined
+                onClick={() => {
+                  if (value !== baseValue) {
+                    change([name, value]);
+                  }
+                  setEdit(false);
+                }}
+              />
+            }
+          />
+        ) : (
+          value
+        )}
+      </div>
+    </div>
+  );
+};
+
+const PropListInfo = ({
+  title,
+  list,
+  change,
+  style = {},
+  emptyMessage = 'Not available',
+  children = null,
+}) => (
+  <div
+    style={{
+      flex: 1,
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'stretch',
+      ...style,
+    }}
+  >
+    <div style={{ display: 'flex', alignItems: 'center' }}>
+      <h3 style={{ flex: 1 }}>{title}</h3>
+      {children}
+    </div>
+    <div
+      style={{
+        flex: 1,
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'stretch',
+        overflowY: 'auto',
+      }}
+    >
+      {list.length ? '' : emptyMessage}
+      {list.map(([name, value]) => (
+        <Prop key={name} name={name} value={value} change={change} />
+      ))}
+    </div>
+  </div>
+);
+
+const ElementTabPane = ({
+  selectors,
+  attributes,
+  styles,
+  computedStyles,
+  name,
+  lookup,
+  querySelector,
+  setAttribute,
+  setStyle,
+  loadComputedStyle,
+}) => {
+  const selector = selectors.join(' ');
+  const [query, setQuery] = useState('');
+  const [showComputed, setShowComputed] = useState(false);
+
+  useEffect(() => {
+    setShowComputed(false);
+  }, [selectors.join(' ')]);
+
+  useEffect(() => {
+    if (showComputed) {
+      loadComputedStyle(selector);
+    }
+  }, [showComputed]);
+
+  return (
+    <div
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'stretch',
+        margin: '0 5px',
+        height: '100%',
+      }}
+    >
+      <div style={{ display: 'flex' }}>
+        <Button style={{ marginRight: '20px' }} onClick={lookup}>
+          <AimOutlined />
+          Select
+        </Button>
+        <Input
+          value={query}
+          placeholder="Enter CSS Selector path"
+          onChange={({ target: { value } }) => setQuery(value)}
+          style={{ flex: 1 }}
+        />
+        <Button type="primary" onClick={() => querySelector(query)}>
+          Query
+        </Button>
+      </div>
+      <Divider />
+      <Breadcrumb style={{ marginDown: '10px' }}>
+        {selectors.map((selector, index) => (
+          <Breadcrumb.Item key={index}>
+            <a
+              href="#"
+              onClick={(e) => {
+                e.preventDefault();
+                querySelector(selectors.slice(0, index + 1).join(' '));
+              }}
+            >
+              {selector}
+            </a>
+          </Breadcrumb.Item>
+        ))}
+      </Breadcrumb>
+      <div style={{ display: 'flex', alignItems: 'stretch', height: '100%' }}>
+        <PropListInfo
+          title="Attributes"
+          list={attributes}
+          emptyMessage="Does not have any attributes."
+          style={{ marginRight: '5px' }}
+          change={(prop) => setAttribute(selector, prop)}
+        />
+        <PropListInfo
+          title="Styles"
+          list={showComputed ? computedStyles : styles}
+          emptyMessage="Does not have any direct style rules."
+          style={{ borderLeft: '1px solid #eee' }}
+          change={(prop) => setStyle(selector, prop)}
+        >
+          {showComputed ? (
+            <>
+              <a
+                href="#"
+                onClick={(event) => {
+                  event.preventDefault();
+                  setShowComputed(false);
+                }}
+              >
+                Direct
+              </a>
+              &nbsp;/&nbsp;Computed
+            </>
+          ) : (
+            <>
+              Direct&nbsp;/&nbsp;
+              <a
+                href="#"
+                onClick={(event) => {
+                  event.preventDefault();
+                  setShowComputed(true);
+                }}
+              >
+                Computed
+              </a>
+            </>
+          )}
+        </PropListInfo>
+      </div>
+    </div>
+  );
+};
+
+export default connect(
+  (state) => ({
+    selectors: getCurrentDomelementSelectors(state),
+    attributes: getCurrentDomelementAttributes(state),
+    styles: getCurrentDomelementStyles(state),
+    name: getCurrentDomelementName(state),
+    computedStyles: getDomelementComputedStyles(state),
+  }),
+  (dispatch) => ({
+    lookup: () => dispatch(domNodeLookup()),
+    querySelector: (query) => dispatch(domQuerySelector(query)),
+    setAttribute: (selector, prop) =>
+      dispatch(domNodeSetAttribute({ selector, prop })),
+    setStyle: (selector, prop) => dispatch(domNodeSetStyle({ selector, prop })),
+    loadComputedStyle: (selector) => dispatch(domNodeComputedStyle({ selector })),
+  }),
+)(ElementTabPane);

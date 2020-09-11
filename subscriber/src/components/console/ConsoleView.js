@@ -16,18 +16,18 @@ const ConsoleView = memo(({ onInit }) => {
   }, [msg, onInit]);
 
   return (
-    <div style={{ position: 'relative' }}>
+    <>
       <div ref={container} className="console-view-container" />
       <Button
         onClick={() =>
           (container.current.querySelector('.ui-console-container').innerHTML =
             '')
         }
-        style={{ position: 'absolute', top: '5px', right: '5px', zIndex: 10 }}
+        style={{ position: 'fixed', top: '55px', right: '5px', zIndex: 10 }}
       >
         Clear
       </Button>
-    </div>
+    </>
   );
 });
 

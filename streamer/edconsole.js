@@ -951,7 +951,6 @@
 	    );
 	  },
 	  handleIncomingCommand: (command, data, sendResponse) => {
-	    console.log(command, handlers);
 	    const { [command]: handler } = handlers;
 
 	    const callback = (rCommand, rData) =>

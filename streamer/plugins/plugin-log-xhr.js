@@ -3,7 +3,6 @@
     XHR_UPDATE: 'network-update',
   };
 
-
   const State = {
     OPENED: 1,
     LOADING: 3,
@@ -29,6 +28,11 @@
       @private
     */
     _headers = [];
+
+    /*
+      @private
+    */
+    _body = '';
 
     /*
       @private
@@ -60,6 +64,11 @@
       return super.setRequestHeader(header, value);
     }
 
+    send(value) {
+      this._body = value;
+      return super.send(value);
+    }
+
     get requestIndex() {
       return this._index;
     }
@@ -68,23 +77,22 @@
       @private
     */
     handleReadyStateChange(event) {
-      const [method, url] = this._openArgs;
+      const { method, url } = this._openArgs;
 
-      console.info({
+      EDConsole.sendCommand(Command.XHR_UPDATE, {
         index: this._index,
         type: 'xhr',
         method,
         url,
         headers: this._headers,
+        body: String(this._body),
         error: this._error && this._error.textContent,
-        result: {
-          responseText: this.responseText,
-          responseType: this.responseType,
-          responseURL: this.responseURL,
-          responseHeaders: this.getAllResponseHeaders(),
-          status: this.status,
-          statusText: this.statusText,
-        },
+        responseText: this.responseText,
+        responseType: this.responseType,
+        responseURL: this.responseURL,
+        responseHeaders: this.getAllResponseHeaders(),
+        status: this.status,
+        statusText: this.statusText,
         state: this.readyState,
       });
     }
@@ -114,63 +122,58 @@
 
   const getFetchCommandParams = (url, params) => {
     const index = XMLHttpRequest.lastRequestIndex++;
-    const cmdParams = params || {};
-    const { method = 'GET', headers, body } = cmdParams;
+    const { method = 'GET', headers, body } = params || {};
 
     return {
       index,
+      type: 'fetch',
       method,
       url,
-      params: {
-        ...cmdParams,
-        method,
-        headers: prepareHeaders(headers),
-        body: body && String(body),
-      },
-      state: '',
+      headers: prepareHeaders(headers),
+      body: body && String(body),
+      state: 0,
     };
   };
 
   const fetch = (url, params) => {
     const cmd = getFetchCommandParams(url, params);
-    console.info({
+    EDConsole.sendCommand(Command.XHR_UPDATE, {
       ...cmd,
       state: State.OPENED,
     });
 
     return new Promise((res, rej) => {
-      console.info({
+      EDConsole.sendCommand(Command.XHR_UPDATE, {
         ...cmd,
         state: State.LOADING,
       });
 
-      const result = fetchFn(url, params);
-      result.then((result) => {
+      const promise = fetchFn(url, params);
+
+      promise.then((result) => {
         res(result);
 
         result.text().then((text) => {
-          console.info({
+          EDConsole.sendCommand(Command.XHR_UPDATE, {
             ...cmd,
             error: null,
-            result: {
-              responseText: text,
-              responseType: result.type,
-              responseURL: result.url,
-              responseHeaders: prepareHeaders(result.headers),
-              status: result.status,
-              statusText: result.statusText,
-            },
+            responseText: text,
+            responseType: result.type,
+            responseURL: result.url,
+            responseHeaders: prepareHeaders(result.headers),
+            status: result.status,
+            statusText: result.statusText,
             state: State.DONE,
           });
         });
       });
-      result.catch((error) => {
+
+      promise.catch((error) => {
         rej(error);
 
-        console.info({
+        EDConsole.sendCommand(Command.XHR_UPDATE, {
           ...cmd,
           error: `${error.type} ${error.message}`,
-          result: {},
           state: State.DONE,
         });
       });
