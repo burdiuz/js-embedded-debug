@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Button, Divider, Input } from 'antd';
@@ -8,12 +8,7 @@ import { getXhrRequests } from 'store/selectors/xhr';
 
 const { TextArea } = Input;
 
-const XhrRequestInfo = ({
-  title = '',
-  headers = [],
-  body = '',
-  style = {},
-}) => (
+const XhrRequestInfo = ({ title, headers, body = '', style = {} }) => (
   <div
     style={{
       display: 'flex',
@@ -39,7 +34,9 @@ const XhrRequestInfo = ({
         >
           {name}:
         </div>
-        <div style={{ flex: '4 1 200px' }}>{value}</div>
+        <div style={{ flex: '4 1 200px', wordBreak: 'break-word' }}>
+          {value}
+        </div>
       </div>
     ))}
     {body ? (

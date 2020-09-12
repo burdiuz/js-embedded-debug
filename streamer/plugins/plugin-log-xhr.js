@@ -45,7 +45,7 @@
       this._index = XMLHttpRequest.lastRequestIndex++;
 
       this.addEventListener('readystatechange', () =>
-        this.handleReadyStateChange(),
+        this.handleReadyStateChange()
       );
 
       this.addEventListener('error', (error) => {
@@ -90,7 +90,7 @@
         responseText: this.responseText,
         responseType: this.responseType,
         responseURL: this.responseURL,
-        responseHeaders: this.getAllResponseHeaders(),
+        responseHeaders: prepareHeaders(this.getAllResponseHeaders()),
         status: this.status,
         statusText: this.statusText,
         state: this.readyState,
@@ -111,6 +111,16 @@
       }
     } else if (source instanceof Array) {
       headers.push(...source);
+    } else if (typeof source === 'string') {
+      source.split('\r\n').forEach((item) => {
+        let [name, value = ''] = item.split(':');
+        name = name.trim();
+        value = value.trim();
+
+        if (name) {
+          headers.push([name, value]);
+        }
+      });
     } else {
       Object.keys(source).forEach((key) => {
         headers.push([key, String(source[key])]);

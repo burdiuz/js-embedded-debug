@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { Button, Divider } from 'antd';
-import { CaretDownFilled, CaretUpFilled } from '@ant-design/icons';
+import { CaretDownFilled, CaretRightFilled } from '@ant-design/icons';
 import { connect } from 'react-redux';
 import { reduxInfoClear } from 'store/actions/redux';
 import { getReduxActions } from 'store/selectors/redux';
@@ -18,7 +18,7 @@ const ReduxAction = ({ action }) => {
     <>
       <div style={{ cursor: 'pointer' }} onClick={() => setExpanded(!expanded)}>
         {expanded ? (
-          <CaretUpFilled style={{ margin: '0 10px' }} />
+          <CaretRightFilled style={{ margin: '0 10px' }} />
         ) : (
           <CaretDownFilled style={{ margin: '0 10px' }} />
         )}
