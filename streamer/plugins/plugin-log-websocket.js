@@ -4,14 +4,16 @@
   }
 
   const Command = {
+    WEBSOCKET_CREATED: 'websocket-created',
     WEBSOCKET_UPDATED: 'websocket-updated',
     WEBSOCKET_MESSAGE: 'websocket-message',
+    WEBSOCKET_MESSAGE_SEND: 'websocket-message-send',
   };
 
   const WebSocketState = {
     CREATED: 0,
     OPENED: 1,
-    CLOSED: 4,
+    CLOSED: 3,
   };
 
   const WebsocketMessageType = {
@@ -20,6 +22,8 @@
   };
 
   const { WebSocket: WebSocketDef } = window;
+  // TODO once WeakRef available, make it weak ref collection
+  const webSockets = {};
 
   class WebSocket extends WebSocketDef {
     static lastRequestIndex = 1;
@@ -45,9 +49,11 @@
     _error = null;
 
     constructor(url, protocols) {
-      super(...args);
+      super(url, protocols);
 
       this._index = WebSocket.lastRequestIndex++;
+      webSockets[this._index] = this;
+
       const cmdData = {
         index: this._index,
         url,
@@ -55,7 +61,7 @@
         state: WebSocketState.CREATED,
       };
 
-      EDConsole.sendCommand(Command.WEBSOCKET_UPDATED, cmdData);
+      EDConsole.sendCommand(Command.WEBSOCKET_CREATED, cmdData);
 
       this.addEventListener('message', ({ data, detail }) => {
         EDConsole.sendCommand(Command.WEBSOCKET_MESSAGE, {
@@ -111,7 +117,7 @@
     send(data) {
       EDConsole.sendCommand(Command.WEBSOCKET_MESSAGE, {
         index: this._index,
-        type: WebsocketMessageType.INCOMING,
+        type: WebsocketMessageType.OUTGOING,
         data: String(data || detail),
       });
 
@@ -120,4 +126,15 @@
   }
 
   Object.assign(window, { WebSocket });
+
+  EDConsole.setCommandHandler(
+    Command.WEBSOCKET_MESSAGE_SEND,
+    (_, { index, message }) => {
+      const webSocket = webSockets[index];
+
+      if (webSocket) {
+        webSocket.send(message);
+      }
+    },
+  );
 })(window.EDConsole);

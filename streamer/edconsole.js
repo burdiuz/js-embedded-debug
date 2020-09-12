@@ -827,12 +827,30 @@
 	const CLIENT_UID = generateUID();
 
 	// parsing JSON for every message would cost much more than simply stripping a substring.
-	const composeMessage = (command, data) => {
+	const composeMessage = (command, data, stringifyFallback) => {
+	  let message;
+
+	  try {
+	    message = JSON.stringify({ command, data });
+	  } catch (error) {
+	    if (stringifyFallback) {
+	      try {
+	        message = JSON.stringify({ command, data: stringifyFallback(data) });
+	      } catch (err) {
+	        console.error(error);
+	        return null;
+	      }
+	    } else {
+	      console.error(error);
+	      return null;
+	    }
+	  }
+
 	  const uid = generateUID();
 
 	  registerMessageUID(uid);
 
-	  return `${CLIENT_UID}${uid}${JSON.stringify({ command, data })}`;
+	  return `${CLIENT_UID}${uid}${message}`;
 	};
 
 	const isMessage = (str) =>
@@ -947,7 +965,7 @@
 	    EDConsole.handleIncomingCommand(
 	      getMessageCommand(message),
 	      getMessageData(message),
-	      sendResponse
+	      sendResponse,
 	    );
 	  },
 	  handleIncomingCommand: (command, data, sendResponse) => {
@@ -963,12 +981,28 @@
 	      sendResponse: callback,
 	    });
 	  },
-	  sendCommand: (command, data) =>
-	    subscribers.forEach((subscriber) =>
-	      EDConsole.sendCommandTo(subscriber, command, data)
-	    ),
-	  sendCommandTo: (sendResponse, command, data) =>
-	    sendResponse(composeMessage$1(command, data)),
+	  sendCommand: (command, data, stringifyFallback) => {
+	    const message = composeMessage$1(command, data, stringifyFallback);
+
+	    if (!message) {
+	      // INFO Might cause problem when using with plugin-log-console, need to be careful
+	      console.error(`Cannot compose "${command}" message from:`, data);
+	      return;
+	    }
+
+	    subscribers.forEach((subscriber) => subscriber(message));
+	  },
+	  sendCommandTo: (subscriber, command, data, stringifyFallback) => {
+	    const message = composeMessage$1(command, data, stringifyFallback);
+
+	    if (!message) {
+	      // INFO Might cause problem when using with plugin-log-console, need to be careful
+	      console.error(`Cannot compose "${command}" message from:`, data);
+	      return;
+	    }
+
+	    subscriber(message);
+	  },
 	};
 
 	window.EDConsole = EDConsole;

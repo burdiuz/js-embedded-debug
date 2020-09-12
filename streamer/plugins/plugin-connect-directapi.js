@@ -1,0 +1,4 @@
+/*
+  Provide custom global methods to communicate with unknown client.
+  The same should be implemented in console app
+*/

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Button, Divider, Input } from 'antd';
-import { CaretDownFilled, CaretUpFilled } from '@ant-design/icons';
+import { CaretDownFilled, CaretRightFilled } from '@ant-design/icons';
 import { xhrInfoClear } from 'store/actions/xhr';
 import { getXhrRequests } from 'store/selectors/xhr';
 
@@ -70,8 +70,6 @@ const XhrRequest = ({ data }) => {
     createdAt.getTime() / 1000
   ).toFixed(2)}s`;
 
-  useEffect(() => {}, []);
-
   return (
     <>
       <div
@@ -84,9 +82,9 @@ const XhrRequest = ({ data }) => {
         onClick={() => setExpanded(!expanded)}
       >
         {expanded ? (
-          <CaretUpFilled style={{ margin: '0 10px' }} />
-        ) : (
           <CaretDownFilled style={{ margin: '0 10px' }} />
+        ) : (
+          <CaretRightFilled style={{ margin: '0 10px' }} />
         )}
         <strong>{method}</strong>
         <div style={{ flex: 1 }}> {url}</div>
@@ -122,22 +120,32 @@ const XhrRequest = ({ data }) => {
 
 const XhrTabPane = ({ list, clear }) => {
   return (
-    <>
+    <div
+      style={{
+        height: '100%',
+        overflowY: 'auto',
+      }}
+    >
       <div
         style={{
           display: 'flex',
           justifyContent: 'flex-end',
-          paddingRight: '5px',
+          padding: '0 5px 10px 0',
         }}
       >
         <Button type="primary" disabled={!list.length} onClick={clear}>
           Clear
         </Button>
       </div>
+      {list.length ? null : (
+        <div style={{ margin: '20px' }}>
+          No new XHR connections were captured.
+        </div>
+      )}
       {list.map((data, i) => (
         <XhrRequest key={i} data={data} />
       ))}
-    </>
+    </div>
   );
 };
 

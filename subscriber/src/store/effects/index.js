@@ -4,3 +4,4 @@ import './domelement';
 import './local-storage';
 import './location';
 import './session-storage';
+import './websockets';

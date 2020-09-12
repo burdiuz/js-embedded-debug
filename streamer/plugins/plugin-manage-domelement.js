@@ -20,7 +20,7 @@
     width: '100%',
     height: '100%',
     backgroundColor: '#ffffff66',
-    zIndex: Number.MAX_SAFE_INTEGER,
+    zIndex: Math.pow(2, 31),
     pointerEvents: 'none',
   });
 
@@ -38,25 +38,33 @@
   container.appendChild(selection);
 
   const buildNodeSelector = (node) => {
-    const { nodeName } = node;
+    const { tagName } = node;
     const className = (node.getAttribute('class') || '').replace(/\s+/g, '.');
     const id = node.getAttribute('id');
+    const name = node.getAttribute('name');
 
-    if (className) {
-      return `${nodeName}.${className}`;
-    } else if (id) {
-      return `${nodeName}#${id}`;
-    } else if (node.parentElement) {
-      const index = Array.from(node.parentElement.children)
-        .filter((child) => child.nodeName === nodeName)
-        .indexOf(node);
+    let index = 0;
+    let isFirst = true;
 
-      if (index) {
-        return `${nodeName}:nth-child(${index + 1})`;
-      }
+    if (node.parentElement) {
+      const children = Array.from(node.parentElement.children);
+
+      index = children.indexOf(node);
+      isFirst = children.find((item) => item.tagName === tagName) === node;
     }
 
-    return `${nodeName}`;
+    if (className) {
+      const base = `${tagName}.${className}`;
+      return isFirst ? base : `${base}:nth-child(${index + 1})`;
+    } else if (id) {
+      return `${tagName}#${id}`;
+    } else if (name) {
+      return `${tagName}[name="${name}"]`;
+    } else if (!isFirst) {
+      return `${tagName}:nth-child(${index + 1})`;
+    }
+
+    return `${tagName}`;
   };
 
   const buildSelector = (node, selectors = []) => {
@@ -105,7 +113,8 @@
     return list;
   };
 
-  let lastSelectedElement = null;
+  // TODO cache selection to apply attrs nad styles changes directly without looking up for it every time
+  // let lastSelectedElement = null;
 
   const mouseoverHandler = ({ target: node }) => {
     EDConsole.sendCommand(Command.DOM_NODE_LOOKUP_RESPONSE, {
@@ -129,12 +138,12 @@
 
   const blockEvents = () =>
     BLOCKED_EVENTS.forEach((type) =>
-      window.addEventListener(type, stopEventPropagation, { capture: true }),
+      window.addEventListener(type, stopEventPropagation, { capture: true })
     );
 
   const unblockEvents = () =>
     BLOCKED_EVENTS.forEach((type) =>
-      window.removeEventListener(type, stopEventPropagation, { capture: true }),
+      window.removeEventListener(type, stopEventPropagation, { capture: true })
     );
 
   EDConsole.setCommandHandler(Command.DOM_NODE_LOOKUP, () => {
@@ -186,7 +195,7 @@
         data = generateComputedStyleList(node);
       }
       sendResponse(Command.DOM_NODE_COMPUTED_STYLE_RESPONSE, data);
-    },
+    }
   );
 
   EDConsole.setCommandHandler(
@@ -200,7 +209,7 @@
       node.setAttribute(...prop);
 
       querySelectorHandler(null, { value: selector }, sendResponse);
-    },
+    }
   );
 
   EDConsole.setCommandHandler(
@@ -214,6 +223,6 @@
       node.style.setProperty(...prop);
 
       querySelectorHandler(null, { value: selector }, sendResponse);
-    },
+    }
   );
 })(window.EDConsole);

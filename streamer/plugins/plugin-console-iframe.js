@@ -9,7 +9,7 @@
 
     Object.assign(frame.style, {
       position: 'absolute',
-      zIndex: '9999',
+      zIndex: Math.pow(2, 32) - 1,
       left: '0',
       right: '0',
       bottom: '0',
@@ -52,12 +52,12 @@
 
       if (
         shiftKey &&
-        !ctrlKey &&
+        ctrlKey &&
         !altKey &&
         (String(key).toUpperCase() === 'T' || keyCode === T_KEY_CODE)
       ) {
         toggleConsoleFrame();
       }
-    },
+    }
   );
 })(window.EDConsole);

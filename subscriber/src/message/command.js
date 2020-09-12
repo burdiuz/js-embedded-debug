@@ -39,8 +39,10 @@ export const Command = {
 
   XHR_UPDATE: 'network-update',
 
+  WEBSOCKET_CREATED: 'websocket-created',
   WEBSOCKET_UPDATED: 'websocket-updated',
   WEBSOCKET_MESSAGE: 'websocket-message',
+  WEBSOCKET_MESSAGE_SEND: 'websocket-message-send',
 
   REDUX_ACTION: 'redux-action',
 };

@@ -13,7 +13,11 @@
     return {
       ...store,
       dispatch: (...args) => {
-        EDConsole.sendCommand(Command.REDUX_ACTION, args[0]);
+        EDConsole.sendCommand(Command.REDUX_ACTION, args[0], ({ type }) => ({
+          type,
+          payload:
+            "Sorry, JSON.stringify() could not handle this action contents, so it can't be shown here.",
+        }));
         return store.dispatch(...args);
       },
     };

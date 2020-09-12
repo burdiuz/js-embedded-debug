@@ -26,7 +26,7 @@
 
       if (
         shiftKey &&
-        !ctrlKey &&
+        ctrlKey &&
         !altKey &&
         (String(key).toUpperCase() === 'Q' || keyCode === Q_KEY_CODE)
       ) {

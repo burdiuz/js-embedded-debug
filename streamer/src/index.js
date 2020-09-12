@@ -57,7 +57,7 @@ const EDConsole = {
     EDConsole.handleIncomingCommand(
       Message.getMessageCommand(message),
       Message.getMessageData(message),
-      sendResponse
+      sendResponse,
     );
   },
   handleIncomingCommand: (command, data, sendResponse) => {
@@ -73,12 +73,28 @@ const EDConsole = {
       sendResponse: callback,
     });
   },
-  sendCommand: (command, data) =>
-    subscribers.forEach((subscriber) =>
-      EDConsole.sendCommandTo(subscriber, command, data)
-    ),
-  sendCommandTo: (sendResponse, command, data) =>
-    sendResponse(composeMessage(command, data)),
+  sendCommand: (command, data, stringifyFallback) => {
+    const message = composeMessage(command, data, stringifyFallback);
+
+    if (!message) {
+      // INFO Might cause problem when using with plugin-log-console, need to be careful
+      console.error(`Cannot compose "${command}" message from:`, data);
+      return;
+    }
+
+    subscribers.forEach((subscriber) => subscriber(message));
+  },
+  sendCommandTo: (subscriber, command, data, stringifyFallback) => {
+    const message = composeMessage(command, data, stringifyFallback);
+
+    if (!message) {
+      // INFO Might cause problem when using with plugin-log-console, need to be careful
+      console.error(`Cannot compose "${command}" message from:`, data);
+      return;
+    }
+
+    subscriber(message);
+  },
 };
 
 window.EDConsole = EDConsole;
