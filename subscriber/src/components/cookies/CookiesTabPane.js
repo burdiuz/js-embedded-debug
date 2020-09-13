@@ -15,13 +15,14 @@ const CookiesTabPane = ({ list, cookiesRead, cookieSet, cookieRemove }) => {
     <StorageView list={list} save={cookieSet} remove={cookieRemove}>
       <div
         style={{
+          flex: '0 0 auto',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
           paddingRight: '5px',
         }}
       >
-        <NewItem save={cookieSet} />
+        <NewItem save={cookieSet} style={{ flex: 1 }} />
         <Button type="primary" onClick={cookiesRead}>
           Refresh
         </Button>

@@ -35,24 +35,14 @@
 	exports.default = hasOwn;
 	});
 
-	var eventDispatcher = createCommonjsModule(function (module, exports) {
-
-	Object.defineProperty(exports, '__esModule', { value: true });
-
-	function _interopDefault (ex) { return (ex && (typeof ex === 'object') && 'default' in ex) ? ex['default'] : ex; }
-
-	var hasOwn = _interopDefault(hasOwn_1);
-
-	/**
-	 *      
-	 */
+	var hasOwn = /*@__PURE__*/getDefaultExportFromCjs(hasOwn_1);
 
 	/* eslint-disable import/prefer-default-export */
-	const isObject = value => typeof value === 'object' && value !== null;
+	const isObject = (value) => typeof value === 'object' && value !== null;
 
 	/**
 	 * Created by Oleg Galaburda on 09.02.16.
-	 *      
+	 *
 	 */
 	class Event {
 	  constructor(type, data = null) {
@@ -64,7 +54,7 @@
 	  toJSON() {
 	    return {
 	      type: this.type,
-	      data: this.data
+	      data: this.data,
 	    };
 	  }
 
@@ -75,7 +65,6 @@
 	  preventDefault() {
 	    this.defaultPrevented = true;
 	  }
-
 	}
 	const getEvent = (eventOrType, optionalData) => {
 	  let event = eventOrType;
@@ -89,7 +78,7 @@
 
 	/**
 	 * Created by Oleg Galaburda on 09.02.16.
-	 *      
+	 *
 	 */
 	class ListenersRunner {
 	  constructor(listeners, onStopped, onComplete) {
@@ -107,9 +96,7 @@
 
 	  run(event, target) {
 	    let listener;
-	    const {
-	      listeners
-	    } = this;
+	    const { listeners } = this;
 	    this.augmentEvent(event); // TODO this has to be handled in separate object ListenersRunner that should be
 	    // created for each call() call and asked for index validation on each listener remove.
 
@@ -130,7 +117,6 @@
 	  }
 	  /* eslint class-methods-use-this: "off" */
 
-
 	  clearEvent(eventObject) {
 	    const event = eventObject;
 	    delete event.stopPropagation;
@@ -142,19 +128,18 @@
 	      this.index--;
 	    }
 	  }
-
 	}
 
 	/**
 	 * Created by Oleg Galaburda on 09.02.16.
-	 *      
+	 *
 	 */
 	class EventListeners {
 	  constructor() {
 	    this._listeners = {};
 	    this._runners = [];
 
-	    this.removeRunner = runner => {
+	    this.removeRunner = (runner) => {
 	      this._runners.splice(this._runners.indexOf(runner), 1);
 	    };
 	  }
@@ -218,9 +203,7 @@
 
 	    if (priorities) {
 	      const list = Object.getOwnPropertyNames(priorities);
-	      const {
-	        length
-	      } = list;
+	      const { length } = list;
 
 	      for (let index = 0; index < length; index++) {
 	        const priority = list[index];
@@ -234,7 +217,7 @@
 	            delete priorities[priority];
 	          }
 
-	          this._runners.forEach(runner => {
+	          this._runners.forEach((runner) => {
 	            runner.listenerRemoved(handlers, handlerIndex);
 	          });
 	        }
@@ -265,9 +248,7 @@
 	    if (priorities) {
 	      // getOwnPropertyNames() or keys()?
 	      const list = Object.getOwnPropertyNames(priorities).sort((a, b) => a - b);
-	      const {
-	        length
-	      } = list;
+	      const { length } = list;
 
 	      for (let index = 0; index < length; index++) {
 	        if (stopped) break;
@@ -282,12 +263,11 @@
 	      }
 	    }
 	  }
-
 	}
 
 	/**
 	 * Created by Oleg Galaburda on 09.02.16.
-	 *      
+	 *
 	 */
 
 	class EventDispatcher {
@@ -321,21 +301,7 @@
 
 	    this._listeners.call(eventObject);
 	  }
-
 	}
-
-	const createEventDispatcher = eventPreprocessor => new EventDispatcher(eventPreprocessor);
-
-	exports.default = EventDispatcher;
-	exports.Event = Event;
-	exports.EventDispatcher = EventDispatcher;
-	exports.createEventDispatcher = createEventDispatcher;
-	exports.getEvent = getEvent;
-	exports.isObject = isObject;
-
-	});
-
-	var EventDispatcher = /*@__PURE__*/getDefaultExportFromCjs(eventDispatcher);
 
 	var getClass_1 = createCommonjsModule(function (module, exports) {
 
@@ -617,7 +583,11 @@
 	var convertObject = ((value, convertValue) => {
 	  const result = createStorage();
 	  Object.keys(value).forEach(key => {
-	    addToStorage(result, keyNeedsConversion(key) ? convertValue(key) : key, convertValue(value[key]));
+	    try {
+	      addToStorage(result, keyNeedsConversion(key) ? convertValue(key) : key, convertValue(value[key]));
+	    } catch (error) {
+	      /* Possible SecurityError when accessing properties from restricted origin */
+	    }
 	  });
 	  setCustomClassNameTo(result, getClass_1.getClassName(value));
 	  return result;
@@ -918,7 +888,7 @@
 
 	const dispatcher = new EventDispatcher();
 
-	const Event = Object.freeze({
+	const Event$1 = Object.freeze({
 	  CONSOLE_FRAME_OPENED: 'consoleFrameOpened',
 	  CONSOLE_FRAME_CLOSED: 'consoleFrameClosed',
 	  COMMAND_RECEIVED: 'commandReceived',
@@ -929,7 +899,7 @@
 	const subscribers = [];
 
 	const EDConsole = {
-	  Event,
+	  Event: Event$1,
 	  Message,
 	  EventDispatcher,
 	  LogDataRenderer,
@@ -952,9 +922,9 @@
 	  removeEventListener: (type, listener) =>
 	    dispatcher.removeEventListener(type, listener),
 	  consoleOpened: (contentWindow) =>
-	    dispatcher.dispatchEvent(Event.CONSOLE_FRAME_OPENED, contentWindow),
+	    dispatcher.dispatchEvent(Event$1.CONSOLE_FRAME_OPENED, contentWindow),
 	  consoleClosed: (contentWindow) =>
-	    dispatcher.dispatchEvent(Event.CONSOLE_FRAME_CLOSED, contentWindow),
+	    dispatcher.dispatchEvent(Event$1.CONSOLE_FRAME_CLOSED, contentWindow),
 	  handleIncomingMessageEvent: (event, sendResponse) => {
 	    const message = readMessage$1(event);
 
@@ -975,7 +945,7 @@
 	      EDConsole.sendCommandTo(sendResponse, rCommand, rData);
 
 	    handler(command, data, callback);
-	    dispatcher.dispatchEvent(Event.COMMAND_RECEIVED, {
+	    dispatcher.dispatchEvent(Event$1.COMMAND_RECEIVED, {
 	      command,
 	      data,
 	      sendResponse: callback,

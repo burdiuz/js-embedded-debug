@@ -43,7 +43,12 @@ const LocationTabPane = ({
   useEffect(() => setHash(baseHash), [baseHash]);
 
   return (
-    <>
+    <div
+      style={{
+        height: '100%',
+        overflowY: 'auto',
+      }}
+    >
       <div
         style={{
           display: 'flex',
@@ -233,7 +238,7 @@ const LocationTabPane = ({
         </Button>
         <Button onClick={goForward}>Go Forward &gt;</Button>
       </div>
-    </>
+    </div>
   );
 };
 

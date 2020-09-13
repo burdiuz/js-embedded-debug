@@ -35,24 +35,14 @@
 	exports.default = hasOwn;
 	});
 
-	var eventDispatcher = createCommonjsModule(function (module, exports) {
-
-	Object.defineProperty(exports, '__esModule', { value: true });
-
-	function _interopDefault (ex) { return (ex && (typeof ex === 'object') && 'default' in ex) ? ex['default'] : ex; }
-
-	var hasOwn = _interopDefault(hasOwn_1);
-
-	/**
-	 *      
-	 */
+	var hasOwn = /*@__PURE__*/getDefaultExportFromCjs(hasOwn_1);
 
 	/* eslint-disable import/prefer-default-export */
-	const isObject = value => typeof value === 'object' && value !== null;
+	const isObject = (value) => typeof value === 'object' && value !== null;
 
 	/**
 	 * Created by Oleg Galaburda on 09.02.16.
-	 *      
+	 *
 	 */
 	class Event {
 	  constructor(type, data = null) {
@@ -64,7 +54,7 @@
 	  toJSON() {
 	    return {
 	      type: this.type,
-	      data: this.data
+	      data: this.data,
 	    };
 	  }
 
@@ -75,7 +65,6 @@
 	  preventDefault() {
 	    this.defaultPrevented = true;
 	  }
-
 	}
 	const getEvent = (eventOrType, optionalData) => {
 	  let event = eventOrType;
@@ -89,7 +78,7 @@
 
 	/**
 	 * Created by Oleg Galaburda on 09.02.16.
-	 *      
+	 *
 	 */
 	class ListenersRunner {
 	  constructor(listeners, onStopped, onComplete) {
@@ -107,9 +96,7 @@
 
 	  run(event, target) {
 	    let listener;
-	    const {
-	      listeners
-	    } = this;
+	    const { listeners } = this;
 	    this.augmentEvent(event); // TODO this has to be handled in separate object ListenersRunner that should be
 	    // created for each call() call and asked for index validation on each listener remove.
 
@@ -130,7 +117,6 @@
 	  }
 	  /* eslint class-methods-use-this: "off" */
 
-
 	  clearEvent(eventObject) {
 	    const event = eventObject;
 	    delete event.stopPropagation;
@@ -142,19 +128,18 @@
 	      this.index--;
 	    }
 	  }
-
 	}
 
 	/**
 	 * Created by Oleg Galaburda on 09.02.16.
-	 *      
+	 *
 	 */
 	class EventListeners {
 	  constructor() {
 	    this._listeners = {};
 	    this._runners = [];
 
-	    this.removeRunner = runner => {
+	    this.removeRunner = (runner) => {
 	      this._runners.splice(this._runners.indexOf(runner), 1);
 	    };
 	  }
@@ -218,9 +203,7 @@
 
 	    if (priorities) {
 	      const list = Object.getOwnPropertyNames(priorities);
-	      const {
-	        length
-	      } = list;
+	      const { length } = list;
 
 	      for (let index = 0; index < length; index++) {
 	        const priority = list[index];
@@ -234,7 +217,7 @@
 	            delete priorities[priority];
 	          }
 
-	          this._runners.forEach(runner => {
+	          this._runners.forEach((runner) => {
 	            runner.listenerRemoved(handlers, handlerIndex);
 	          });
 	        }
@@ -265,9 +248,7 @@
 	    if (priorities) {
 	      // getOwnPropertyNames() or keys()?
 	      const list = Object.getOwnPropertyNames(priorities).sort((a, b) => a - b);
-	      const {
-	        length
-	      } = list;
+	      const { length } = list;
 
 	      for (let index = 0; index < length; index++) {
 	        if (stopped) break;
@@ -282,12 +263,11 @@
 	      }
 	    }
 	  }
-
 	}
 
 	/**
 	 * Created by Oleg Galaburda on 09.02.16.
-	 *      
+	 *
 	 */
 
 	class EventDispatcher {
@@ -321,21 +301,7 @@
 
 	    this._listeners.call(eventObject);
 	  }
-
 	}
-
-	const createEventDispatcher = eventPreprocessor => new EventDispatcher(eventPreprocessor);
-
-	exports.default = EventDispatcher;
-	exports.Event = Event;
-	exports.EventDispatcher = EventDispatcher;
-	exports.createEventDispatcher = createEventDispatcher;
-	exports.getEvent = getEvent;
-	exports.isObject = isObject;
-
-	});
-
-	var EventDispatcher = /*@__PURE__*/getDefaultExportFromCjs(eventDispatcher);
 
 	var getClass_1 = createCommonjsModule(function (module, exports) {
 
@@ -617,7 +583,11 @@
 	var convertObject = ((value, convertValue) => {
 	  const result = createStorage();
 	  Object.keys(value).forEach(key => {
-	    addToStorage(result, keyNeedsConversion(key) ? convertValue(key) : key, convertValue(value[key]));
+	    try {
+	      addToStorage(result, keyNeedsConversion(key) ? convertValue(key) : key, convertValue(value[key]));
+	    } catch (error) {
+	      /* Possible SecurityError when accessing properties from restricted origin */
+	    }
 	  });
 	  setCustomClassNameTo(result, getClass_1.getClassName(value));
 	  return result;
@@ -918,7 +888,7 @@
 
 	const dispatcher = new EventDispatcher();
 
-	const Event = Object.freeze({
+	const Event$1 = Object.freeze({
 	  CONSOLE_FRAME_OPENED: 'consoleFrameOpened',
 	  CONSOLE_FRAME_CLOSED: 'consoleFrameClosed',
 	  COMMAND_RECEIVED: 'commandReceived',
@@ -929,7 +899,7 @@
 	const subscribers = [];
 
 	const EDConsole = {
-	  Event,
+	  Event: Event$1,
 	  Message,
 	  EventDispatcher,
 	  LogDataRenderer,
@@ -952,9 +922,9 @@
 	  removeEventListener: (type, listener) =>
 	    dispatcher.removeEventListener(type, listener),
 	  consoleOpened: (contentWindow) =>
-	    dispatcher.dispatchEvent(Event.CONSOLE_FRAME_OPENED, contentWindow),
+	    dispatcher.dispatchEvent(Event$1.CONSOLE_FRAME_OPENED, contentWindow),
 	  consoleClosed: (contentWindow) =>
-	    dispatcher.dispatchEvent(Event.CONSOLE_FRAME_CLOSED, contentWindow),
+	    dispatcher.dispatchEvent(Event$1.CONSOLE_FRAME_CLOSED, contentWindow),
 	  handleIncomingMessageEvent: (event, sendResponse) => {
 	    const message = readMessage$1(event);
 
@@ -975,7 +945,7 @@
 	      EDConsole.sendCommandTo(sendResponse, rCommand, rData);
 
 	    handler(command, data, callback);
-	    dispatcher.dispatchEvent(Event.COMMAND_RECEIVED, {
+	    dispatcher.dispatchEvent(Event$1.COMMAND_RECEIVED, {
 	      command,
 	      data,
 	      sendResponse: callback,
@@ -1202,7 +1172,7 @@
 	      log,
 	      error,
 	      warn,
-	      // info,
+	      info,
 	    });
 
 	    if (!window.log) {
@@ -1425,49 +1395,62 @@
 	  };
 
 	  const { fetch: fetchFn, XMLHttpRequest: XMLHttpRequestDef } = window;
+	  let lastRequestIndex = 1;
 
 	  class XMLHttpRequest extends XMLHttpRequestDef {
-	    static lastRequestIndex = 1;
-
-	    /*
-	      @private
-	    */
-	    _index = 0;
-
-	    /*
-	      @private
-	    */
-	    _openArgs = {};
-
-	    /*
-	      @private
-	    */
-	    _headers = [];
-
-	    /*
-	      @private
-	    */
-	    _body = '';
-
-	    /*
-	      @private
-	    */
-	    _error = null;
-
 	    constructor(...args) {
 	      super(...args);
 
-	      this._index = XMLHttpRequest.lastRequestIndex++;
+	      this._index = lastRequestIndex++;
+	      this._openArgs = {};
+	      this._headers = [];
+	      this._body = '';
+	      this._error = null;
 
-	      this.addEventListener('readystatechange', () =>
-	        this.handleReadyStateChange()
-	      );
+	      this.addEventListener('readystatechange', (event) => {
+	        const { method, url } = this._openArgs;
+
+	        EDConsole.sendCommand(Command.XHR_UPDATE, {
+	          index: this._index,
+	          type: 'xhr',
+	          method,
+	          url,
+	          headers: this._headers,
+	          body: String(this._body),
+	          error: this._error && this._error.textContent,
+	          responseText: this.responseText,
+	          responseType: this.responseType,
+	          responseURL: this.responseURL,
+	          responseHeaders: prepareHeaders(this.getAllResponseHeaders()),
+	          status: this.status,
+	          statusText: this.statusText,
+	          state: this.readyState,
+	        });
+	      });
 
 	      this.addEventListener('error', (error) => {
 	        this._error = error;
 	      });
-	    }
 
+	      const { open, send, setRequestHeader } = this;
+
+	      this.open = (method, url, ...args) => {
+	        this._openArgs = { method, url };
+	        return open.call(this, method, url, ...args);
+	      };
+
+	      this.setRequestHeader = (header, value) => {
+	        this._headers.push([header, value]);
+
+	        return setRequestHeader.call(this, header, value);
+	      };
+
+	      this.send = (value) => {
+	        this._body = value;
+	        return send.call(this, value);
+	      };
+	    }
+	    /*
 	    open(method, url, ...args) {
 	      this._openArgs = { method, url };
 	      return super.open(method, url, ...args);
@@ -1483,33 +1466,9 @@
 	      this._body = value;
 	      return super.send(value);
 	    }
-
+	*/
 	    get requestIndex() {
 	      return this._index;
-	    }
-
-	    /*
-	      @private
-	    */
-	    handleReadyStateChange(event) {
-	      const { method, url } = this._openArgs;
-
-	      EDConsole.sendCommand(Command.XHR_UPDATE, {
-	        index: this._index,
-	        type: 'xhr',
-	        method,
-	        url,
-	        headers: this._headers,
-	        body: String(this._body),
-	        error: this._error && this._error.textContent,
-	        responseText: this.responseText,
-	        responseType: this.responseType,
-	        responseURL: this.responseURL,
-	        responseHeaders: prepareHeaders(this.getAllResponseHeaders()),
-	        status: this.status,
-	        statusText: this.statusText,
-	        state: this.readyState,
-	      });
 	    }
 	  }
 
@@ -1635,33 +1594,16 @@
 	  // TODO once WeakRef available, make it weak ref collection
 	  const webSockets = {};
 
+	  let lastRequestIndex = 1;
+
 	  class WebSocket extends WebSocketDef {
-	    static lastRequestIndex = 1;
-
-	    /*
-	      @private
-	    */
-	    _index = 0;
-
-	    /*
-	      @private
-	    */
-	    _openHandler = null;
-
-	    /*
-	      @private
-	    */
-	    _closeHandler = null;
-
-	    /*
-	      @private
-	    */
-	    _error = null;
-
 	    constructor(url, protocols) {
 	      super(url, protocols);
 
-	      this._index = WebSocket.lastRequestIndex++;
+	      this._index = lastRequestIndex++;
+	      this._openHandler = null;
+	      this._closeHandler = null;
+	      this._error = null;
 	      webSockets[this._index] = this;
 
 	      const cmdData = {
@@ -1706,6 +1648,18 @@
 	          this._closeHandler.call(this, event);
 	        }
 	      };
+
+	      const { send } = this;
+
+	      this.send = (data) => {
+	        EDConsole.sendCommand(Command.WEBSOCKET_MESSAGE, {
+	          index: this._index,
+	          type: WebsocketMessageType.OUTGOING,
+	          data: String(data || detail),
+	        });
+
+	        return send.call(this, data);
+	      };
 	    }
 
 	    get onopen() {
@@ -1723,7 +1677,7 @@
 	    set onclose(handler) {
 	      this._closeHandler = handler;
 	    }
-
+	    /*
 	    send(data) {
 	      EDConsole.sendCommand(Command.WEBSOCKET_MESSAGE, {
 	        index: this._index,
@@ -1733,6 +1687,7 @@
 
 	      return super.send(data);
 	    }
+	*/
 	  }
 
 	  Object.assign(window, { WebSocket });
@@ -1745,7 +1700,7 @@
 	      if (webSocket) {
 	        webSocket.send(message);
 	      }
-	    },
+	    }
 	  );
 	})(window.EDConsole);
 

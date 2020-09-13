@@ -24,13 +24,14 @@ const LocalStorageTabPane = ({
     <StorageView list={list} save={storageSet} remove={storageRemove}>
       <div
         style={{
+          flex: '0 0 auto',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
           paddingRight: '5px',
         }}
       >
-        <NewItem save={storageSet} />
+        <NewItem save={storageSet} style={{ flex: 1 }} />
         <Button type="primary" onClick={storageRead}>
           Refresh
         </Button>

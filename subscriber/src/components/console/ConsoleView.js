@@ -17,7 +17,11 @@ const ConsoleView = memo(({ onInit }) => {
 
   return (
     <>
-      <div ref={container} className="console-view-container" />
+      <div
+        ref={container}
+        className="console-view-container"
+        style={{ height: '100%' }}
+      />
       <Button
         onClick={() =>
           (container.current.querySelector('.ui-console-container').innerHTML =

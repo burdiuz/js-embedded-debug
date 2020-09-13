@@ -10,49 +10,62 @@
   };
 
   const { fetch: fetchFn, XMLHttpRequest: XMLHttpRequestDef } = window;
+  let lastRequestIndex = 1;
 
   class XMLHttpRequest extends XMLHttpRequestDef {
-    static lastRequestIndex = 1;
-
-    /*
-      @private
-    */
-    _index = 0;
-
-    /*
-      @private
-    */
-    _openArgs = {};
-
-    /*
-      @private
-    */
-    _headers = [];
-
-    /*
-      @private
-    */
-    _body = '';
-
-    /*
-      @private
-    */
-    _error = null;
-
     constructor(...args) {
       super(...args);
 
-      this._index = XMLHttpRequest.lastRequestIndex++;
+      this._index = lastRequestIndex++;
+      this._openArgs = {};
+      this._headers = [];
+      this._body = '';
+      this._error = null;
 
-      this.addEventListener('readystatechange', () =>
-        this.handleReadyStateChange()
-      );
+      this.addEventListener('readystatechange', (event) => {
+        const { method, url } = this._openArgs;
+
+        EDConsole.sendCommand(Command.XHR_UPDATE, {
+          index: this._index,
+          type: 'xhr',
+          method,
+          url,
+          headers: this._headers,
+          body: String(this._body),
+          error: this._error && this._error.textContent,
+          responseText: this.responseText,
+          responseType: this.responseType,
+          responseURL: this.responseURL,
+          responseHeaders: prepareHeaders(this.getAllResponseHeaders()),
+          status: this.status,
+          statusText: this.statusText,
+          state: this.readyState,
+        });
+      });
 
       this.addEventListener('error', (error) => {
         this._error = error;
       });
-    }
 
+      const { open, send, setRequestHeader } = this;
+
+      this.open = (method, url, ...args) => {
+        this._openArgs = { method, url };
+        return open.call(this, method, url, ...args);
+      };
+
+      this.setRequestHeader = (header, value) => {
+        this._headers.push([header, value]);
+
+        return setRequestHeader.call(this, header, value);
+      };
+
+      this.send = (value) => {
+        this._body = value;
+        return send.call(this, value);
+      };
+    }
+    /*
     open(method, url, ...args) {
       this._openArgs = { method, url };
       return super.open(method, url, ...args);
@@ -68,33 +81,9 @@
       this._body = value;
       return super.send(value);
     }
-
+*/
     get requestIndex() {
       return this._index;
-    }
-
-    /*
-      @private
-    */
-    handleReadyStateChange(event) {
-      const { method, url } = this._openArgs;
-
-      EDConsole.sendCommand(Command.XHR_UPDATE, {
-        index: this._index,
-        type: 'xhr',
-        method,
-        url,
-        headers: this._headers,
-        body: String(this._body),
-        error: this._error && this._error.textContent,
-        responseText: this.responseText,
-        responseType: this.responseType,
-        responseURL: this.responseURL,
-        responseHeaders: prepareHeaders(this.getAllResponseHeaders()),
-        status: this.status,
-        statusText: this.statusText,
-        state: this.readyState,
-      });
     }
   }
 

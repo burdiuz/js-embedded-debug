@@ -147,81 +147,88 @@ const ElementTabPane = ({
         height: '100%',
       }}
     >
-      <div style={{ display: 'flex' }}>
+      <div style={{ display: 'flex', alignItems: 'center' }}>
         <Button style={{ marginRight: '20px' }} onClick={lookup}>
           <AimOutlined />
           Select
         </Button>
         <Input
           value={query}
+          size="middle"
           placeholder="Enter CSS Selector path"
           onChange={({ target: { value } }) => setQuery(value)}
-          style={{ flex: 1 }}
+          style={{ width: '100%' }}
         />
         <Button type="primary" onClick={() => querySelector(query)}>
           Query
         </Button>
       </div>
       <Divider />
-      <Breadcrumb style={{ marginDown: '10px' }}>
-        {selectors.map((selector, index) => (
-          <Breadcrumb.Item key={index}>
-            <a
-              href="#"
-              onClick={(e) => {
-                e.preventDefault();
-                querySelector(selectors.slice(0, index + 1).join(' '));
-              }}
+      {selector ? (
+        <>
+          <Breadcrumb style={{ marginDown: '10px' }}>
+            {selectors.map((selector, index) => (
+              <Breadcrumb.Item key={index}>
+                <a
+                  href="#"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    querySelector(selectors.slice(0, index + 1).join(' '));
+                  }}
+                >
+                  {selector}
+                </a>
+              </Breadcrumb.Item>
+            ))}
+          </Breadcrumb>
+          <div
+            style={{ display: 'flex', alignItems: 'stretch', height: '100%' }}
+          >
+            <PropListInfo
+              title="Attributes"
+              list={attributes}
+              emptyMessage="Does not have any attributes."
+              style={{ marginRight: '5px' }}
+              change={(prop) => setAttribute(selector, prop)}
+            />
+            <PropListInfo
+              title="Styles"
+              list={showComputed ? computedStyles : styles}
+              emptyMessage="Does not have any direct style rules."
+              style={{ borderLeft: '1px solid #eee' }}
+              change={(prop) => setStyle(selector, prop)}
             >
-              {selector}
-            </a>
-          </Breadcrumb.Item>
-        ))}
-      </Breadcrumb>
-      <div style={{ display: 'flex', alignItems: 'stretch', height: '100%' }}>
-        <PropListInfo
-          title="Attributes"
-          list={attributes}
-          emptyMessage="Does not have any attributes."
-          style={{ marginRight: '5px' }}
-          change={(prop) => setAttribute(selector, prop)}
-        />
-        <PropListInfo
-          title="Styles"
-          list={showComputed ? computedStyles : styles}
-          emptyMessage="Does not have any direct style rules."
-          style={{ borderLeft: '1px solid #eee' }}
-          change={(prop) => setStyle(selector, prop)}
-        >
-          {showComputed ? (
-            <>
-              <a
-                href="#"
-                onClick={(event) => {
-                  event.preventDefault();
-                  setShowComputed(false);
-                }}
-              >
-                Direct
-              </a>
-              &nbsp;/&nbsp;Computed
-            </>
-          ) : (
-            <>
-              Direct&nbsp;/&nbsp;
-              <a
-                href="#"
-                onClick={(event) => {
-                  event.preventDefault();
-                  setShowComputed(true);
-                }}
-              >
-                Computed
-              </a>
-            </>
-          )}
-        </PropListInfo>
-      </div>
+              {showComputed ? (
+                <>
+                  <a
+                    href="#"
+                    onClick={(event) => {
+                      event.preventDefault();
+                      setShowComputed(false);
+                    }}
+                  >
+                    Direct
+                  </a>
+                  &nbsp;/&nbsp;Computed
+                </>
+              ) : (
+                <>
+                  Direct&nbsp;/&nbsp;
+                  <a
+                    href="#"
+                    onClick={(event) => {
+                      event.preventDefault();
+                      setShowComputed(true);
+                    }}
+                  >
+                    Computed
+                  </a>
+                </>
+              )}
+            </PropListInfo>
+          </div>
+        </>
+      ) : null}
     </div>
   );
 };
@@ -240,6 +247,7 @@ export default connect(
     setAttribute: (selector, prop) =>
       dispatch(domNodeSetAttribute({ selector, prop })),
     setStyle: (selector, prop) => dispatch(domNodeSetStyle({ selector, prop })),
-    loadComputedStyle: (selector) => dispatch(domNodeComputedStyle({ selector })),
+    loadComputedStyle: (selector) =>
+      dispatch(domNodeComputedStyle({ selector })),
   }),
 )(ElementTabPane);

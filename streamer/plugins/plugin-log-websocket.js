@@ -25,33 +25,16 @@
   // TODO once WeakRef available, make it weak ref collection
   const webSockets = {};
 
+  let lastRequestIndex = 1;
+
   class WebSocket extends WebSocketDef {
-    static lastRequestIndex = 1;
-
-    /*
-      @private
-    */
-    _index = 0;
-
-    /*
-      @private
-    */
-    _openHandler = null;
-
-    /*
-      @private
-    */
-    _closeHandler = null;
-
-    /*
-      @private
-    */
-    _error = null;
-
     constructor(url, protocols) {
       super(url, protocols);
 
-      this._index = WebSocket.lastRequestIndex++;
+      this._index = lastRequestIndex++;
+      this._openHandler = null;
+      this._closeHandler = null;
+      this._error = null;
       webSockets[this._index] = this;
 
       const cmdData = {
@@ -96,6 +79,18 @@
           this._closeHandler.call(this, event);
         }
       };
+
+      const { send } = this;
+
+      this.send = (data) => {
+        EDConsole.sendCommand(Command.WEBSOCKET_MESSAGE, {
+          index: this._index,
+          type: WebsocketMessageType.OUTGOING,
+          data: String(data || detail),
+        });
+
+        return send.call(this, data);
+      };
     }
 
     get onopen() {
@@ -113,7 +108,7 @@
     set onclose(handler) {
       this._closeHandler = handler;
     }
-
+    /*
     send(data) {
       EDConsole.sendCommand(Command.WEBSOCKET_MESSAGE, {
         index: this._index,
@@ -123,6 +118,7 @@
 
       return super.send(data);
     }
+*/
   }
 
   Object.assign(window, { WebSocket });
@@ -135,6 +131,6 @@
       if (webSocket) {
         webSocket.send(message);
       }
-    },
+    }
   );
 })(window.EDConsole);

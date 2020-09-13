@@ -1,4 +1,4 @@
-import EventDispatcher from '@actualwave/event-dispatcher';
+import EventDispatcher from './libs/event-dispatcher';
 import * as LogDataRenderer from '@actualwave/log-data-renderer';
 import * as Message from '../../subscriber/src/message/message';
 

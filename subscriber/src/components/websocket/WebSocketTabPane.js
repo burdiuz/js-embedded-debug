@@ -50,7 +50,6 @@ const WebSocketFrame = ({ message: { type, data } }) => (
 );
 
 const WebSocketView = ({ data, messages }) => {
-  console.log(messages);
   const { url, state, createdAt, updatedAt = new Date() } = data;
   const [expanded, setExpanded] = useState(false);
 

@@ -7,6 +7,7 @@ export const Item = ({ name, value, save, remove }) => {
   return (
     <div
       style={{
+        flex: '0 0 auto',
         display: 'flex',
         alignItems: 'center',
         margin: '2px 5px',
@@ -40,17 +41,17 @@ Item.propTypes = {
   remove: PropTypes.func.isRequired,
 };
 
-export const NewItem = ({ save }) => {
+export const NewItem = ({ save, style }) => {
   const [name, setName] = useState('');
   const [value, setValue] = useState('');
 
   return (
     <div
       style={{
-        flex: 1,
         display: 'flex',
         alignItems: 'center',
         margin: '2px 5px',
+        ...(style || {}),
       }}
     >
       <Input
@@ -88,6 +89,8 @@ export const StorageView = ({ list, save, remove, children }) => (
       display: 'flex',
       flexDirection: 'column',
       alignItems: 'stretch',
+      height: '100%',
+      overflowY: 'auto',
     }}
   >
     {children}
