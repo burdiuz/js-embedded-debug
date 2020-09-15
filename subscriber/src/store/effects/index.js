@@ -5,3 +5,4 @@ import './local-storage';
 import './location';
 import './session-storage';
 import './websockets';
+import './pixel-perfect';

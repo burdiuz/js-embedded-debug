@@ -10,6 +10,7 @@ import * as redux from './redux';
 import * as location from './location';
 import * as websockets from './websockets';
 import * as domelement from './domelement';
+import * as pixelperfect from './pixel-perfect';
 
 const reducer = combineReducers(
   createReducers({
@@ -22,6 +23,7 @@ const reducer = combineReducers(
     location,
     websockets,
     domelement,
+    pixelperfect,
   }),
 );
 

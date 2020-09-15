@@ -37,6 +37,15 @@ export const Command = {
   DOM_NODE_SET_ATTRIBUTE: 'dom-node-set-attribute',
   DOM_NODE_SET_STYLE: 'dom-node-set-style',
 
+  PP_ZOOM_SET: 'pixel-perfect-zoom-set',
+  PP_RULER_SHOW: 'pixel-perfect-ruler-show',
+  PP_RULER_HIDE: 'pixel-perfect-ruler-hide',
+  PP_GRID_SHOW: 'pixel-perfect-grid-show',
+  PP_GRID_HIDE: 'pixel-perfect-grid-hide',
+  PP_IMAGE_SHOW: 'pixel-perfect-image-show',
+  PP_IMAGE_HIDE: 'pixel-perfect-image-hide',
+  PP_IMAGE_SETTINGS: 'pixel-perfect-image-settings',
+
   XHR_UPDATE: 'network-update',
 
   WEBSOCKET_CREATED: 'websocket-created',

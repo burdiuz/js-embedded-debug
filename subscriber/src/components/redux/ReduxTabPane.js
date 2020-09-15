@@ -18,9 +18,9 @@ const ReduxAction = ({ action }) => {
     <>
       <div style={{ cursor: 'pointer' }} onClick={() => setExpanded(!expanded)}>
         {expanded ? (
-          <CaretRightFilled style={{ margin: '0 10px' }} />
-        ) : (
           <CaretDownFilled style={{ margin: '0 10px' }} />
+        ) : (
+          <CaretRightFilled style={{ margin: '0 10px' }} />
         )}
         <span>{action.type}</span>
       </div>
@@ -31,6 +31,8 @@ const ReduxAction = ({ action }) => {
             padding: '5px',
             margin: '0 10px 0 30px',
             fontSize: '0.8em',
+            overflowY: 'auto',
+            maxHeight: '200px',
           }}
         >
           {json}
@@ -46,18 +48,23 @@ const ReduxTabPane = ({ list, clear }) => {
     <>
       <div
         style={{
-          display: 'flex',
-          justifyContent: 'flex-end',
-          paddingRight: '5px',
+          position: 'relative',
+          height: '100%',
+          overflowY: 'auto',
         }}
       >
-        <Button type="primary" disabled={!list.length} onClick={clear}>
-          Clear
-        </Button>
+        {list.map((action, i) => (
+          <ReduxAction key={i} action={action} />
+        ))}
       </div>
-      {list.map((action, i) => (
-        <ReduxAction key={i} action={action} />
-      ))}
+      <Button
+        type="primary"
+        disabled={!list.length}
+        onClick={clear}
+        style={{ position: 'absolute', top: '55px', right: '5px' }}
+      >
+        Clear
+      </Button>
     </>
   );
 };

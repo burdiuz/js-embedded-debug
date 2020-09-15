@@ -1,15 +1,16 @@
 import React from 'react';
 import { Tabs } from 'antd';
 
+import CookiesTabPane from './cookies/CookiesTabPane';
 import ConsoleTabPane from './console/ConsoleTabPane';
 import ElementTabPane from './element/ElementTabPane';
-import CookiesTabPane from './cookies/CookiesTabPane';
-import LocalStorageTabPane from './local-storage/LocalStorageTabPane';
-import XhrTabPane from './xhr/XhrTabPane';
-import WebSocketTabPane from './websocket/WebSocketTabPane';
-import SessionStorageTabPane from './session-storage/SessionStorageTabPane';
-import ReduxTabPane from './redux/ReduxTabPane';
 import LocationTabPane from './location/LocationTabPane';
+import LocalStorageTabPane from './local-storage/LocalStorageTabPane';
+import PixelPerfectTabPane from './pixel-perfect/PixelPerfectTabPane';
+import ReduxTabPane from './redux/ReduxTabPane';
+import SessionStorageTabPane from './session-storage/SessionStorageTabPane';
+import WebSocketTabPane from './websocket/WebSocketTabPane';
+import XhrTabPane from './xhr/XhrTabPane';
 
 import logo from '../logo.svg';
 
@@ -48,6 +49,9 @@ const MainView = () => (
     </TabPane>
     <TabPane tab="Location" key="location">
       <LocationTabPane />
+    </TabPane>
+    <TabPane tab="Pixel Perfect" key="pixel-perfect">
+      <PixelPerfectTabPane />
     </TabPane>
     <TabPane tab="Info" key="info">
       <div className="App">

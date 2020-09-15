@@ -1482,12 +1482,18 @@
     var T_KEY_CODE = 84;
     var ARROW_DOWN_KEY_CODE = 40;
     var frame;
+    var bodyPrevPaddingBottom = document.createElement('div');
+    Object.assign(bodyPrevPaddingBottom.style, {
+      flex: '0 0 300px',
+      minHeight: '300px',
+      height: '300px'
+    });
 
     var displayConsoleFrame = function displayConsoleFrame() {
       frame = document.createElement('iframe');
       frame.src = EDConsole.getConsolePath();
       Object.assign(frame.style, {
-        position: 'absolute',
+        position: 'fixed',
         zIndex: Math.pow(2, 32) - 1,
         left: '0',
         right: '0',
@@ -1498,11 +1504,15 @@
         boxShadow: '0 0 10px #00000066',
         backgroundColor: '#ffffff'
       });
-      document.body.appendChild(frame);
+      var _document = document,
+          body = _document.body;
+      body.appendChild(bodyPrevPaddingBottom);
+      body.appendChild(frame);
       EDConsole.consoleOpened(frame.contentWindow);
     };
 
     var hideConsoleFrame = function hideConsoleFrame() {
+      bodyPrevPaddingBottom.remove();
       frame.remove();
       EDConsole.consoleClosed(frame.contentWindow);
       frame = null;
@@ -1805,6 +1815,100 @@
       sessionStorage.removeItem(data.key);
       sendResponse(Command.READ_SESSION_STORAGE_RESPONSE, read(sessionStorage));
     });
+  })(window.EDConsole);
+
+  (function (EDConsole) {
+    var Command = {
+      REDUX_ACTION: 'redux-action'
+    };
+
+    var _send = function send(action) {
+      return EDConsole.sendCommand(Command.REDUX_ACTION, action, function (_ref) {
+        var type = _ref.type;
+        return {
+          type: type,
+          payload: "Sorry, JSON.stringify() could not handle this action contents, so it can't be shown here."
+        };
+      });
+    };
+
+    var __REDUX_DEVTOOLS_EXTENSION__ = function __REDUX_DEVTOOLS_EXTENSION__() {
+      return function (next) {
+        return function (reducer, initialState, enhancer) {
+          var store = next(reducer, initialState, enhancer);
+          return _objectSpread2(_objectSpread2({}, store), {}, {
+            dispatch: function dispatch() {
+              _send(arguments.length <= 0 ? undefined : arguments[0]);
+
+              return store.dispatch.apply(store, arguments);
+            }
+          });
+        };
+      };
+    };
+
+    window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ = function () {
+      var extensionCompose = function extensionCompose() {
+        for (var _len = arguments.length, funcs = new Array(_len), _key = 0; _key < _len; _key++) {
+          funcs[_key] = arguments[_key];
+        }
+
+        return function () {
+          return funcs.reduceRight(function (composed, f) {
+            return f(composed);
+          }, __REDUX_DEVTOOLS_EXTENSION__().apply(void 0, arguments));
+        };
+      };
+
+      if (arguments.length === 0) {
+        return __REDUX_DEVTOOLS_EXTENSION__();
+      }
+
+      if (arguments.length === 1 && _typeof(arguments.length <= 0 ? undefined : arguments[0]) === 'object') {
+        return extensionCompose;
+      }
+
+      return extensionCompose.apply(void 0, arguments);
+    };
+
+    var noop = function noop() {
+      return undefined;
+    };
+
+    Object.assign(__REDUX_DEVTOOLS_EXTENSION__, {
+      open: noop,
+      // (...args) => console.log('open()', ...args),
+      updateStore: noop,
+      // (...args) => console.log('updateStore()', ...args),
+      notifyErrors: noop,
+      // (...args) => console.log('notifyErrors()', ...args),
+      send: function send(performAction) {
+        // console.log('send()', ...args);
+        var _ref2 = performAction || {},
+            action = _ref2.action;
+
+        if (action) {
+          _send(action);
+        }
+      },
+      listen: noop,
+      // (...args) => console.log('listen()', ...args),
+      connect: function connect() {
+        // console.log('connect()', ...args);
+        return __REDUX_DEVTOOLS_EXTENSION__;
+      },
+      disconnect: noop,
+      // (...args) => console.log('disconnect()', ...args),
+      error: noop,
+      // (...args) => console.log('X.error()', ...args),
+      init: noop,
+      // (...args) => console.log('X.init()', ...args),
+      subscribe: noop,
+      // (...args) => console.log('X.subscribe()', ...args),
+      unsubscribe: noop // (...args) => console.log('X.unsubscribe()', ...args),
+
+    });
+    window.__REDUX_DEVTOOLS_EXTENSION__ = __REDUX_DEVTOOLS_EXTENSION__;
   })(window.EDConsole);
 
   (function (EDConsole) {

@@ -2,13 +2,19 @@
   const T_KEY_CODE = 84;
   const ARROW_DOWN_KEY_CODE = 40;
   let frame;
+  const bodyPrevPaddingBottom = document.createElement('div');
+  Object.assign(bodyPrevPaddingBottom.style, {
+    flex: '0 0 300px',
+    minHeight: '300px',
+    height: '300px',
+  });
 
   const displayConsoleFrame = () => {
     frame = document.createElement('iframe');
     frame.src = EDConsole.getConsolePath();
 
     Object.assign(frame.style, {
-      position: 'absolute',
+      position: 'fixed',
       zIndex: Math.pow(2, 32) - 1,
       left: '0',
       right: '0',
@@ -20,11 +26,15 @@
       backgroundColor: '#ffffff',
     });
 
-    document.body.appendChild(frame);
+    const { body } = document;
+
+    body.appendChild(bodyPrevPaddingBottom);
+    body.appendChild(frame);
     EDConsole.consoleOpened(frame.contentWindow);
   };
 
   const hideConsoleFrame = () => {
+    bodyPrevPaddingBottom.remove();
     frame.remove();
     EDConsole.consoleClosed(frame.contentWindow);
     frame = null;
@@ -58,6 +68,6 @@
       ) {
         toggleConsoleFrame();
       }
-    }
+    },
   );
 })(window.EDConsole);
