@@ -8,7 +8,32 @@ import { getXhrRequests } from 'store/selectors/xhr';
 
 const { TextArea } = Input;
 
-const XhrRequestInfo = ({ title, headers, body = '', style = {} }) => (
+const State = {
+  OPENED: 1,
+  LOADING: 3,
+  DONE: 4,
+};
+
+const getStateString = (state) => {
+  switch (state) {
+    case State.OPENED:
+      return '(opened)';
+    case State.LOADING:
+      return '(loading)';
+    case State.DONE:
+      return '(done)';
+    default:
+      return `(pending?${state})`;
+  }
+};
+
+const XhrRequestInfo = ({
+  title,
+  headers,
+  body = '',
+  bodyType = '',
+  style = {},
+}) => (
   <div
     style={{
       display: 'flex',
@@ -41,7 +66,9 @@ const XhrRequestInfo = ({ title, headers, body = '', style = {} }) => (
     ))}
     {body ? (
       <>
-        <h3 style={{ marginTop: '10px' }}>{title} Body</h3>
+        <h3 style={{ marginTop: '10px' }}>
+          {title} Body {bodyType ? ` ( ${bodyType} )` : ''}
+        </h3>
         <TextArea value={body} rows="4" readOnly />
       </>
     ) : null}
@@ -50,11 +77,13 @@ const XhrRequestInfo = ({ title, headers, body = '', style = {} }) => (
 
 const XhrRequest = ({ data }) => {
   const {
+    type,
     method,
     url,
     status,
     statusText,
     createdAt,
+    state,
     updatedAt = new Date(),
   } = data;
   const [expanded, setExpanded] = useState(false);
@@ -84,13 +113,18 @@ const XhrRequest = ({ data }) => {
           <CaretRightFilled style={{ margin: '0 10px' }} />
         )}
         <strong>{method}</strong>
-        <div style={{ flex: 1 }}> {url}</div>
+        <div style={{ flex: 1, marginLeft: '5px' }}>
+          <sup style={{ color: '#aaaaaa' }}>{type}</sup>
+          &nbsp;{url}
+        </div>
         {status ? (
           <div style={{ flex: '0 1 200px' }}>
             {status} {statusText}
           </div>
         ) : (
-          <div style={{ flex: '0 1 200px', color: '#999' }}>(pending)</div>
+          <div style={{ flex: '0 1 200px', color: '#999' }}>
+            {getStateString(state)}
+          </div>
         )}
         <div>{time}</div>
         <div style={{ width: '75px', textAlign: 'right' }}>{duration}</div>
@@ -106,6 +140,7 @@ const XhrRequest = ({ data }) => {
             title="Response"
             headers={data.responseHeaders}
             body={data.responseText}
+            bodyType={data.responseType}
             style={{ borderLeft: '1px solid #eee' }}
           />
         </div>

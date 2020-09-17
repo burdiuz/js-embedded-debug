@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
 import { Button, Input, Divider, Breadcrumb } from 'antd';
-import { AimOutlined, CheckOutlined } from '@ant-design/icons';
+import { AimOutlined, CheckOutlined, CopyOutlined } from '@ant-design/icons';
 import { connect } from 'react-redux';
 import {
   domNodeLookup,
@@ -16,6 +16,7 @@ import {
   getCurrentDomelementStyles,
   getCurrentDomelementName,
   getDomelementComputedStyles,
+  getCurrentDomelementDimensions,
 } from 'store/selectors/domelement';
 
 const Prop = ({ name, value: baseValue, change }) => {
@@ -115,6 +116,10 @@ const ElementTabPane = ({
   selectors,
   attributes,
   styles,
+  width,
+  height,
+  x,
+  y,
   computedStyles,
   name,
   lookup,
@@ -123,7 +128,7 @@ const ElementTabPane = ({
   setStyle,
   loadComputedStyle,
 }) => {
-  const selector = selectors.join(' ');
+  const selector = selectors.join(' > ');
   const [query, setQuery] = useState('');
   const [showComputed, setShowComputed] = useState(false);
 
@@ -167,7 +172,13 @@ const ElementTabPane = ({
       {selector ? (
         <>
           <Breadcrumb style={{ marginDown: '10px' }}>
-            {selectors.map((selector, index) => (
+            <Button
+              icon={<CopyOutlined />}
+              size="small"
+              style={{ marginRight: '10px' }}
+              onClick={() => navigator.clipboard.writeText(selector)}
+            />
+            {selectors.map((item, index) => (
               <Breadcrumb.Item key={index}>
                 <a
                   href="#"
@@ -176,11 +187,17 @@ const ElementTabPane = ({
                     querySelector(selectors.slice(0, index + 1).join(' '));
                   }}
                 >
-                  {selector}
+                  {item}
                 </a>
               </Breadcrumb.Item>
             ))}
           </Breadcrumb>
+          <div>
+            <strong>Dimensions:&nbsp;</strong>
+            {width} x {height}
+            <strong>&nbsp;Position:&nbsp;</strong>
+            {x} x {y}
+          </div>
           <div
             style={{ display: 'flex', alignItems: 'stretch', height: '100%' }}
           >
@@ -240,6 +257,7 @@ export default connect(
     styles: getCurrentDomelementStyles(state),
     name: getCurrentDomelementName(state),
     computedStyles: getDomelementComputedStyles(state),
+    ...getCurrentDomelementDimensions(state),
   }),
   (dispatch) => ({
     lookup: () => dispatch(domNodeLookup()),

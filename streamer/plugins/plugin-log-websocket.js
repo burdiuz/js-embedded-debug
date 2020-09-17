@@ -121,6 +121,8 @@
 */
   }
 
+  EDConsole.$WebSocket = WebSocketDef;
+
   Object.assign(window, { WebSocket });
 
   EDConsole.setCommandHandler(

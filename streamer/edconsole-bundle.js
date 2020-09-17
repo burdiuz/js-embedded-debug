@@ -1623,20 +1623,33 @@
 
 	      promise.then((result) => {
 	        res(result);
-
-	        result.text().then((text) => {
-	          EDConsole.sendCommand(Command.XHR_UPDATE, {
-	            ...cmd,
-	            error: null,
-	            responseText: text,
-	            responseType: result.type,
-	            responseURL: result.url,
-	            responseHeaders: prepareHeaders(result.headers),
-	            status: result.status,
-	            statusText: result.statusText,
-	            state: State.DONE,
-	          });
+	        Object.assign(cmd, {
+	          responseType: result.type,
+	          responseURL: result.url,
+	          responseHeaders: prepareHeaders(result.headers),
+	          status: result.status,
+	          statusText: result.statusText,
+	          state: State.DONE,
 	        });
+
+	        EDConsole.sendCommand(Command.XHR_UPDATE, cmd);
+
+	        result
+	          .text()
+	          .then((text) => {
+	            EDConsole.sendCommand(Command.XHR_UPDATE, {
+	              ...cmd,
+	              error: null,
+	              responseText: text,
+	            });
+	          })
+	          .catch(() => {
+	            EDConsole.sendCommand(Command.XHR_UPDATE, {
+	              ...cmd,
+	              error: null,
+	              responseText: 'Error: Could not retrieve response body.',
+	            });
+	          });
 	      });
 
 	      promise.catch((error) => {
@@ -1645,11 +1658,15 @@
 	        EDConsole.sendCommand(Command.XHR_UPDATE, {
 	          ...cmd,
 	          error: `${error.type} ${error.message}`,
-	          state: State.DONE,
+	          status: '---',
+	          statusText: 'Rejected promise',
 	        });
 	      });
 	    });
 	  };
+
+	  EDConsole.$fetch = fetch;
+	  EDConsole.$XMLHttpRequest = XMLHttpRequestDef;
 
 	  Object.assign(window, { fetch, XMLHttpRequest });
 	})(window.EDConsole);
@@ -1777,6 +1794,8 @@
 	*/
 	  }
 
+	  EDConsole.$WebSocket = WebSocketDef;
+
 	  Object.assign(window, { WebSocket });
 
 	  EDConsole.setCommandHandler(
@@ -1838,23 +1857,35 @@
 
 	    let index = 0;
 	    let isFirst = true;
+	    let children = [];
 
 	    if (node.parentElement) {
-	      const children = Array.from(node.parentElement.children);
-
+	      children = Array.from(node.parentElement.children);
 	      index = children.indexOf(node);
-	      isFirst = children.find((item) => item.tagName === tagName) === node;
 	    }
 
 	    if (className) {
+	      const rgx = new RegExp(`(^|\\s)${className}(\\s|$)`);
+
+	      isFirst =
+	        children.find(
+	          (item) => item.tagName === tagName && item.className.match(rgx),
+	        ) === node;
+
 	      const base = `${tagName}.${className}`;
 	      return isFirst ? base : `${base}:nth-child(${index + 1})`;
 	    } else if (id) {
+	      // isFirst = children.find((item) => item.tagName === tagName && item.id === id) === node;
+
 	      return `${tagName}#${id}`;
 	    } else if (name) {
 	      return `${tagName}[name="${name}"]`;
-	    } else if (!isFirst) {
-	      return `${tagName}:nth-child(${index + 1})`;
+	    } else {
+	      isFirst = children.find((item) => item.tagName === tagName) === node;
+
+	      if (!isFirst) {
+	        return `${tagName}:nth-child(${index + 1})`;
+	      }
 	    }
 
 	    return `${tagName}`;
@@ -1931,12 +1962,12 @@
 
 	  const blockEvents = () =>
 	    BLOCKED_EVENTS.forEach((type) =>
-	      window.addEventListener(type, stopEventPropagation, { capture: true })
+	      window.addEventListener(type, stopEventPropagation, { capture: true }),
 	    );
 
 	  const unblockEvents = () =>
 	    BLOCKED_EVENTS.forEach((type) =>
-	      window.removeEventListener(type, stopEventPropagation, { capture: true })
+	      window.removeEventListener(type, stopEventPropagation, { capture: true }),
 	    );
 
 	  EDConsole.setCommandHandler(Command.DOM_NODE_LOOKUP, () => {
@@ -1961,6 +1992,13 @@
 	    document.body.appendChild(container);
 	  });
 
+	  const getNodeDimensions = (node) => ({
+	    x: node.offsetLeft,
+	    y: node.offsetTop,
+	    width: node.scrollWidth || node.offsetWidth || node.clientWidth,
+	    height: node.scrollHeight || node.offsetHeight || node.clientHeight,
+	  });
+
 	  const querySelectorHandler = (_, { value }, sendResponse) => {
 	    const node = document.querySelector(value);
 	    let data = null;
@@ -1970,6 +2008,7 @@
 	        selectors: buildSelector(node),
 	        attributes: generateAttributeList(node),
 	        styles: generateStyleList(node),
+	        ...getNodeDimensions(node),
 	      };
 	    }
 	    sendResponse(Command.DOM_QUERY_SELECTOR_RESPONSE, data);
@@ -1987,7 +2026,7 @@
 	        data = generateComputedStyleList(node);
 	      }
 	      sendResponse(Command.DOM_NODE_COMPUTED_STYLE_RESPONSE, data);
-	    }
+	    },
 	  );
 
 	  EDConsole.setCommandHandler(
@@ -2001,7 +2040,7 @@
 	      node.setAttribute(...prop);
 
 	      querySelectorHandler(null, { value: selector }, sendResponse);
-	    }
+	    },
 	  );
 
 	  EDConsole.setCommandHandler(
@@ -2015,7 +2054,7 @@
 	      node.style.setProperty(...prop);
 
 	      querySelectorHandler(null, { value: selector }, sendResponse);
-	    }
+	    },
 	  );
 	})(window.EDConsole);
 

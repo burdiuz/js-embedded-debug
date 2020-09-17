@@ -4,6 +4,9 @@ import { Input, Button } from 'antd';
 
 const { TextArea } = Input;
 
+const commands = [];
+let commandIndex = 0;
+
 const CommandInput = ({ onSend }) => {
   const [text, setText] = useState('');
   const [multi, setMulti] = useState(false);
@@ -52,9 +55,27 @@ const CommandInput = ({ onSend }) => {
           }
           onChange={({ target: { value } }) => setText(value)}
           onKeyUp={({ keyCode }) => {
-            if (keyCode === 13) {
-              onSend(text);
-              setText('');
+            switch (keyCode) {
+              case 13:
+                onSend(text);
+                setText('');
+                commands.push(text);
+                commandIndex = commands.length;
+                break;
+              case 38:
+                if (commands.length) {
+                  commandIndex =
+                    commandIndex <= 0 ? commands.length - 1 : commandIndex - 1;
+                  setText(commands[commandIndex]);
+                }
+                break;
+              case 40:
+                if (commands.length) {
+                  commandIndex =
+                    commandIndex >= commands.length - 1 ? 0 : commandIndex + 1;
+                  setText(commands[commandIndex]);
+                }
+                break;
             }
           }}
         />

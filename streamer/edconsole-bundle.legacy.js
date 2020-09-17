@@ -2108,16 +2108,24 @@
         var promise = fetchFn(url, params);
         promise.then(function (result) {
           res(result);
+          Object.assign(cmd, {
+            responseType: result.type,
+            responseURL: result.url,
+            responseHeaders: prepareHeaders(result.headers),
+            status: result.status,
+            statusText: result.statusText,
+            state: State.DONE
+          });
+          EDConsole.sendCommand(Command.XHR_UPDATE, cmd);
           result.text().then(function (text) {
             EDConsole.sendCommand(Command.XHR_UPDATE, _objectSpread2(_objectSpread2({}, cmd), {}, {
               error: null,
-              responseText: text,
-              responseType: result.type,
-              responseURL: result.url,
-              responseHeaders: prepareHeaders(result.headers),
-              status: result.status,
-              statusText: result.statusText,
-              state: State.DONE
+              responseText: text
+            }));
+          })["catch"](function () {
+            EDConsole.sendCommand(Command.XHR_UPDATE, _objectSpread2(_objectSpread2({}, cmd), {}, {
+              error: null,
+              responseText: 'Error: Could not retrieve response body.'
             }));
           });
         });
@@ -2125,12 +2133,15 @@
           rej(error);
           EDConsole.sendCommand(Command.XHR_UPDATE, _objectSpread2(_objectSpread2({}, cmd), {}, {
             error: "".concat(error.type, " ").concat(error.message),
-            state: State.DONE
+            status: '---',
+            statusText: 'Rejected promise'
           }));
         });
       });
     };
 
+    EDConsole.$fetch = fetch;
+    EDConsole.$XMLHttpRequest = XMLHttpRequestDef;
     Object.assign(window, {
       fetch: fetch,
       XMLHttpRequest: XMLHttpRequest
@@ -2268,6 +2279,7 @@
       return WebSocket;
     }(WebSocketDef);
 
+    EDConsole.$WebSocket = WebSocketDef;
     Object.assign(window, {
       WebSocket: WebSocket
     });
@@ -2325,24 +2337,33 @@
       var name = node.getAttribute('name');
       var index = 0;
       var isFirst = true;
+      var children = [];
 
       if (node.parentElement) {
-        var children = Array.from(node.parentElement.children);
+        children = Array.from(node.parentElement.children);
         index = children.indexOf(node);
-        isFirst = children.find(function (item) {
-          return item.tagName === tagName;
-        }) === node;
       }
 
       if (className) {
+        var rgx = new RegExp("(^|\\s)".concat(className, "(\\s|$)"));
+        isFirst = children.find(function (item) {
+          return item.tagName === tagName && item.className.match(rgx);
+        }) === node;
         var base = "".concat(tagName, ".").concat(className);
         return isFirst ? base : "".concat(base, ":nth-child(").concat(index + 1, ")");
       } else if (id) {
+        // isFirst = children.find((item) => item.tagName === tagName && item.id === id) === node;
         return "".concat(tagName, "#").concat(id);
       } else if (name) {
         return "".concat(tagName, "[name=\"").concat(name, "\"]");
-      } else if (!isFirst) {
-        return "".concat(tagName, ":nth-child(").concat(index + 1, ")");
+      } else {
+        isFirst = children.find(function (item) {
+          return item.tagName === tagName;
+        }) === node;
+
+        if (!isFirst) {
+          return "".concat(tagName, ":nth-child(").concat(index + 1, ")");
+        }
       }
 
       return "".concat(tagName);
@@ -2467,17 +2488,26 @@
       document.body.appendChild(container);
     });
 
+    var getNodeDimensions = function getNodeDimensions(node) {
+      return {
+        x: node.offsetLeft,
+        y: node.offsetTop,
+        width: node.scrollWidth || node.offsetWidth || node.clientWidth,
+        height: node.scrollHeight || node.offsetHeight || node.clientHeight
+      };
+    };
+
     var querySelectorHandler = function querySelectorHandler(_, _ref2, sendResponse) {
       var value = _ref2.value;
       var node = document.querySelector(value);
       var data = null;
 
       if (node) {
-        data = {
+        data = _objectSpread2({
           selectors: buildSelector(node),
           attributes: generateAttributeList(node),
           styles: generateStyleList(node)
-        };
+        }, getNodeDimensions(node));
       }
 
       sendResponse(Command.DOM_QUERY_SELECTOR_RESPONSE, data);

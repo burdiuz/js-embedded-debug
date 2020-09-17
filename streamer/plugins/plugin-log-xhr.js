@@ -151,20 +151,33 @@
 
       promise.then((result) => {
         res(result);
+        Object.assign(cmd, {
+          responseType: result.type,
+          responseURL: result.url,
+          responseHeaders: prepareHeaders(result.headers),
+          status: result.status,
+          statusText: result.statusText,
+          state: State.DONE,
+        })
 
-        result.text().then((text) => {
-          EDConsole.sendCommand(Command.XHR_UPDATE, {
-            ...cmd,
-            error: null,
-            responseText: text,
-            responseType: result.type,
-            responseURL: result.url,
-            responseHeaders: prepareHeaders(result.headers),
-            status: result.status,
-            statusText: result.statusText,
-            state: State.DONE,
+        EDConsole.sendCommand(Command.XHR_UPDATE, cmd);
+
+        result
+          .text()
+          .then((text) => {
+            EDConsole.sendCommand(Command.XHR_UPDATE, {
+              ...cmd,
+              error: null,
+              responseText: text,
+            });
+          })
+          .catch(() => {
+            EDConsole.sendCommand(Command.XHR_UPDATE, {
+              ...cmd,
+              error: null,
+              responseText: 'Error: Could not retrieve response body.',
+            });
           });
-        });
       });
 
       promise.catch((error) => {
@@ -173,11 +186,15 @@
         EDConsole.sendCommand(Command.XHR_UPDATE, {
           ...cmd,
           error: `${error.type} ${error.message}`,
-          state: State.DONE,
+          status: '---',
+          statusText: 'Rejected promise',
         });
       });
     });
   };
+
+  EDConsole.$fetch = fetch;
+  EDConsole.$XMLHttpRequest = XMLHttpRequestDef;
 
   Object.assign(window, { fetch, XMLHttpRequest });
 })(window.EDConsole);

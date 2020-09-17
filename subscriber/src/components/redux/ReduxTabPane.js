@@ -53,6 +53,9 @@ const ReduxTabPane = ({ list, clear }) => {
           overflowY: 'auto',
         }}
       >
+        {list.length ? null : (
+          <div style={{ margin: '20px' }}>No new actions were captured.</div>
+        )}
         {list.map((action, i) => (
           <ReduxAction key={i} action={action} />
         ))}
