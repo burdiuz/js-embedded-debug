@@ -1,0 +1,39 @@
+add a parameter to configure key bindings. it should be a list with params like [{shiftKey: true, key: 'Q', keyCode: 81}, {shiftKey: true, ctrlKey: true, key: 'Enter', keyCode: 13}, ]
+make a function to open a new frame to be a parameter so developer could specify needed way to open the console. this way we will not need more than one key binding.
+
+add Element Info tab for embedded debugger which will make mouse pointer to highlight the element it points to and in tab display it's containers and it's attributes and styles with abolity to change them.
+
+WebSockets tab with info from WebSockets
+Possibility to create an IFRAME on target page in full size and load your own content info the environment. Container page must be blocked or if possible, make a slider for opacity to compare iframe content and target base content.
+
+Add clear() method for DOM Console
+
+Add a tool for pixel perfect with loading transparent images over page
+load image, position, scale, opacity, is movable
+load image via url or local file
+rulers
+grids -- 5px, 10px and bootstrap grid with variable amount of columns
+
+change webpage zoom levels
+
+console command input history
+
+fix css path generation -- not add nth-child for unique combinations of tag + class or tag + id
+
+for XHR add feature to resend, redirect or return mocked data instead of real request
+add url overwrite option for XHR. User can set regexps and URLs, if regexp matches then request is being redirected to URL
+or block with error, for example 404 or 400 or 500 with HTML content instead of JSON etc to verify how it works
+
+Also, allow WebSocket to resend outgoing packet or receive incoming or emulate receiving mocked data
+
+check if possible to load JS/CSS from remote resources
+
+add option to copy whole html of an element into clipboard, this can be done in injection script to not send huge 
+amount of data into console(it might crash).
+
+The first hidden tab should be a green/red dot displaying connection status.
+
+Info tab should also contain self-testing console.
+
+Location Tab should have an option to display all location history.
+
