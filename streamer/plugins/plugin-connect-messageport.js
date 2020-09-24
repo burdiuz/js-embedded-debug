@@ -2,6 +2,9 @@
   const { Event, Message } = EDConsole;
   const Command = {
     INIT_FRAME: 'init-frame',
+    SET_PLUGINS_CONFIGURATION: 'set-plugins-configuration',
+    CONNECTION_PING: 'connection-ping',
+    CONNECTION_PONG: 'connection-pong',
   };
 
   const targets = new Map();
@@ -33,6 +36,14 @@
     if (message && Message.getMessageCommand(message) === Command.INIT_FRAME) {
       EDConsole.subscribeToIncomingMessages(messageSubscriber);
       targets.set(target, messageSubscriber);
+
+      EDConsole.sendCommandTo(
+        messageSubscriber,
+        Command.SET_PLUGINS_CONFIGURATION,
+        {
+          plugins: EDConsole.getRegisteredPlugins(),
+        },
+      );
     }
   };
 
@@ -44,8 +55,18 @@
   });
 
   EDConsole.addEventListener(Event.CONSOLE_FRAME_CLOSED, ({ data: target }) =>
-    removeTarget(target)
+    removeTarget(target),
   );
 
   window.addEventListener('message', messageHandler);
+
+  EDConsole.setCommandHandler(Command.INIT_FRAME, (_, src, sendResponse) =>
+    sendResponse(Command.SET_PLUGINS_CONFIGURATION, {
+      plugins: EDConsole.getRegisteredPlugins(),
+    }),
+  );
+
+  EDConsole.setCommandHandler(Command.CONNECTION_PING, (_, src, sendResponse) =>
+    sendResponse(Command.CONNECTION_PONG),
+  );
 })(window.EDConsole);

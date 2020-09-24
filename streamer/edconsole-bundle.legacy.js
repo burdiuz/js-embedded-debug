@@ -1335,6 +1335,7 @@
   });
   var handlers = {};
   var subscribers = [];
+  var plugins = [];
 
   var EDConsole = {
     Event: Event$1,
@@ -1343,6 +1344,12 @@
     LogDataRenderer: LogDataRenderer,
     getConsolePath: function getConsolePath() {
       return EDConsoleConfig.consoleHref;
+    },
+    registerPlugin: function registerPlugin(pluginName) {
+      plugins.push(pluginName);
+    },
+    getRegisteredPlugins: function getRegisteredPlugins() {
+      return plugins.slice();
     },
     setCommandHandler: function setCommandHandler(command, handler) {
       handlers[command] = handler;
@@ -1423,7 +1430,10 @@
     var Event = EDConsole.Event,
         Message = EDConsole.Message;
     var Command = {
-      INIT_FRAME: 'init-frame'
+      INIT_FRAME: 'init-frame',
+      SET_PLUGINS_CONFIGURATION: 'set-plugins-configuration',
+      CONNECTION_PING: 'connection-ping',
+      CONNECTION_PONG: 'connection-pong'
     };
     var targets = new Map();
 
@@ -1458,6 +1468,9 @@
       if (message && Message.getMessageCommand(message) === Command.INIT_FRAME) {
         EDConsole.subscribeToIncomingMessages(messageSubscriber);
         targets.set(target, messageSubscriber);
+        EDConsole.sendCommandTo(messageSubscriber, Command.SET_PLUGINS_CONFIGURATION, {
+          plugins: EDConsole.getRegisteredPlugins()
+        });
       }
     };
 
@@ -1476,6 +1489,14 @@
       return removeTarget(target);
     });
     window.addEventListener('message', messageHandler);
+    EDConsole.setCommandHandler(Command.INIT_FRAME, function (_, src, sendResponse) {
+      return sendResponse(Command.SET_PLUGINS_CONFIGURATION, {
+        plugins: EDConsole.getRegisteredPlugins()
+      });
+    });
+    EDConsole.setCommandHandler(Command.CONNECTION_PING, function (_, src, sendResponse) {
+      return sendResponse(Command.CONNECTION_PONG);
+    });
   })(window.EDConsole);
 
   (function (EDConsole) {
@@ -1573,6 +1594,7 @@
   })(window.EDConsole);
 
   (function (EDConsole) {
+    var PLUGIN_NAME = 'log-console';
     var LogDataRenderer = EDConsole.LogDataRenderer;
     var Command = {
       CONSOLE_LOG: 'console-log',
@@ -1666,9 +1688,11 @@
 
       sendResponse(Command.EVAL_COMMAND_RESPONSE, response);
     });
+    EDConsole.registerPlugin(PLUGIN_NAME);
   })(window.EDConsole);
 
   (function (EDConsole) {
+    var PLUGIN_NAME = 'log-location';
     var Command = {
       READ_LOCATION: 'read-location',
       READ_LOCATION_RESPONSE: 'read-location/response',
@@ -1722,9 +1746,11 @@
         username: username
       });
     });
+    EDConsole.registerPlugin(PLUGIN_NAME);
   })(window.EDConsole);
 
   (function (EDConsole) {
+    var PLUGIN_NAME = 'manage-cookies';
     var Command = {
       READ_COOKIES: 'read-cookies',
       READ_COOKIES_RESPONSE: 'read-cookies/response',
@@ -1765,9 +1791,11 @@
       removeCookie(data.key);
       sendResponse(Command.READ_COOKIES_RESPONSE, readCookies());
     });
+    EDConsole.registerPlugin(PLUGIN_NAME);
   })(window.EDConsole);
 
   (function (EDConsole) {
+    var PLUGIN_NAME = 'manage-storage';
     var Command = {
       READ_LOCAL_STORAGE: 'read-local-storage',
       READ_LOCAL_STORAGE_RESPONSE: 'read-local-storage/response',
@@ -1815,9 +1843,11 @@
       sessionStorage.removeItem(data.key);
       sendResponse(Command.READ_SESSION_STORAGE_RESPONSE, read(sessionStorage));
     });
+    EDConsole.registerPlugin(PLUGIN_NAME);
   })(window.EDConsole);
 
   (function (EDConsole) {
+    var PLUGIN_NAME = 'log-redux';
     var Command = {
       REDUX_ACTION: 'redux-action'
     };
@@ -1909,9 +1939,11 @@
 
     });
     window.__REDUX_DEVTOOLS_EXTENSION__ = __REDUX_DEVTOOLS_EXTENSION__;
+    EDConsole.registerPlugin(PLUGIN_NAME);
   })(window.EDConsole);
 
   (function (EDConsole) {
+    var PLUGIN_NAME = 'log-xhr';
     var Command = {
       XHR_UPDATE: 'network-update'
     };
@@ -2146,9 +2178,12 @@
       fetch: fetch,
       XMLHttpRequest: XMLHttpRequest
     });
+    EDConsole.registerPlugin(PLUGIN_NAME);
   })(window.EDConsole);
 
   (function (EDConsole) {
+    var PLUGIN_NAME = 'log-websocket';
+
     if (typeof window.WebSocket === 'undefined') {
       return;
     }
@@ -2292,9 +2327,11 @@
         webSocket.send(message);
       }
     });
+    EDConsole.registerPlugin(PLUGIN_NAME);
   })(window.EDConsole);
 
   (function (EDConsole) {
+    var PLUGIN_NAME = 'manage-domelement';
     var Command = {
       DOM_NODE_LOOKUP: 'dom-node-lookup',
       DOM_NODE_LOOKUP_RESPONSE: 'dom-node-lookup/response',
@@ -2556,6 +2593,7 @@
         value: selector
       }, sendResponse);
     });
+    EDConsole.registerPlugin(PLUGIN_NAME);
   })(window.EDConsole);
 
 })));

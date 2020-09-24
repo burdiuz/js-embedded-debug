@@ -1,5 +1,6 @@
 export const LOCATION_READ = 'locationRead';
 export const LOCATION_UPDATE_RECEIVED = 'locationUpdateReceived';
+export const LOCATION_HISTORY_CHANGED = 'locationHistoryChanged';
 export const LOCATION_SET = 'locationSet';
 export const LOCATION_SET_HASH = 'locationSetHash';
 export const LOCATION_RELOAD = 'locationReload';

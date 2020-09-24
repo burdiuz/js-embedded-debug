@@ -1,4 +1,5 @@
 ((EDConsole) => {
+  const PLUGIN_NAME = 'log-location';
   const Command = {
     READ_LOCATION: 'read-location',
     READ_LOCATION_RESPONSE: 'read-location/response',
@@ -57,4 +58,6 @@
       });
     },
   );
+
+  EDConsole.registerPlugin(PLUGIN_NAME);
 })(window.EDConsole);

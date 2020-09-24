@@ -1,4 +1,5 @@
 ((EDConsole) => {
+  const PLUGIN_NAME = 'log-redux';
   const Command = {
     REDUX_ACTION: 'redux-action',
   };
@@ -73,4 +74,6 @@
   });
 
   window.__REDUX_DEVTOOLS_EXTENSION__ = __REDUX_DEVTOOLS_EXTENSION__;
+
+  EDConsole.registerPlugin(PLUGIN_NAME);
 })(window.EDConsole);

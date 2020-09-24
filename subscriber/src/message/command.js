@@ -1,5 +1,8 @@
 export const Command = {
   INIT_FRAME: 'init-frame',
+  SET_PLUGINS_CONFIGURATION: 'set-plugins-configuration',
+  CONNECTION_PING: 'connection-ping',
+  CONNECTION_PONG: 'connection-pong',
 
   CONSOLE_LOG: 'console-log',
   EVAL_COMMAND: 'eval-command',

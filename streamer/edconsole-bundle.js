@@ -898,12 +898,18 @@
 
 	const subscribers = [];
 
+	const plugins = [];
+
 	const EDConsole = {
 	  Event: Event$1,
 	  Message,
 	  EventDispatcher,
 	  LogDataRenderer,
 	  getConsolePath: () => EDConsoleConfig.consoleHref,
+	  registerPlugin: (pluginName) => {
+	    plugins.push(pluginName);
+	  },
+	  getRegisteredPlugins: () => plugins.slice(),
 	  setCommandHandler: (command, handler) => {
 	    handlers[command] = handler;
 	  },
@@ -981,6 +987,9 @@
 	  const { Event, Message } = EDConsole;
 	  const Command = {
 	    INIT_FRAME: 'init-frame',
+	    SET_PLUGINS_CONFIGURATION: 'set-plugins-configuration',
+	    CONNECTION_PING: 'connection-ping',
+	    CONNECTION_PONG: 'connection-pong',
 	  };
 
 	  const targets = new Map();
@@ -1012,6 +1021,14 @@
 	    if (message && Message.getMessageCommand(message) === Command.INIT_FRAME) {
 	      EDConsole.subscribeToIncomingMessages(messageSubscriber);
 	      targets.set(target, messageSubscriber);
+
+	      EDConsole.sendCommandTo(
+	        messageSubscriber,
+	        Command.SET_PLUGINS_CONFIGURATION,
+	        {
+	          plugins: EDConsole.getRegisteredPlugins(),
+	        },
+	      );
 	    }
 	  };
 
@@ -1023,10 +1040,20 @@
 	  });
 
 	  EDConsole.addEventListener(Event.CONSOLE_FRAME_CLOSED, ({ data: target }) =>
-	    removeTarget(target)
+	    removeTarget(target),
 	  );
 
 	  window.addEventListener('message', messageHandler);
+
+	  EDConsole.setCommandHandler(Command.INIT_FRAME, (_, src, sendResponse) =>
+	    sendResponse(Command.SET_PLUGINS_CONFIGURATION, {
+	      plugins: EDConsole.getRegisteredPlugins(),
+	    }),
+	  );
+
+	  EDConsole.setCommandHandler(Command.CONNECTION_PING, (_, src, sendResponse) =>
+	    sendResponse(Command.CONNECTION_PONG),
+	  );
 	})(window.EDConsole);
 
 	((EDConsole) => {
@@ -1142,6 +1169,7 @@
 	})(window.EDConsole);
 
 	((EDConsole) => {
+	  const PLUGIN_NAME = 'log-console';
 	  const { LogDataRenderer } = EDConsole;
 	  const Command = {
 	    CONSOLE_LOG: 'console-log',
@@ -1214,9 +1242,12 @@
 	      sendResponse(Command.EVAL_COMMAND_RESPONSE, response);
 	    },
 	  );
+
+	  EDConsole.registerPlugin(PLUGIN_NAME);
 	})(window.EDConsole);
 
 	((EDConsole) => {
+	  const PLUGIN_NAME = 'log-location';
 	  const Command = {
 	    READ_LOCATION: 'read-location',
 	    READ_LOCATION_RESPONSE: 'read-location/response',
@@ -1275,9 +1306,12 @@
 	      });
 	    },
 	  );
+
+	  EDConsole.registerPlugin(PLUGIN_NAME);
 	})(window.EDConsole);
 
 	((EDConsole) => {
+	  const PLUGIN_NAME = 'manage-cookies';
 	  const Command = {
 	    READ_COOKIES: 'read-cookies',
 	    READ_COOKIES_RESPONSE: 'read-cookies/response',
@@ -1318,9 +1352,12 @@
 	      sendResponse(Command.READ_COOKIES_RESPONSE, readCookies());
 	    }
 	  );
+
+	  EDConsole.registerPlugin(PLUGIN_NAME);
 	})(window.EDConsole);
 
 	((EDConsole) => {
+	  const PLUGIN_NAME = 'manage-storage';
 	  const Command = {
 	    READ_LOCAL_STORAGE: 'read-local-storage',
 	    READ_LOCAL_STORAGE_RESPONSE: 'read-local-storage/response',
@@ -1391,9 +1428,12 @@
 	      sendResponse(Command.READ_SESSION_STORAGE_RESPONSE, read(sessionStorage));
 	    },
 	  );
+
+	  EDConsole.registerPlugin(PLUGIN_NAME);
 	})(window.EDConsole);
 
 	((EDConsole) => {
+	  const PLUGIN_NAME = 'log-redux';
 	  const Command = {
 	    REDUX_ACTION: 'redux-action',
 	  };
@@ -1468,9 +1508,12 @@
 	  });
 
 	  window.__REDUX_DEVTOOLS_EXTENSION__ = __REDUX_DEVTOOLS_EXTENSION__;
+
+	  EDConsole.registerPlugin(PLUGIN_NAME);
 	})(window.EDConsole);
 
 	((EDConsole) => {
+	  const PLUGIN_NAME = 'log-xhr';
 	  const Command = {
 	    XHR_UPDATE: 'network-update',
 	  };
@@ -1669,9 +1712,12 @@
 	  EDConsole.$XMLHttpRequest = XMLHttpRequestDef;
 
 	  Object.assign(window, { fetch, XMLHttpRequest });
+
+	  EDConsole.registerPlugin(PLUGIN_NAME);
 	})(window.EDConsole);
 
 	((EDConsole) => {
+	  const PLUGIN_NAME = 'log-websocket';
 	  if (typeof window.WebSocket === 'undefined') {
 	    return;
 	  }
@@ -1808,9 +1854,12 @@
 	      }
 	    }
 	  );
+
+	  EDConsole.registerPlugin(PLUGIN_NAME);
 	})(window.EDConsole);
 
 	((EDConsole) => {
+	  const PLUGIN_NAME = 'manage-domelement';
 	  const Command = {
 	    DOM_NODE_LOOKUP: 'dom-node-lookup',
 	    DOM_NODE_LOOKUP_RESPONSE: 'dom-node-lookup/response',
@@ -2056,6 +2105,8 @@
 	      querySelectorHandler(null, { value: selector }, sendResponse);
 	    },
 	  );
+
+	  EDConsole.registerPlugin(PLUGIN_NAME);
 	})(window.EDConsole);
 
 })));

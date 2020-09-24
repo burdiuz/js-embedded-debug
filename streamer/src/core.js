@@ -16,6 +16,8 @@ const handlers = {};
 
 const subscribers = [];
 
+const plugins = [];
+
 const addSubscriber = (subscriber) => subscribers.push(subscriber);
 
 const removeSubscriber = (subscriber) => {};
@@ -26,6 +28,10 @@ const EDConsole = {
   EventDispatcher,
   LogDataRenderer,
   getConsolePath: () => EDConsoleConfig.consoleHref,
+  registerPlugin: (pluginName) => {
+    plugins.push(pluginName);
+  },
+  getRegisteredPlugins: () => plugins.slice(),
   setCommandHandler: (command, handler) => {
     handlers[command] = handler;
   },

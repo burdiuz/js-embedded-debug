@@ -1,16 +1,26 @@
-import React from 'react';
+import React, { useEffect, useState, memo } from 'react';
 import { Tabs } from 'antd';
+import { CheckCircleFilled, CloseCircleFilled } from '@ant-design/icons';
+import { connect } from 'react-redux';
 
-import CookiesTabPane from './cookies/CookiesTabPane';
-import ConsoleTabPane from './console/ConsoleTabPane';
-import ElementTabPane from './element/ElementTabPane';
-import LocationTabPane from './location/LocationTabPane';
-import LocalStorageTabPane from './local-storage/LocalStorageTabPane';
-import PixelPerfectTabPane from './pixel-perfect/PixelPerfectTabPane';
-import ReduxTabPane from './redux/ReduxTabPane';
-import SessionStorageTabPane from './session-storage/SessionStorageTabPane';
-import WebSocketTabPane from './websocket/WebSocketTabPane';
-import XhrTabPane from './xhr/XhrTabPane';
+import { connectionTestStart } from 'store/actions/connection';
+import {
+  hasConnectionTestStarted,
+  isConnectionActive,
+  isToolConnected,
+} from 'store/selectors/connection';
+import { Tools } from 'message/tools';
+
+import { renderCookiesTab } from './cookies';
+import { renderConsoleTab } from './console';
+import { renderElementTab } from './element';
+import { renderLocationTab } from './location';
+import { renderLocalStorageTab } from './local-storage';
+import { renderPixelPerfectTab } from './pixel-perfect';
+import { renderReduxTab } from './redux';
+import { renderSessionStorageTab } from './session-storage';
+import { renderWebSocketTab } from './websocket';
+import { renderXhrTab } from './xhr';
 
 import logo from '../logo.svg';
 
@@ -20,58 +30,96 @@ const { TabPane } = Tabs;
  TODO: Make injection to tell console which modules are active to show only tabs which will get the communication
 */
 
-const MainView = () => (
-  <Tabs defaultActiveKey="console" className="main-tabs">
-    <TabPane tab="&nbsp;" key="spacer" disabled></TabPane>
-    <TabPane tab="Console" key="console" className="console-tab">
-      <ConsoleTabPane />
-    </TabPane>
-    <TabPane tab="Element" key="element">
-      <ElementTabPane />
-    </TabPane>
-    <TabPane tab="XHR" key="xhr">
-      <XhrTabPane />
-    </TabPane>
-    <TabPane tab="WebSockets" key="websockets">
-      <WebSocketTabPane />
-    </TabPane>
-    <TabPane tab="Cookies" key="cookies">
-      <CookiesTabPane />
-    </TabPane>
-    <TabPane tab="Local Storage" key="local-storage">
-      <LocalStorageTabPane />
-    </TabPane>
-    <TabPane tab="Session Storage" key="session-storage">
-      <SessionStorageTabPane />
-    </TabPane>
-    <TabPane tab="Redux" key="redux">
-      <ReduxTabPane />
-    </TabPane>
-    <TabPane tab="Location" key="location">
-      <LocationTabPane />
-    </TabPane>
-    <TabPane tab="Pixel Perfect" key="pixel-perfect">
-      <PixelPerfectTabPane />
-    </TabPane>
-    <TabPane tab="Info" key="info">
-      <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <p>
-            Edit <code>src/App.js</code> and save to reload.
-          </p>
-          <a
-            className="App-link"
-            href="https://reactjs.org"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Learn React
-          </a>
-        </header>
-      </div>
-    </TabPane>
-  </Tabs>
+const ConnectionInfo = memo(({ connected }) =>
+  connected ? (
+    <CheckCircleFilled
+      style={{ color: '#00cc00', margin: '0 0 0 20px' }}
+      title="Connected"
+    />
+  ) : (
+    <CloseCircleFilled
+      style={{ color: '#cc0000', margin: '0 0 0 20px' }}
+      title="Not connected"
+    />
+  ),
 );
 
-export default MainView;
+const MainView = ({
+  connected,
+  connectionTestStarted,
+  startTest,
+  enableConsole,
+  enableElement,
+  enableXhr,
+  enableWebSocket,
+  enableCookies,
+  enableStorage,
+  enableRedux,
+  enableLocation,
+  enablePixelPerfect,
+}) => {
+  const [tab, setTab] = useState('console');
+
+  useEffect(() => {
+    if (!connectionTestStarted) {
+      startTest();
+    }
+  }, [connectionTestStarted]);
+
+  return (
+    <Tabs activeKey={tab} onChange={setTab} className="main-tabs">
+      <TabPane
+        tab={<ConnectionInfo connected={connected} />}
+        key="spacer"
+        disabled
+      ></TabPane>
+      {enableConsole && renderConsoleTab()}
+      {enableElement && renderElementTab()}
+      {enableXhr && renderXhrTab()}
+      {enableWebSocket && renderWebSocketTab()}
+      {enableCookies && renderCookiesTab()}
+      {enableStorage && renderLocalStorageTab()}
+      {enableStorage && renderSessionStorageTab()}
+      {enableRedux && renderReduxTab()}
+      {enableLocation && renderLocationTab()}
+      {enablePixelPerfect && renderPixelPerfectTab()}
+      <TabPane tab="Info" key="info">
+        <div className="App">
+          <header className="App-header">
+            <img src={logo} className="App-logo" alt="logo" />
+            <p>
+              Edit <code>src/App.js</code> and save to reload.
+            </p>
+            <a
+              className="App-link"
+              href="https://reactjs.org"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Learn React
+            </a>
+          </header>
+        </div>
+      </TabPane>
+    </Tabs>
+  );
+};
+
+export default connect(
+  (state) => ({
+    connected: isConnectionActive(state),
+    connectionTestStarted: hasConnectionTestStarted(state),
+    enableConsole: isToolConnected(state, { tool: Tools.LOG_CONSOLE }),
+    enableElement: isToolConnected(state, { tool: Tools.MANAGE_DOMELEMENT }),
+    enableXhr: isToolConnected(state, { tool: Tools.LOG_XHR }),
+    enableWebSocket: isToolConnected(state, { tool: Tools.LOG_WEBSOCKET }),
+    enableCookies: isToolConnected(state, { tool: Tools.MANAGE_COOKIES }),
+    enableStorage: isToolConnected(state, { tool: Tools.MANAGE_STORAGE }),
+    enableRedux: isToolConnected(state, { tool: Tools.LOG_REDUX }),
+    enableLocation: isToolConnected(state, { tool: Tools.LOG_LOCATION }),
+    enablePixelPerfect: isToolConnected(state, { tool: Tools.PIXEL_PERFECT }),
+  }),
+  {
+    startTest: connectionTestStart,
+  },
+)(MainView);

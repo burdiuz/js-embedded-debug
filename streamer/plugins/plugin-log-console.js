@@ -1,4 +1,5 @@
 ((EDConsole) => {
+  const PLUGIN_NAME = 'log-console';
   const { LogDataRenderer } = EDConsole;
   const Command = {
     CONSOLE_LOG: 'console-log',
@@ -71,4 +72,6 @@
       sendResponse(Command.EVAL_COMMAND_RESPONSE, response);
     },
   );
+
+  EDConsole.registerPlugin(PLUGIN_NAME);
 })(window.EDConsole);

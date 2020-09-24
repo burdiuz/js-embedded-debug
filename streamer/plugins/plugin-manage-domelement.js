@@ -1,4 +1,5 @@
 ((EDConsole) => {
+  const PLUGIN_NAME = 'manage-domelement';
   const Command = {
     DOM_NODE_LOOKUP: 'dom-node-lookup',
     DOM_NODE_LOOKUP_RESPONSE: 'dom-node-lookup/response',
@@ -245,4 +246,6 @@
       querySelectorHandler(null, { value: selector }, sendResponse);
     },
   );
+
+  EDConsole.registerPlugin(PLUGIN_NAME);
 })(window.EDConsole);

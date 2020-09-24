@@ -898,12 +898,18 @@
 
 	const subscribers = [];
 
+	const plugins = [];
+
 	const EDConsole = {
 	  Event: Event$1,
 	  Message,
 	  EventDispatcher,
 	  LogDataRenderer,
 	  getConsolePath: () => EDConsoleConfig.consoleHref,
+	  registerPlugin: (pluginName) => {
+	    plugins.push(pluginName);
+	  },
+	  getRegisteredPlugins: () => plugins.slice(),
 	  setCommandHandler: (command, handler) => {
 	    handlers[command] = handler;
 	  },

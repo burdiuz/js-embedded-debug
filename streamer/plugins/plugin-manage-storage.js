@@ -1,4 +1,5 @@
 ((EDConsole) => {
+  const PLUGIN_NAME = 'manage-storage';
   const Command = {
     READ_LOCAL_STORAGE: 'read-local-storage',
     READ_LOCAL_STORAGE_RESPONSE: 'read-local-storage/response',
@@ -69,4 +70,6 @@
       sendResponse(Command.READ_SESSION_STORAGE_RESPONSE, read(sessionStorage));
     },
   );
+
+  EDConsole.registerPlugin(PLUGIN_NAME);
 })(window.EDConsole);

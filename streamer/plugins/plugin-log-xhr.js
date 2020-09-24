@@ -1,4 +1,5 @@
 ((EDConsole) => {
+  const PLUGIN_NAME = 'log-xhr';
   const Command = {
     XHR_UPDATE: 'network-update',
   };
@@ -197,4 +198,6 @@
   EDConsole.$XMLHttpRequest = XMLHttpRequestDef;
 
   Object.assign(window, { fetch, XMLHttpRequest });
+
+  EDConsole.registerPlugin(PLUGIN_NAME);
 })(window.EDConsole);

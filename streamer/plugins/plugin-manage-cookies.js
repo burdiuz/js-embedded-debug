@@ -1,4 +1,5 @@
 ((EDConsole) => {
+  const PLUGIN_NAME = 'manage-cookies';
   const Command = {
     READ_COOKIES: 'read-cookies',
     READ_COOKIES_RESPONSE: 'read-cookies/response',
@@ -39,4 +40,6 @@
       sendResponse(Command.READ_COOKIES_RESPONSE, readCookies());
     }
   );
+
+  EDConsole.registerPlugin(PLUGIN_NAME);
 })(window.EDConsole);

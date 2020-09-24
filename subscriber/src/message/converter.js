@@ -5,11 +5,16 @@ import { sessionStorageUpdate } from 'store/actions/session-storage';
 import { xhrUpdateReceived } from 'store/actions/xhr';
 import { reduxActionReceived } from 'store/actions/redux';
 import { locationUpdateReceived } from 'store/actions/location';
-import { websocketCreated, websocketUpdated, websocketMessage } from 'store/actions/websockets';
+import {
+  websocketCreated,
+  websocketUpdated,
+  websocketMessage,
+} from 'store/actions/websockets';
 import {
   domNodeInfoUpdate,
   domNodeComputedStyleResponse,
 } from 'store/actions/domelement';
+import { connectionPong, connectedToolsSet } from 'store/actions/connection';
 
 import { Command } from './command';
 import { getMessageCommand, getMessageData } from './message';
@@ -18,6 +23,9 @@ const converter = (dispatch) => (message) => {
   const data = getMessageData(message);
 
   switch (getMessageCommand(message)) {
+    case Command.SET_PLUGINS_CONFIGURATION:
+      dispatch(connectedToolsSet(data));
+      break;
     case Command.CONSOLE_LOG:
       dispatch(consoleLogReceived(data));
       break;
@@ -61,6 +69,9 @@ const converter = (dispatch) => (message) => {
       break;
     case Command.DOM_NODE_COMPUTED_STYLE_RESPONSE:
       dispatch(domNodeComputedStyleResponse(data));
+      break;
+    case Command.CONNECTION_PONG:
+      dispatch(connectionPong());
       break;
   }
 };

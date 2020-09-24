@@ -1,4 +1,5 @@
 ((EDConsole) => {
+  const PLUGIN_NAME = 'log-websocket';
   if (typeof window.WebSocket === 'undefined') {
     return;
   }
@@ -135,4 +136,6 @@
       }
     }
   );
+
+  EDConsole.registerPlugin(PLUGIN_NAME);
 })(window.EDConsole);
