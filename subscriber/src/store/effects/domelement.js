@@ -5,6 +5,9 @@ import {
   DOM_NODE_SET_ATTRIBUTE,
   DOM_NODE_SET_STYLE,
   DOM_NODE_COMPUTED_STYLE,
+  DOM_NODE_COPY_QUERY,
+  DOM_NODE_COPY_HTML,
+  DOM_NODE_COPY_TEXT,
 } from 'store/actions/domelement';
 import { Command } from 'message/command';
 import { getServiceInstance } from 'communication';
@@ -36,7 +39,23 @@ take(DOM_NODE_SET_STYLE, async ({ payload }) => {
 take(DOM_NODE_COMPUTED_STYLE, async ({ payload }) => {
   const comm = getServiceInstance();
 
-  console.log(payload);
-
   comm.send(Command.DOM_NODE_COMPUTED_STYLE, payload);
+});
+
+take(DOM_NODE_COPY_QUERY, async () => {
+  const comm = getServiceInstance();
+
+  comm.send(Command.DOM_NODE_COPY_QUERY);
+});
+
+take(DOM_NODE_COPY_HTML, async () => {
+  const comm = getServiceInstance();
+
+  comm.send(Command.DOM_NODE_COPY_HTML);
+});
+
+take(DOM_NODE_COPY_TEXT, async () => {
+  const comm = getServiceInstance();
+
+  comm.send(Command.DOM_NODE_COPY_TEXT);
 });

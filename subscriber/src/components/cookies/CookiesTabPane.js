@@ -1,15 +1,40 @@
-import React, { useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Button } from 'antd';
 import * as actions from 'store/actions/cookies';
 import { getCookieList } from 'store/selectors/cookies';
 import { StorageView, NewItem } from '../StorageView';
+import { TextAreaView } from '../TextAreaView';
 
-const CookiesTabPane = ({ list, cookiesRead, cookieSet, cookieRemove }) => {
+const CookiesTabPane = ({
+  list,
+  cookiesRead,
+  cookieSet,
+  cookieRemove,
+  cookiesCopy,
+  cookiesImport,
+}) => {
+  const [showImport, setShowImport] = useState(false);
+
   useEffect(() => {
     cookiesRead();
   }, []);
+
+  if (showImport) {
+    return (
+      <TextAreaView
+        title="Import Cookies from JSON"
+        placeholder="Provide a JSON object with strings to be saved as cookies"
+        save={(data) => {
+          cookiesImport(data);
+          setShowImport(false);
+        }}
+        cancel={() => setShowImport(false)}
+        saveButtonName="Import"
+      />
+    );
+  }
 
   return (
     <StorageView list={list} save={cookieSet} remove={cookieRemove}>
@@ -22,10 +47,10 @@ const CookiesTabPane = ({ list, cookiesRead, cookieSet, cookieRemove }) => {
           paddingRight: '5px',
         }}
       >
+        <Button onClick={cookiesRead}>Sync</Button>
+        <Button onClick={cookiesCopy}>Copy</Button>
+        <Button onClick={() => setShowImport(true)}>Import</Button>
         <NewItem save={cookieSet} style={{ flex: 1 }} />
-        <Button type="primary" onClick={cookiesRead}>
-          Refresh
-        </Button>
       </div>
     </StorageView>
   );
@@ -51,5 +76,7 @@ export default connect(
     cookiesRead: actions.cookiesRead,
     cookieSet: actions.cookieSet,
     cookieRemove: actions.cookieRemove,
+    cookiesCopy: actions.cookiesClipboardExport,
+    cookiesImport: actions.cookiesBulkSet,
   },
 )(CookiesTabPane);

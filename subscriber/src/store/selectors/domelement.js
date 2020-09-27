@@ -11,11 +11,15 @@ export const getDomelementComputedStyles = ({
   domelement: { computedStyles },
 }) => computedStyles;
 
-export const getCurrentDomelementDimensions = ({
-  domelement: {
-    selected: { x, y, width, height },
-  },
-}) => ({ x, y, width, height });
+export const getCurrentDomelementDimensions = (state) => {
+  const {
+    domelement: {
+      selected: { x, y, width, height },
+    },
+  } = state;
+
+  return { x, y, width, height };
+};
 
 export const getCurrentDomelementName = ({ domelement: { selected } }) => {
   const selectors = (selected && selected.selectors) || [];

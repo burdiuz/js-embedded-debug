@@ -52,17 +52,6 @@ const LocationTabPane = ({
       <div
         style={{
           display: 'flex',
-          justifyContent: 'flex-end',
-          padding: '0 5px',
-        }}
-      >
-        <Button type="primary" onClick={sync}>
-          Refresh
-        </Button>
-      </div>
-      <div
-        style={{
-          display: 'flex',
           alignItems: 'center',
           margin: '10px 5px 5px 0',
         }}
@@ -125,118 +114,24 @@ const LocationTabPane = ({
         </Button>
       </div>
 
-      <div
-        style={{
-          display: 'flex',
-          alignItems: 'flex-start',
-          margin: '0 5px 5px 0',
-        }}
-      >
-        <div
-          style={{
-            flex: '0 0 120px',
-            fontWeight: 'bold',
-            textAlign: 'right',
-            marginRight: '5px',
-          }}
-        >
-          search:
-        </div>
-        <div style={{ flex: '1', wordBreak: 'break-all' }}>{search}</div>
-      </div>
-
-      <div
-        style={{
-          display: 'flex',
-          alignItems: 'flex-start',
-          margin: '0 5px 5px 0',
-        }}
-      >
-        <div
-          style={{
-            flex: '0 0 120px',
-            fontWeight: 'bold',
-            textAlign: 'right',
-            marginRight: '5px',
-          }}
-        >
-          pathname:
-        </div>
-        <div style={{ flex: '1', wordBreak: 'break-all' }}>{pathname}</div>
-      </div>
-
-      <div
-        style={{
-          display: 'flex',
-          alignItems: 'flex-start',
-          margin: '0 5px 5px 0',
-        }}
-      >
-        <div
-          style={{
-            flex: '0 0 120px',
-            fontWeight: 'bold',
-            textAlign: 'right',
-            marginRight: '5px',
-          }}
-        >
-          host:
-        </div>
-        <div style={{ flex: '1', wordBreak: 'break-all' }}>{host}</div>
-      </div>
-
-      <div
-        style={{
-          display: 'flex',
-          alignItems: 'flex-start',
-          margin: '0 5px 5px 0',
-        }}
-      >
-        <div
-          style={{
-            flex: '0 0 120px',
-            fontWeight: 'bold',
-            textAlign: 'right',
-            marginRight: '5px',
-          }}
-        >
-          protocol:
-        </div>
-        <div style={{ flex: '1', wordBreak: 'break-all' }}>{protocol}</div>
-      </div>
-
-      <div
-        style={{
-          display: 'flex',
-          alignItems: 'flex-start',
-          margin: '0 5px 5px 0',
-        }}
-      >
-        <div
-          style={{
-            flex: '0 0 120px',
-            fontWeight: 'bold',
-            textAlign: 'right',
-            marginRight: '5px',
-          }}
-        >
-          hostname:
-        </div>
-        <div style={{ flex: '1', wordBreak: 'break-all' }}>{hostname}</div>
-      </div>
       <Divider />
       <div
         style={{
           display: 'flex',
-          justifyContent: 'flex-end',
+          justifyContent: 'space-between',
           padding: '0 5px',
         }}
       >
-        <Button onClick={goBackward}>&lt; Go Back</Button>
-        <Button onClick={reload} type="primary">
-          Reload Page
+        <Button type="primary" onClick={sync}>
+          Sync
         </Button>
-        <Button onClick={goForward}>Go Forward &gt;</Button>
+        <span>
+          <Button onClick={goBackward}>&lt; Go Back</Button>
+          <Button onClick={reload} type="primary">
+            Reload Page
+          </Button>
+          <Button onClick={goForward}>Go Forward &gt;</Button>
+        </span>
       </div>
     </div>
   );

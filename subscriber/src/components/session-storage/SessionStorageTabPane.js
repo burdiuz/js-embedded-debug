@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Button } from 'antd';
@@ -6,19 +6,41 @@ import {
   sessionStorageRead,
   sessionStorageSet,
   sessionStorageRemove,
+  sessionStorageClipboardExport,
+  sessionStorageBulkSet,
 } from 'store/actions/session-storage';
 import { getSessionStorageItems } from 'store/selectors/session-storage';
 import { StorageView, NewItem } from '../StorageView';
+import { TextAreaView } from '../TextAreaView';
 
 const SessionStorageTabPane = ({
   list,
   storageRead,
   storageSet,
   storageRemove,
+  storageCopy,
+  storageImport,
 }) => {
+  const [showImport, setShowImport] = useState(false);
+
   useEffect(() => {
     storageRead();
   }, []);
+
+  if (showImport) {
+    return (
+      <TextAreaView
+        title="Import Session Storage data from JSON"
+        placeholder="Provide a JSON object with strings to be saved as Session Storage items"
+        save={(data) => {
+          storageImport(data);
+          setShowImport(false);
+        }}
+        cancel={() => setShowImport(false)}
+        saveButtonName="Import"
+      />
+    );
+  }
 
   return (
     <StorageView list={list} save={storageSet} remove={storageRemove}>
@@ -31,10 +53,10 @@ const SessionStorageTabPane = ({
           paddingRight: '5px',
         }}
       >
+      <Button onClick={storageRead}>Sync</Button>
+      <Button onClick={storageCopy}>Copy</Button>
+      <Button onClick={() => setShowImport(true)}>Import</Button>
         <NewItem save={storageSet} style={{ flex: 1 }} />
-        <Button type="primary" onClick={storageRead}>
-          Refresh
-        </Button>
       </div>
     </StorageView>
   );
@@ -60,5 +82,7 @@ export default connect(
     storageRead: sessionStorageRead,
     storageSet: sessionStorageSet,
     storageRemove: sessionStorageRemove,
+    storageCopy: sessionStorageClipboardExport,
+    storageImport: sessionStorageBulkSet,
   },
 )(SessionStorageTabPane);

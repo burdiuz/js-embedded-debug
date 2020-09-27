@@ -38,3 +38,7 @@ code {
 .console-input-container {
 
 }
+
+.ant-divider.ant-divider-horizontal {
+  margin: 8px 0;
+}

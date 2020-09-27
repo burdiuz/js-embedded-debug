@@ -1,5 +1,9 @@
 import { take, put } from '@actualwave/redux-side-effect';
-import { CONNECTION_PING, CONNECTION_TEST_START, connectionPing } from 'store/actions/connection';
+import {
+  CONNECTION_PING,
+  CONNECTION_TEST_START,
+  connectionPing,
+} from 'store/actions/connection';
 import { Command } from 'message/command';
 import { getServiceInstance } from 'communication';
 

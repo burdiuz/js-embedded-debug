@@ -20,16 +20,22 @@ export const Command = {
   READ_COOKIES_RESPONSE: 'read-cookies/response',
   COOKIE_SET: 'cookie-set',
   COOKIE_REMOVE: 'cookie-remove',
+  COOKIES_CLIPBOARD_EXPORT: 'cookies-clipboard-export',
+  COOKIES_BULK_SET: 'cookies-bulk-set',
 
   READ_LOCAL_STORAGE: 'read-local-storage',
   READ_LOCAL_STORAGE_RESPONSE: 'read-local-storage/response',
   LOCAL_STORAGE_SET: 'local-storage-set',
   LOCAL_STORAGE_REMOVE: 'local-storage-remove',
+  LOCAL_STORAGE_CLIPBOARD_EXPORT: 'local-storage-clipboard-export',
+  LOCAL_STORAGE_BULK_SET: 'local-storage-bulk-set',
 
   READ_SESSION_STORAGE: 'read-session-storage',
   READ_SESSION_STORAGE_RESPONSE: 'read-session-storage/response',
   SESSION_STORAGE_SET: 'session-storage-set',
   SESSION_STORAGE_REMOVE: 'session-storage-remove',
+  SESSION_STORAGE_CLIPBOARD_EXPORT: 'session-storage-clipboard-export',
+  SESSION_STORAGE_BULK_SET: 'session-storage-bulk-set',
 
   DOM_NODE_LOOKUP: 'dom-node-lookup',
   DOM_NODE_LOOKUP_RESPONSE: 'dom-node-lookup/response',
@@ -39,6 +45,9 @@ export const Command = {
   DOM_NODE_COMPUTED_STYLE_RESPONSE: 'dom-node-computed-style/response',
   DOM_NODE_SET_ATTRIBUTE: 'dom-node-set-attribute',
   DOM_NODE_SET_STYLE: 'dom-node-set-style',
+  DOM_NODE_COPY_QUERY: 'dom-node-copy-query',
+  DOM_NODE_COPY_HTML: 'dom-node-copy-html',
+  DOM_NODE_COPY_TEXT: 'dom-node-copy-text',
 
   PP_ZOOM_SET: 'pixel-perfect-zoom-set',
   PP_RULER_SHOW: 'pixel-perfect-ruler-show',

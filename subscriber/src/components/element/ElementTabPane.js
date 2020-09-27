@@ -9,6 +9,9 @@ import {
   domNodeSetAttribute,
   domNodeSetStyle,
   domNodeComputedStyle,
+  domNodeCopyQuery,
+  domNodeCopyHtml,
+  domNodeCopyText,
 } from 'store/actions/domelement';
 import {
   getCurrentDomelementSelectors,
@@ -18,6 +21,8 @@ import {
   getDomelementComputedStyles,
   getCurrentDomelementDimensions,
 } from 'store/selectors/domelement';
+
+import { NewItem } from '../StorageView';
 
 const Prop = ({ name, value: baseValue, change }) => {
   const [value, setValue] = useState(baseValue);
@@ -42,30 +47,32 @@ const Prop = ({ name, value: baseValue, change }) => {
       >
         {name}:
       </div>
-      <div style={{ flex: '4 1 200px' }}>
+      <div style={{ flex: '4 1 200px', display: 'flex' }}>
         {edit ? (
-          <Input
-            ref={inputRef}
-            value={value}
-            size="small"
-            onChange={({ target: { value } }) => setValue(value)}
-            onPressEnter={() => {
-              if (value !== baseValue) {
-                change([name, value]);
-              }
-              setEdit(false);
-            }}
-            addonAfter={
-              <CheckOutlined
-                onClick={() => {
-                  if (value !== baseValue) {
-                    change([name, value]);
-                  }
-                  setEdit(false);
-                }}
-              />
-            }
-          />
+          <>
+            <Input
+              ref={inputRef}
+              value={value}
+              size="small"
+              onChange={({ target: { value } }) => setValue(value)}
+              onPressEnter={() => {
+                if (value !== baseValue) {
+                  change([name, value]);
+                }
+                setEdit(false);
+              }}
+            />
+            <Button
+              icon={<CheckOutlined />}
+              size="small"
+              onClick={() => {
+                if (value !== baseValue) {
+                  change([name, value]);
+                }
+                setEdit(false);
+              }}
+            />
+          </>
         ) : (
           value
         )}
@@ -73,6 +80,8 @@ const Prop = ({ name, value: baseValue, change }) => {
     </div>
   );
 };
+
+// <NewItem save={() => null} style={{ flex: 1 }} />
 
 const PropListInfo = ({
   title,
@@ -127,6 +136,9 @@ const ElementTabPane = ({
   setAttribute,
   setStyle,
   loadComputedStyle,
+  copyQuery,
+  copyHtml,
+  copyText,
 }) => {
   const selector = selectors.join(' > ');
   const [query, setQuery] = useState('');
@@ -172,19 +184,13 @@ const ElementTabPane = ({
       {selector ? (
         <>
           <Breadcrumb style={{ marginDown: '10px' }}>
-            <Button
-              icon={<CopyOutlined />}
-              size="small"
-              style={{ marginRight: '10px' }}
-              onClick={() => navigator.clipboard.writeText(selector)}
-            />
             {selectors.map((item, index) => (
               <Breadcrumb.Item key={index}>
                 <a
                   href="#"
                   onClick={(e) => {
                     e.preventDefault();
-                    querySelector(selectors.slice(0, index + 1).join(' '));
+                    querySelector(selectors.slice(0, index + 1).join(' > '));
                   }}
                 >
                   {item}
@@ -192,11 +198,19 @@ const ElementTabPane = ({
               </Breadcrumb.Item>
             ))}
           </Breadcrumb>
-          <div>
+          <div style={{ display: 'flex', alignItems: 'center' }}>
             <strong>Dimensions:&nbsp;</strong>
             {width} x {height}
             <strong>&nbsp;Position:&nbsp;</strong>
             {x} x {y}
+            <div style={{ flex: 1 }}></div>
+            <Button onClick={copyQuery} style={{ marginRight: '5px' }}>
+              Copy CSS Query
+            </Button>
+            <Button onClick={copyHtml} style={{ marginRight: '5px' }}>
+              Copy Element HTML
+            </Button>
+            <Button onClick={copyText}>Copy Element Text</Button>
           </div>
           <div
             style={{ display: 'flex', alignItems: 'stretch', height: '100%' }}
@@ -267,5 +281,8 @@ export default connect(
     setStyle: (selector, prop) => dispatch(domNodeSetStyle({ selector, prop })),
     loadComputedStyle: (selector) =>
       dispatch(domNodeComputedStyle({ selector })),
+    copyQuery: () => dispatch(domNodeCopyQuery()),
+    copyHtml: () => dispatch(domNodeCopyHtml()),
+    copyText: () => dispatch(domNodeCopyText()),
   }),
 )(ElementTabPane);

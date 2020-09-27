@@ -11,10 +11,12 @@ const getInitialState = () => ({
   computedStyles: [],
 });
 
-export const domNodeInfoUpdate = (state, { payload: selected }) => ({
-  ...state,
-  selected,
-});
+export const domNodeInfoUpdate = (state, { payload }) => {
+  return {
+    ...state,
+    selected: payload || getInitialState().selected,
+  };
+};
 
 export const domNodeComputedStyleResponse = (
   state,

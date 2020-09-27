@@ -94,8 +94,8 @@ export const StorageView = ({ list, save, remove, children }) => (
     }}
   >
     {children}
-    {list.map(({ key, value }) => (
-      <Item key={key} name={key} value={value} save={save} remove={remove} />
+    {list.map(({ key, value }, index) => (
+      <Item key={`${index}${key}`} name={key} value={value} save={save} remove={remove} />
     ))}
   </div>
 );
