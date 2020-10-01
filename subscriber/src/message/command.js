@@ -66,4 +66,6 @@ export const Command = {
   WEBSOCKET_MESSAGE_SEND: 'websocket-message-send',
 
   REDUX_ACTION: 'redux-action',
+
+  TEXTDATA_SHOW: 'textdata-show',
 };

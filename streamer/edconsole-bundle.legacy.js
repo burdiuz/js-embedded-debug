@@ -1520,7 +1520,7 @@
         right: '0',
         bottom: '0',
         width: '100%',
-        height: '300px',
+        height: '350px',
         borderTop: '1px solid #eee',
         boxShadow: '0 0 10px #00000066',
         backgroundColor: '#ffffff'
@@ -1746,6 +1746,73 @@
         username: username
       });
     });
+    var _window = window,
+        historyObj = _window.history;
+    var pushStateFn = historyObj.pushState,
+        replaceStateFn = historyObj.replaceState,
+        backFn = historyObj.back,
+        forwardFn = historyObj.forward,
+        goFn = historyObj.go;
+
+    historyObj.back = function () {
+      console.log('History Back');
+
+      for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+        args[_key] = arguments[_key];
+      }
+
+      backFn.apply(historyObj, args);
+    };
+
+    historyObj.forward = function () {
+      console.log('History Forward');
+
+      for (var _len2 = arguments.length, args = new Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
+        args[_key2] = arguments[_key2];
+      }
+
+      forwardFn.apply(historyObj, args);
+    };
+
+    historyObj.go = function () {
+      var _console;
+
+      for (var _len3 = arguments.length, args = new Array(_len3), _key3 = 0; _key3 < _len3; _key3++) {
+        args[_key3] = arguments[_key3];
+      }
+
+      (_console = console).log.apply(_console, ['History Go'].concat(args));
+
+      goFn.apply(historyObj, args);
+    };
+
+    historyObj.pushState = function () {
+      var _console2;
+
+      for (var _len4 = arguments.length, args = new Array(_len4), _key4 = 0; _key4 < _len4; _key4++) {
+        args[_key4] = arguments[_key4];
+      }
+
+      (_console2 = console).log.apply(_console2, ['History Push'].concat(args));
+
+      pushStateFn.apply(historyObj, args);
+    };
+
+    historyObj.replaceState = function () {
+      var _console3;
+
+      for (var _len5 = arguments.length, args = new Array(_len5), _key5 = 0; _key5 < _len5; _key5++) {
+        args[_key5] = arguments[_key5];
+      }
+
+      (_console3 = console).log.apply(_console3, ['History Replace'].concat(args));
+
+      replaceStateFn.apply(historyObj, args);
+    };
+
+    window.addEventListener('popstate', function (event) {
+      console.log('History Pop', event);
+    });
     EDConsole.registerPlugin(PLUGIN_NAME);
   })(window.EDConsole);
 
@@ -1755,11 +1822,16 @@
       READ_COOKIES: 'read-cookies',
       READ_COOKIES_RESPONSE: 'read-cookies/response',
       COOKIE_SET: 'cookie-set',
-      COOKIE_REMOVE: 'cookie-remove'
+      COOKIE_REMOVE: 'cookie-remove',
+      COOKIES_CLIPBOARD_EXPORT: 'cookies-clipboard-export',
+      COOKIES_BULK_SET: 'cookies-bulk-set',
+      TEXTDATA_SHOW: 'textdata-show'
     };
 
     var readCookies = function readCookies() {
-      return document.cookie.split(';').map(function (str) {
+      return document.cookie.split(';').filter(function (item) {
+        return !!item.trim();
+      }).map(function (str) {
         var _str$split = str.split('='),
             _str$split2 = _slicedToArray(_str$split, 2),
             key = _str$split2[0],
@@ -1773,7 +1845,7 @@
     };
 
     var setCookie = function setCookie(key, value) {
-      document.cookie = "".concat(key, "=").concat(value, "; expires=Fri, 31 Dec 9999 23:59:59 GMT");
+      document.cookie = "".concat(key, "=").concat(value, "; path=/; expires=Fri, 31 Dec 9999 23:59:59 GMT");
     };
 
     var removeCookie = function removeCookie(key) {
@@ -1791,6 +1863,33 @@
       removeCookie(data.key);
       sendResponse(Command.READ_COOKIES_RESPONSE, readCookies());
     });
+    EDConsole.setCommandHandler(Command.COOKIES_CLIPBOARD_EXPORT, function (_, inc, sendResponse) {
+      var cookies = readCookies();
+
+      try {
+        var data = JSON.stringify(cookies, null, 2);
+        navigator.clipboard.writeText(data);
+        sendResponse(Command.TEXTDATA_SHOW, {
+          title: 'Cookies',
+          data: data
+        });
+      } catch (error) {}
+    });
+    EDConsole.setCommandHandler(Command.COOKIES_BULK_SET, function (_, data, sendResponse) {
+      if (data instanceof Array) {
+        data.forEach(function (_ref) {
+          var key = _ref.key,
+              value = _ref.value;
+          return setCookie(key, value);
+        });
+      } else {
+        Object.keys(data).forEach(function (key) {
+          return setCookie(key, data[key]);
+        });
+      }
+
+      sendResponse(Command.READ_COOKIES_RESPONSE, readCookies());
+    });
     EDConsole.registerPlugin(PLUGIN_NAME);
   })(window.EDConsole);
 
@@ -1801,10 +1900,15 @@
       READ_LOCAL_STORAGE_RESPONSE: 'read-local-storage/response',
       LOCAL_STORAGE_SET: 'local-storage-set',
       LOCAL_STORAGE_REMOVE: 'local-storage-remove',
+      LOCAL_STORAGE_CLIPBOARD_EXPORT: 'local-storage-clipboard-export',
+      LOCAL_STORAGE_BULK_SET: 'local-storage-bulk-set',
       READ_SESSION_STORAGE: 'read-session-storage',
       READ_SESSION_STORAGE_RESPONSE: 'read-session-storage/response',
       SESSION_STORAGE_SET: 'session-storage-set',
-      SESSION_STORAGE_REMOVE: 'session-storage-remove'
+      SESSION_STORAGE_REMOVE: 'session-storage-remove',
+      SESSION_STORAGE_CLIPBOARD_EXPORT: 'session-storage-clipboard-export',
+      SESSION_STORAGE_BULK_SET: 'session-storage-bulk-set',
+      TEXTDATA_SHOW: 'textdata-show'
     };
 
     var read = function read(storage) {
@@ -1832,6 +1936,37 @@
       localStorage.removeItem(data.key);
       sendResponse(Command.READ_LOCAL_STORAGE_RESPONSE, read(localStorage));
     });
+    EDConsole.setCommandHandler(Command.LOCAL_STORAGE_CLIPBOARD_EXPORT, function (_, inc, sendResponse) {
+      var storageData = read(localStorage).reduce(function (res, _ref) {
+        var key = _ref.key,
+            value = _ref.value;
+        return _objectSpread2(_objectSpread2({}, res), {}, _defineProperty({}, key, value));
+      }, {});
+
+      try {
+        var data = JSON.stringify(storageData, null, 2);
+        navigator.clipboard.writeText(data);
+        sendResponse(Command.TEXTDATA_SHOW, {
+          title: 'LocalStorage contents',
+          data: data
+        });
+      } catch (error) {}
+    });
+    EDConsole.setCommandHandler(Command.LOCAL_STORAGE_BULK_SET, function (_, data, sendResponse) {
+      if (data instanceof Array) {
+        data.forEach(function (_ref2) {
+          var key = _ref2.key,
+              value = _ref2.value;
+          return localStorage.setItem(key, value);
+        });
+      } else {
+        Object.keys(data).forEach(function (key) {
+          return localStorage.setItem(key, data[key]);
+        });
+      }
+
+      sendResponse(Command.READ_LOCAL_STORAGE_RESPONSE, read(localStorage));
+    });
     EDConsole.setCommandHandler(Command.READ_SESSION_STORAGE, function (_, data, sendResponse) {
       return sendResponse(Command.READ_SESSION_STORAGE_RESPONSE, read(sessionStorage));
     });
@@ -1841,6 +1976,37 @@
     });
     EDConsole.setCommandHandler(Command.SESSION_STORAGE_REMOVE, function (_, data, sendResponse) {
       sessionStorage.removeItem(data.key);
+      sendResponse(Command.READ_SESSION_STORAGE_RESPONSE, read(sessionStorage));
+    });
+    EDConsole.setCommandHandler(Command.SESSION_STORAGE_CLIPBOARD_EXPORT, function (_, inc, sendResponse) {
+      var storageData = read(sessionStorage).reduce(function (res, _ref3) {
+        var key = _ref3.key,
+            value = _ref3.value;
+        return _objectSpread2(_objectSpread2({}, res), {}, _defineProperty({}, key, value));
+      }, {});
+
+      try {
+        var data = JSON.stringify(storageData, null, 2);
+        navigator.clipboard.writeText(data);
+        sendResponse(Command.TEXTDATA_SHOW, {
+          title: 'SessionStorage contents',
+          data: data
+        });
+      } catch (error) {}
+    });
+    EDConsole.setCommandHandler(Command.SESSION_STORAGE_BULK_SET, function (_, data, sendResponse) {
+      if (data instanceof Array) {
+        data.forEach(function (_ref4) {
+          var key = _ref4.key,
+              value = _ref4.value;
+          return sessionStorage.setItem(key, value);
+        });
+      } else {
+        Object.keys(data).forEach(function (key) {
+          return sessionStorage.setItem(key, data[key]);
+        });
+      }
+
       sendResponse(Command.READ_SESSION_STORAGE_RESPONSE, read(sessionStorage));
     });
     EDConsole.registerPlugin(PLUGIN_NAME);
@@ -2340,7 +2506,11 @@
       DOM_NODE_COMPUTED_STYLE: 'dom-node-computed-style',
       DOM_NODE_COMPUTED_STYLE_RESPONSE: 'dom-node-computed-style/response',
       DOM_NODE_SET_ATTRIBUTE: 'dom-node-set-attribute',
-      DOM_NODE_SET_STYLE: 'dom-node-set-style'
+      DOM_NODE_SET_STYLE: 'dom-node-set-style',
+      DOM_NODE_COPY_QUERY: 'dom-node-copy-query',
+      DOM_NODE_COPY_HTML: 'dom-node-copy-html',
+      DOM_NODE_COPY_TEXT: 'dom-node-copy-text',
+      TEXTDATA_SHOW: 'textdata-show'
     };
     var container = document.createElement('div');
     Object.assign(container.style, {
@@ -2383,18 +2553,18 @@
 
       if (className) {
         var rgx = new RegExp("(^|\\s)".concat(className, "(\\s|$)"));
-        isFirst = children.find(function (item) {
+        isFirst = !children.length || children.find(function (item) {
           return item.tagName === tagName && item.className.match(rgx);
         }) === node;
         var base = "".concat(tagName, ".").concat(className);
         return isFirst ? base : "".concat(base, ":nth-child(").concat(index + 1, ")");
       } else if (id) {
-        // isFirst = children.find((item) => item.tagName === tagName && item.id === id) === node;
+        // isFirst = !children.length || children.find((item) => item.tagName === tagName && item.id === id) === node;
         return "".concat(tagName, "#").concat(id);
       } else if (name) {
         return "".concat(tagName, "[name=\"").concat(name, "\"]");
       } else {
-        isFirst = children.find(function (item) {
+        isFirst = !children.length || children.find(function (item) {
           return item.tagName === tagName;
         }) === node;
 
@@ -2451,17 +2621,22 @@
       }
 
       return list;
-    }; // TODO cache selection to apply attrs nad styles changes directly without looking up for it every time
+    }; // TODO cache selection to apply attrs and styles changes directly without looking up for it every time
     // let lastSelectedElement = null;
 
 
+    var lastSelectedNode = null;
+    var lastSelectedQuery = null;
+
     var mouseoverHandler = function mouseoverHandler(_ref) {
       var node = _ref.target;
-      EDConsole.sendCommand(Command.DOM_NODE_LOOKUP_RESPONSE, {
-        selectors: buildSelector(node),
+      lastSelectedNode = node;
+      lastSelectedQuery = buildSelector(node);
+      EDConsole.sendCommand(Command.DOM_NODE_LOOKUP_RESPONSE, _objectSpread2({
+        selectors: lastSelectedQuery,
         attributes: generateAttributeList(node),
         styles: generateStyleList(node)
-      });
+      }, getNodeDimensions(node)));
 
       var _node$getBoundingClie = node.getBoundingClientRect(),
           top = _node$getBoundingClie.top,
@@ -2540,8 +2715,10 @@
       var data = null;
 
       if (node) {
+        lastSelectedNode = node;
+        lastSelectedQuery = buildSelector(node);
         data = _objectSpread2({
-          selectors: buildSelector(node),
+          selectors: lastSelectedQuery,
           attributes: generateAttributeList(node),
           styles: generateStyleList(node)
         }, getNodeDimensions(node));
@@ -2592,6 +2769,42 @@
       querySelectorHandler(null, {
         value: selector
       }, sendResponse);
+    });
+    EDConsole.setCommandHandler(Command.DOM_NODE_COPY_QUERY, function (_, inc, sendResponse) {
+      if (lastSelectedQuery) {
+        try {
+          var data = lastSelectedQuery.join(' > ');
+          navigator.clipboard.writeText(data);
+          sendResponse(Command.TEXTDATA_SHOW, {
+            title: 'HTML Element query selector',
+            data: data
+          });
+        } catch (error) {}
+      }
+    });
+    EDConsole.setCommandHandler(Command.DOM_NODE_COPY_HTML, function (_, inc, sendResponse) {
+      if (lastSelectedNode) {
+        try {
+          var data = lastSelectedNode.outerHTML;
+          navigator.clipboard.writeText(data);
+          sendResponse(Command.TEXTDATA_SHOW, {
+            title: 'HTML Element outerHTML',
+            data: data
+          });
+        } catch (error) {}
+      }
+    });
+    EDConsole.setCommandHandler(Command.DOM_NODE_COPY_TEXT, function (_, inc, sendResponse) {
+      if (lastSelectedNode) {
+        try {
+          var data = lastSelectedNode.innerText;
+          navigator.clipboard.writeText(data);
+          sendResponse(Command.TEXTDATA_SHOW, {
+            title: 'HTML Element innerText',
+            data: data
+          });
+        } catch (error) {}
+      }
     });
     EDConsole.registerPlugin(PLUGIN_NAME);
   })(window.EDConsole);

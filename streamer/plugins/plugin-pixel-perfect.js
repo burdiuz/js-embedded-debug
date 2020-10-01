@@ -133,10 +133,10 @@
   EDConsole.setCommandHandler(Command.PP_IMAGE_HIDE, () => {});
 
   EDConsole.registerPlugin(PLUGIN_NAME);
-
+/*
   showGrid('GRID_50');
   showBGrid(12);
   showRulers();
   show();
-})({ setCommandHandler: () => null });
-//})(window.EDConsole);
+  */
+})(window.EDConsole);

@@ -1078,7 +1078,7 @@
 	      right: '0',
 	      bottom: '0',
 	      width: '100%',
-	      height: '300px',
+	      height: '350px',
 	      borderTop: '1px solid #eee',
 	      boxShadow: '0 0 10px #00000066',
 	      backgroundColor: '#ffffff',
@@ -1270,9 +1270,13 @@
 	    window.location.reload(),
 	  );
 
-	  EDConsole.setCommandHandler(Command.HISTORY_BACK, () => window.history.back());
+	  EDConsole.setCommandHandler(Command.HISTORY_BACK, () =>
+	    window.history.back(),
+	  );
 
-	  EDConsole.setCommandHandler(Command.HISTORY_FORWARD, () => window.history.forward());
+	  EDConsole.setCommandHandler(Command.HISTORY_FORWARD, () =>
+	    window.history.forward(),
+	  );
 
 	  EDConsole.setCommandHandler(
 	    Command.READ_LOCATION,
@@ -1307,6 +1311,44 @@
 	    },
 	  );
 
+	  const { history: historyObj } = window;
+	  const {
+	    pushState: pushStateFn,
+	    replaceState: replaceStateFn,
+	    back: backFn,
+	    forward: forwardFn,
+	    go: goFn,
+	  } = historyObj;
+
+	  historyObj.back = (...args) => {
+	    console.log('History Back');
+	    backFn.apply(historyObj, args);
+	  };
+
+	  historyObj.forward = (...args) => {
+	    console.log('History Forward');
+	    forwardFn.apply(historyObj, args);
+	  };
+
+	  historyObj.go = (...args) => {
+	    console.log('History Go', ...args);
+	    goFn.apply(historyObj, args);
+	  };
+
+	  historyObj.pushState = (...args) => {
+	    console.log('History Push', ...args);
+	    pushStateFn.apply(historyObj, args);
+	  };
+
+	  historyObj.replaceState = (...args) => {
+	    console.log('History Replace', ...args);
+	    replaceStateFn.apply(historyObj, args);
+	  };
+
+	  window.addEventListener('popstate', (event) => {
+	    console.log('History Pop', event);
+	  });
+
 	  EDConsole.registerPlugin(PLUGIN_NAME);
 	})(window.EDConsole);
 
@@ -1317,17 +1359,24 @@
 	    READ_COOKIES_RESPONSE: 'read-cookies/response',
 	    COOKIE_SET: 'cookie-set',
 	    COOKIE_REMOVE: 'cookie-remove',
+	    COOKIES_CLIPBOARD_EXPORT: 'cookies-clipboard-export',
+	    COOKIES_BULK_SET: 'cookies-bulk-set',
+
+	    TEXTDATA_SHOW: 'textdata-show',
 	  };
 
 	  const readCookies = () =>
-	    document.cookie.split(';').map((str) => {
-	      const [key, value] = str.split('=');
+	    document.cookie
+	      .split(';')
+	      .filter((item) => !!item.trim())
+	      .map((str) => {
+	        const [key, value] = str.split('=');
 
-	      return { key: key.trim(), value: value.trim() };
-	    });
+	        return { key: key.trim(), value: value.trim() };
+	      });
 
 	  const setCookie = (key, value) => {
-	    document.cookie = `${key}=${value}; expires=Fri, 31 Dec 9999 23:59:59 GMT`;
+	    document.cookie = `${key}=${value}; path=/; expires=Fri, 31 Dec 9999 23:59:59 GMT`;
 	  };
 
 	  const removeCookie = (key) => {
@@ -1350,7 +1399,37 @@
 	      removeCookie(data.key);
 
 	      sendResponse(Command.READ_COOKIES_RESPONSE, readCookies());
-	    }
+	    },
+	  );
+
+	  EDConsole.setCommandHandler(
+	    Command.COOKIES_CLIPBOARD_EXPORT,
+	    (_, inc, sendResponse) => {
+	      const cookies = readCookies();
+
+	      try {
+	        const data = JSON.stringify(cookies, null, 2);
+
+	        navigator.clipboard.writeText(data);
+	        sendResponse(Command.TEXTDATA_SHOW, {
+	          title: 'Cookies',
+	          data,
+	        });
+	      } catch (error) {}
+	    },
+	  );
+
+	  EDConsole.setCommandHandler(
+	    Command.COOKIES_BULK_SET,
+	    (_, data, sendResponse) => {
+	      if (data instanceof Array) {
+	        data.forEach(({ key, value }) => setCookie(key, value));
+	      } else {
+	        Object.keys(data).forEach((key) => setCookie(key, data[key]));
+	      }
+
+	      sendResponse(Command.READ_COOKIES_RESPONSE, readCookies());
+	    },
 	  );
 
 	  EDConsole.registerPlugin(PLUGIN_NAME);
@@ -1363,11 +1442,17 @@
 	    READ_LOCAL_STORAGE_RESPONSE: 'read-local-storage/response',
 	    LOCAL_STORAGE_SET: 'local-storage-set',
 	    LOCAL_STORAGE_REMOVE: 'local-storage-remove',
+	    LOCAL_STORAGE_CLIPBOARD_EXPORT: 'local-storage-clipboard-export',
+	    LOCAL_STORAGE_BULK_SET: 'local-storage-bulk-set',
 
 	    READ_SESSION_STORAGE: 'read-session-storage',
 	    READ_SESSION_STORAGE_RESPONSE: 'read-session-storage/response',
 	    SESSION_STORAGE_SET: 'session-storage-set',
 	    SESSION_STORAGE_REMOVE: 'session-storage-remove',
+	    SESSION_STORAGE_CLIPBOARD_EXPORT: 'session-storage-clipboard-export',
+	    SESSION_STORAGE_BULK_SET: 'session-storage-bulk-set',
+
+	    TEXTDATA_SHOW: 'textdata-show',
 	  };
 
 	  const read = (storage) => {
@@ -1406,6 +1491,41 @@
 	  );
 
 	  EDConsole.setCommandHandler(
+	    Command.LOCAL_STORAGE_CLIPBOARD_EXPORT,
+	    (_, inc, sendResponse) => {
+	      const storageData = read(localStorage).reduce(
+	        (res, { key, value }) => ({ ...res, [key]: value }),
+	        {},
+	      );
+
+	      try {
+	        const data = JSON.stringify(storageData, null, 2);
+
+	        navigator.clipboard.writeText(data);
+	        sendResponse(Command.TEXTDATA_SHOW, {
+	          title: 'LocalStorage contents',
+	          data,
+	        });
+	      } catch (error) {}
+	    },
+	  );
+
+	  EDConsole.setCommandHandler(
+	    Command.LOCAL_STORAGE_BULK_SET,
+	    (_, data, sendResponse) => {
+	      if (data instanceof Array) {
+	        data.forEach(({ key, value }) => localStorage.setItem(key, value));
+	      } else {
+	        Object.keys(data).forEach((key) =>
+	          localStorage.setItem(key, data[key]),
+	        );
+	      }
+
+	      sendResponse(Command.READ_LOCAL_STORAGE_RESPONSE, read(localStorage));
+	    },
+	  );
+
+	  EDConsole.setCommandHandler(
 	    Command.READ_SESSION_STORAGE,
 	    (_, data, sendResponse) =>
 	      sendResponse(Command.READ_SESSION_STORAGE_RESPONSE, read(sessionStorage)),
@@ -1424,6 +1544,41 @@
 	    Command.SESSION_STORAGE_REMOVE,
 	    (_, data, sendResponse) => {
 	      sessionStorage.removeItem(data.key);
+
+	      sendResponse(Command.READ_SESSION_STORAGE_RESPONSE, read(sessionStorage));
+	    },
+	  );
+
+	  EDConsole.setCommandHandler(
+	    Command.SESSION_STORAGE_CLIPBOARD_EXPORT,
+	    (_, inc, sendResponse) => {
+	      const storageData = read(sessionStorage).reduce(
+	        (res, { key, value }) => ({ ...res, [key]: value }),
+	        {},
+	      );
+
+	      try {
+	        const data = JSON.stringify(storageData, null, 2);
+
+	        navigator.clipboard.writeText(data);
+	        sendResponse(Command.TEXTDATA_SHOW, {
+	          title: 'SessionStorage contents',
+	          data,
+	        });
+	      } catch (error) {}
+	    },
+	  );
+
+	  EDConsole.setCommandHandler(
+	    Command.SESSION_STORAGE_BULK_SET,
+	    (_, data, sendResponse) => {
+	      if (data instanceof Array) {
+	        data.forEach(({ key, value }) => sessionStorage.setItem(key, value));
+	      } else {
+	        Object.keys(data).forEach((key) =>
+	          sessionStorage.setItem(key, data[key]),
+	        );
+	      }
 
 	      sendResponse(Command.READ_SESSION_STORAGE_RESPONSE, read(sessionStorage));
 	    },
@@ -1869,6 +2024,11 @@
 	    DOM_NODE_COMPUTED_STYLE_RESPONSE: 'dom-node-computed-style/response',
 	    DOM_NODE_SET_ATTRIBUTE: 'dom-node-set-attribute',
 	    DOM_NODE_SET_STYLE: 'dom-node-set-style',
+	    DOM_NODE_COPY_QUERY: 'dom-node-copy-query',
+	    DOM_NODE_COPY_HTML: 'dom-node-copy-html',
+	    DOM_NODE_COPY_TEXT: 'dom-node-copy-text',
+
+	    TEXTDATA_SHOW: 'textdata-show',
 	  };
 
 	  const container = document.createElement('div');
@@ -1917,6 +2077,7 @@
 	      const rgx = new RegExp(`(^|\\s)${className}(\\s|$)`);
 
 	      isFirst =
+	        !children.length ||
 	        children.find(
 	          (item) => item.tagName === tagName && item.className.match(rgx),
 	        ) === node;
@@ -1924,13 +2085,15 @@
 	      const base = `${tagName}.${className}`;
 	      return isFirst ? base : `${base}:nth-child(${index + 1})`;
 	    } else if (id) {
-	      // isFirst = children.find((item) => item.tagName === tagName && item.id === id) === node;
+	      // isFirst = !children.length || children.find((item) => item.tagName === tagName && item.id === id) === node;
 
 	      return `${tagName}#${id}`;
 	    } else if (name) {
 	      return `${tagName}[name="${name}"]`;
 	    } else {
-	      isFirst = children.find((item) => item.tagName === tagName) === node;
+	      isFirst =
+	        !children.length ||
+	        children.find((item) => item.tagName === tagName) === node;
 
 	      if (!isFirst) {
 	        return `${tagName}:nth-child(${index + 1})`;
@@ -1986,14 +2149,21 @@
 	    return list;
 	  };
 
-	  // TODO cache selection to apply attrs nad styles changes directly without looking up for it every time
+	  // TODO cache selection to apply attrs and styles changes directly without looking up for it every time
 	  // let lastSelectedElement = null;
 
+	  let lastSelectedNode = null;
+	  let lastSelectedQuery = null;
+
 	  const mouseoverHandler = ({ target: node }) => {
+	    lastSelectedNode = node;
+	    lastSelectedQuery = buildSelector(node);
+
 	    EDConsole.sendCommand(Command.DOM_NODE_LOOKUP_RESPONSE, {
-	      selectors: buildSelector(node),
+	      selectors: lastSelectedQuery,
 	      attributes: generateAttributeList(node),
 	      styles: generateStyleList(node),
+	      ...getNodeDimensions(node),
 	    });
 
 	    const { top, left, width, height } = node.getBoundingClientRect();
@@ -2053,13 +2223,17 @@
 	    let data = null;
 
 	    if (node) {
+	      lastSelectedNode = node;
+	      lastSelectedQuery = buildSelector(node);
+
 	      data = {
-	        selectors: buildSelector(node),
+	        selectors: lastSelectedQuery,
 	        attributes: generateAttributeList(node),
 	        styles: generateStyleList(node),
 	        ...getNodeDimensions(node),
 	      };
 	    }
+
 	    sendResponse(Command.DOM_QUERY_SELECTOR_RESPONSE, data);
 	  };
 
@@ -2103,6 +2277,57 @@
 	      node.style.setProperty(...prop);
 
 	      querySelectorHandler(null, { value: selector }, sendResponse);
+	    },
+	  );
+
+	  EDConsole.setCommandHandler(
+	    Command.DOM_NODE_COPY_QUERY,
+	    (_, inc, sendResponse) => {
+	      if (lastSelectedQuery) {
+	        try {
+	          const data = lastSelectedQuery.join(' > ');
+
+	          navigator.clipboard.writeText(data);
+	          sendResponse(Command.TEXTDATA_SHOW, {
+	            title: 'HTML Element query selector',
+	            data,
+	          });
+	        } catch (error) {}
+	      }
+	    },
+	  );
+
+	  EDConsole.setCommandHandler(
+	    Command.DOM_NODE_COPY_HTML,
+	    (_, inc, sendResponse) => {
+	      if (lastSelectedNode) {
+	        try {
+	          const data = lastSelectedNode.outerHTML;
+
+	          navigator.clipboard.writeText(data);
+	          sendResponse(Command.TEXTDATA_SHOW, {
+	            title: 'HTML Element outerHTML',
+	            data,
+	          });
+	        } catch (error) {}
+	      }
+	    },
+	  );
+
+	  EDConsole.setCommandHandler(
+	    Command.DOM_NODE_COPY_TEXT,
+	    (_, inc, sendResponse) => {
+	      if (lastSelectedNode) {
+	        try {
+	          const data = lastSelectedNode.innerText;
+
+	          navigator.clipboard.writeText(data);
+	          sendResponse(Command.TEXTDATA_SHOW, {
+	            title: 'HTML Element innerText',
+	            data,
+	          });
+	        } catch (error) {}
+	      }
 	    },
 	  );
 

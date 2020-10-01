@@ -15,6 +15,7 @@ import {
   domNodeComputedStyleResponse,
 } from 'store/actions/domelement';
 import { connectionPong, connectedToolsSet } from 'store/actions/connection';
+import { textdataSet } from 'store/actions/textdata';
 
 import { Command } from './command';
 import { getMessageCommand, getMessageData } from './message';
@@ -72,6 +73,9 @@ const converter = (dispatch) => (message) => {
       break;
     case Command.CONNECTION_PONG:
       dispatch(connectionPong());
+      break;
+    case Command.TEXTDATA_SHOW:
+      dispatch(textdataSet(data));
       break;
   }
 };

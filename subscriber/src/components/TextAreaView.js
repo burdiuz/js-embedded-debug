@@ -35,11 +35,12 @@ export const TextAreaView = ({
         ...style,
       }}
     >
-      {title ? <h4>{title}</h4> : null}
+      {title ? <h4>&nbsp;{title}</h4> : null}
       <TextArea
         ref={ref}
         value={currentValue}
         placeholder={placeholder}
+        readOnly={!saveButtonName}
         onChange={({ target: { value: newValue } }) =>
           setCurrentValue(newValue)
         }
@@ -54,9 +55,11 @@ export const TextAreaView = ({
           margin: '5px',
         }}
       >
-        <Button type="primary" onClick={() => save(currentValue)}>
-          {saveButtonName}
-        </Button>
+        {saveButtonName ? (
+          <Button type="primary" onClick={() => save(currentValue)}>
+            {saveButtonName}
+          </Button>
+        ) : null}
         <Button
           onClick={() => cancel(currentValue)}
           style={{ marginLeft: '5px' }}

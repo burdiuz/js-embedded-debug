@@ -21,6 +21,7 @@ import { renderReduxTab } from './redux';
 import { renderSessionStorageTab } from './session-storage';
 import { renderWebSocketTab } from './websocket';
 import { renderXhrTab } from './xhr';
+import TextData from './TextData';
 
 import logo from '../logo.svg';
 
@@ -67,41 +68,44 @@ const MainView = ({
   }, [connectionTestStarted]);
 
   return (
-    <Tabs activeKey={tab} onChange={setTab} className="main-tabs">
-      <TabPane
-        tab={<ConnectionInfo connected={connected} />}
-        key="spacer"
-        disabled
-      ></TabPane>
-      {enableConsole && renderConsoleTab()}
-      {enableElement && renderElementTab()}
-      {enableXhr && renderXhrTab()}
-      {enableWebSocket && renderWebSocketTab()}
-      {enableCookies && renderCookiesTab()}
-      {enableStorage && renderLocalStorageTab()}
-      {enableStorage && renderSessionStorageTab()}
-      {enableRedux && renderReduxTab()}
-      {enableLocation && renderLocationTab()}
-      {enablePixelPerfect && renderPixelPerfectTab()}
-      <TabPane tab="Info" key="info">
-        <div className="App">
-          <header className="App-header">
-            <img src={logo} className="App-logo" alt="logo" />
-            <p>
-              Edit <code>src/App.js</code> and save to reload.
-            </p>
-            <a
-              className="App-link"
-              href="https://reactjs.org"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Learn React
-            </a>
-          </header>
-        </div>
-      </TabPane>
-    </Tabs>
+    <>
+      <Tabs activeKey={tab} onChange={setTab} className="main-tabs">
+        <TabPane
+          tab={<ConnectionInfo connected={connected} />}
+          key="spacer"
+          disabled
+        ></TabPane>
+        {enableConsole && renderConsoleTab()}
+        {enableElement && renderElementTab()}
+        {enableXhr && renderXhrTab()}
+        {enableWebSocket && renderWebSocketTab()}
+        {enableCookies && renderCookiesTab()}
+        {enableStorage && renderLocalStorageTab()}
+        {enableStorage && renderSessionStorageTab()}
+        {enableRedux && renderReduxTab()}
+        {enableLocation && renderLocationTab()}
+        {enablePixelPerfect && renderPixelPerfectTab()}
+        <TabPane tab="Info" key="info">
+          <div className="App">
+            <header className="App-header">
+              <img src={logo} className="App-logo" alt="logo" />
+              <p>
+                Edit <code>src/App.js</code> and save to reload.
+              </p>
+              <a
+                className="App-link"
+                href="https://reactjs.org"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Learn React
+              </a>
+            </header>
+          </div>
+        </TabPane>
+      </Tabs>
+      <TextData />
+    </>
   );
 };
 

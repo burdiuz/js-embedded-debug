@@ -5,17 +5,24 @@
     READ_COOKIES_RESPONSE: 'read-cookies/response',
     COOKIE_SET: 'cookie-set',
     COOKIE_REMOVE: 'cookie-remove',
+    COOKIES_CLIPBOARD_EXPORT: 'cookies-clipboard-export',
+    COOKIES_BULK_SET: 'cookies-bulk-set',
+
+    TEXTDATA_SHOW: 'textdata-show',
   };
 
   const readCookies = () =>
-    document.cookie.split(';').map((str) => {
-      const [key, value] = str.split('=');
+    document.cookie
+      .split(';')
+      .filter((item) => !!item.trim())
+      .map((str) => {
+        const [key, value] = str.split('=');
 
-      return { key: key.trim(), value: value.trim() };
-    });
+        return { key: key.trim(), value: value.trim() };
+      });
 
   const setCookie = (key, value) => {
-    document.cookie = `${key}=${value}; expires=Fri, 31 Dec 9999 23:59:59 GMT`;
+    document.cookie = `${key}=${value}; path=/; expires=Fri, 31 Dec 9999 23:59:59 GMT`;
   };
 
   const removeCookie = (key) => {
@@ -38,7 +45,37 @@
       removeCookie(data.key);
 
       sendResponse(Command.READ_COOKIES_RESPONSE, readCookies());
-    }
+    },
+  );
+
+  EDConsole.setCommandHandler(
+    Command.COOKIES_CLIPBOARD_EXPORT,
+    (_, inc, sendResponse) => {
+      const cookies = readCookies();
+
+      try {
+        const data = JSON.stringify(cookies, null, 2);
+
+        navigator.clipboard.writeText(data);
+        sendResponse(Command.TEXTDATA_SHOW, {
+          title: 'Cookies',
+          data,
+        });
+      } catch (error) {}
+    },
+  );
+
+  EDConsole.setCommandHandler(
+    Command.COOKIES_BULK_SET,
+    (_, data, sendResponse) => {
+      if (data instanceof Array) {
+        data.forEach(({ key, value }) => setCookie(key, value));
+      } else {
+        Object.keys(data).forEach((key) => setCookie(key, data[key]));
+      }
+
+      sendResponse(Command.READ_COOKIES_RESPONSE, readCookies());
+    },
   );
 
   EDConsole.registerPlugin(PLUGIN_NAME);

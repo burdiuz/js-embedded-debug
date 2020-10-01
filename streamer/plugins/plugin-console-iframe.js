@@ -20,7 +20,7 @@
       right: '0',
       bottom: '0',
       width: '100%',
-      height: '300px',
+      height: '350px',
       borderTop: '1px solid #eee',
       boxShadow: '0 0 10px #00000066',
       backgroundColor: '#ffffff',

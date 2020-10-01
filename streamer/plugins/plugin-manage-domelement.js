@@ -9,6 +9,11 @@
     DOM_NODE_COMPUTED_STYLE_RESPONSE: 'dom-node-computed-style/response',
     DOM_NODE_SET_ATTRIBUTE: 'dom-node-set-attribute',
     DOM_NODE_SET_STYLE: 'dom-node-set-style',
+    DOM_NODE_COPY_QUERY: 'dom-node-copy-query',
+    DOM_NODE_COPY_HTML: 'dom-node-copy-html',
+    DOM_NODE_COPY_TEXT: 'dom-node-copy-text',
+
+    TEXTDATA_SHOW: 'textdata-show',
   };
 
   const container = document.createElement('div');
@@ -57,6 +62,7 @@
       const rgx = new RegExp(`(^|\\s)${className}(\\s|$)`);
 
       isFirst =
+        !children.length ||
         children.find(
           (item) => item.tagName === tagName && item.className.match(rgx),
         ) === node;
@@ -64,13 +70,15 @@
       const base = `${tagName}.${className}`;
       return isFirst ? base : `${base}:nth-child(${index + 1})`;
     } else if (id) {
-      // isFirst = children.find((item) => item.tagName === tagName && item.id === id) === node;
+      // isFirst = !children.length || children.find((item) => item.tagName === tagName && item.id === id) === node;
 
       return `${tagName}#${id}`;
     } else if (name) {
       return `${tagName}[name="${name}"]`;
     } else {
-      isFirst = children.find((item) => item.tagName === tagName) === node;
+      isFirst =
+        !children.length ||
+        children.find((item) => item.tagName === tagName) === node;
 
       if (!isFirst) {
         return `${tagName}:nth-child(${index + 1})`;
@@ -126,14 +134,21 @@
     return list;
   };
 
-  // TODO cache selection to apply attrs nad styles changes directly without looking up for it every time
+  // TODO cache selection to apply attrs and styles changes directly without looking up for it every time
   // let lastSelectedElement = null;
 
+  let lastSelectedNode = null;
+  let lastSelectedQuery = null;
+
   const mouseoverHandler = ({ target: node }) => {
+    lastSelectedNode = node;
+    lastSelectedQuery = buildSelector(node);
+
     EDConsole.sendCommand(Command.DOM_NODE_LOOKUP_RESPONSE, {
-      selectors: buildSelector(node),
+      selectors: lastSelectedQuery,
       attributes: generateAttributeList(node),
       styles: generateStyleList(node),
+      ...getNodeDimensions(node),
     });
 
     const { top, left, width, height } = node.getBoundingClientRect();
@@ -194,13 +209,17 @@
     let data = null;
 
     if (node) {
+      lastSelectedNode = node;
+      lastSelectedQuery = buildSelector(node);
+
       data = {
-        selectors: buildSelector(node),
+        selectors: lastSelectedQuery,
         attributes: generateAttributeList(node),
         styles: generateStyleList(node),
         ...getNodeDimensions(node),
       };
     }
+
     sendResponse(Command.DOM_QUERY_SELECTOR_RESPONSE, data);
   };
 
@@ -244,6 +263,57 @@
       node.style.setProperty(...prop);
 
       querySelectorHandler(null, { value: selector }, sendResponse);
+    },
+  );
+
+  EDConsole.setCommandHandler(
+    Command.DOM_NODE_COPY_QUERY,
+    (_, inc, sendResponse) => {
+      if (lastSelectedQuery) {
+        try {
+          const data = lastSelectedQuery.join(' > ');
+
+          navigator.clipboard.writeText(data);
+          sendResponse(Command.TEXTDATA_SHOW, {
+            title: 'HTML Element query selector',
+            data,
+          });
+        } catch (error) {}
+      }
+    },
+  );
+
+  EDConsole.setCommandHandler(
+    Command.DOM_NODE_COPY_HTML,
+    (_, inc, sendResponse) => {
+      if (lastSelectedNode) {
+        try {
+          const data = lastSelectedNode.outerHTML;
+
+          navigator.clipboard.writeText(data);
+          sendResponse(Command.TEXTDATA_SHOW, {
+            title: 'HTML Element outerHTML',
+            data,
+          });
+        } catch (error) {}
+      }
+    },
+  );
+
+  EDConsole.setCommandHandler(
+    Command.DOM_NODE_COPY_TEXT,
+    (_, inc, sendResponse) => {
+      if (lastSelectedNode) {
+        try {
+          const data = lastSelectedNode.innerText;
+
+          navigator.clipboard.writeText(data);
+          sendResponse(Command.TEXTDATA_SHOW, {
+            title: 'HTML Element innerText',
+            data,
+          });
+        } catch (error) {}
+      }
     },
   );
 
