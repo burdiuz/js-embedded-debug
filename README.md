@@ -20,7 +20,7 @@ data.
 4. Once page of your project loaded use Ctrl+Shift+ArrowUp to open console in new tab/window or Ctrl+Shift+ArrowDown to open console in a frame.
 
 ## Streamer
-I've planned tree ways of delivering data between streamer and subscriber -- via MessagePort, WebSocket and SharedWorker,
+I've planned three ways of delivering data between streamer and subscriber -- via MessagePort, WebSocket and SharedWorker,
 but currently MessagePort is the only option. Main disadvantage of MessagePort is once target is closed, connection
 between streamer and subscriber is lost forever.
 
