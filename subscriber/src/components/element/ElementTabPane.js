@@ -12,6 +12,7 @@ import {
   domNodeCopyQuery,
   domNodeCopyHtml,
   domNodeCopyText,
+  domNodeAssignVariable,
 } from 'store/actions/domelement';
 import {
   getCurrentDomelementSelectors,
@@ -20,6 +21,7 @@ import {
   getCurrentDomelementName,
   getDomelementComputedStyles,
   getCurrentDomelementDimensions,
+  getCurrentDomelementVariableName,
 } from 'store/selectors/domelement';
 
 import { NewItem } from '../StorageView';
@@ -113,6 +115,12 @@ const PropListInfo = ({
         overflowY: 'auto',
       }}
     >
+      <NewItem
+        size="small"
+        nameFlex="1 1 150px"
+        valueFlex="4 1 200px"
+        save={(key, value) => change([key, value])}
+      />
       {list.length ? '' : emptyMessage}
       {list.map(([name, value]) => (
         <Prop key={name} name={name} value={value} change={change} />
@@ -129,6 +137,7 @@ const ElementTabPane = ({
   height,
   x,
   y,
+  variable,
   computedStyles,
   name,
   lookup,
@@ -139,6 +148,7 @@ const ElementTabPane = ({
   copyQuery,
   copyHtml,
   copyText,
+  assignVar,
 }) => {
   const selector = selectors.join(' > ');
   const [query, setQuery] = useState('');
@@ -203,14 +213,35 @@ const ElementTabPane = ({
             {width} x {height}
             <strong>&nbsp;Position:&nbsp;</strong>
             {x} x {y}
+            &nbsp;
+            {variable ? (
+              <>
+                <strong>Assigned to:&nbsp;</strong>
+                {variable}
+              </>
+            ) : (
+              <Button type="link" size="small" onClick={assignVar}>
+                Assign Variable
+              </Button>
+            )}
             <div style={{ flex: 1 }}></div>
-            <Button onClick={copyQuery} style={{ marginRight: '5px' }}>
+            <Button
+              onClick={copyQuery}
+              size="small"
+              style={{ marginRight: '5px' }}
+            >
               Copy CSS Query
             </Button>
-            <Button onClick={copyHtml} style={{ marginRight: '5px' }}>
+            <Button
+              onClick={copyHtml}
+              size="small"
+              style={{ marginRight: '5px' }}
+            >
               Copy Element HTML
             </Button>
-            <Button onClick={copyText}>Copy Element Text</Button>
+            <Button onClick={copyText} size="small">
+              Copy Element Text
+            </Button>
           </div>
           <div
             style={{ display: 'flex', alignItems: 'stretch', height: '100%' }}
@@ -271,6 +302,7 @@ export default connect(
     styles: getCurrentDomelementStyles(state),
     name: getCurrentDomelementName(state),
     computedStyles: getDomelementComputedStyles(state),
+    variable: getCurrentDomelementVariableName(state),
     ...getCurrentDomelementDimensions(state),
   }),
   (dispatch) => ({
@@ -284,5 +316,6 @@ export default connect(
     copyQuery: () => dispatch(domNodeCopyQuery()),
     copyHtml: () => dispatch(domNodeCopyHtml()),
     copyText: () => dispatch(domNodeCopyText()),
+    assignVar: () => dispatch(domNodeAssignVariable()),
   }),
 )(ElementTabPane);

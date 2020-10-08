@@ -21,6 +21,12 @@ export const getCurrentDomelementDimensions = (state) => {
   return { x, y, width, height };
 };
 
+export const getCurrentDomelementVariableName = ({
+  domelement: {
+    selected: { variable },
+  },
+}) => variable;
+
 export const getCurrentDomelementName = ({ domelement: { selected } }) => {
   const selectors = (selected && selected.selectors) || [];
   const { length } = selectors;

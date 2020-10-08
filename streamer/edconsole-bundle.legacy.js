@@ -1864,16 +1864,20 @@
       sendResponse(Command.READ_COOKIES_RESPONSE, readCookies());
     });
     EDConsole.setCommandHandler(Command.COOKIES_CLIPBOARD_EXPORT, function (_, inc, sendResponse) {
+      var data = '';
       var cookies = readCookies();
 
       try {
-        var data = JSON.stringify(cookies, null, 2);
+        data = JSON.stringify(cookies, null, 2);
         navigator.clipboard.writeText(data);
+      } catch (error) {}
+
+      if (data) {
         sendResponse(Command.TEXTDATA_SHOW, {
           title: 'Cookies',
           data: data
         });
-      } catch (error) {}
+      }
     });
     EDConsole.setCommandHandler(Command.COOKIES_BULK_SET, function (_, data, sendResponse) {
       if (data instanceof Array) {
@@ -1937,6 +1941,7 @@
       sendResponse(Command.READ_LOCAL_STORAGE_RESPONSE, read(localStorage));
     });
     EDConsole.setCommandHandler(Command.LOCAL_STORAGE_CLIPBOARD_EXPORT, function (_, inc, sendResponse) {
+      var data = '';
       var storageData = read(localStorage).reduce(function (res, _ref) {
         var key = _ref.key,
             value = _ref.value;
@@ -1944,13 +1949,16 @@
       }, {});
 
       try {
-        var data = JSON.stringify(storageData, null, 2);
+        data = JSON.stringify(storageData, null, 2);
         navigator.clipboard.writeText(data);
+      } catch (error) {}
+
+      if (data) {
         sendResponse(Command.TEXTDATA_SHOW, {
           title: 'LocalStorage contents',
           data: data
         });
-      } catch (error) {}
+      }
     });
     EDConsole.setCommandHandler(Command.LOCAL_STORAGE_BULK_SET, function (_, data, sendResponse) {
       if (data instanceof Array) {
@@ -1979,6 +1987,7 @@
       sendResponse(Command.READ_SESSION_STORAGE_RESPONSE, read(sessionStorage));
     });
     EDConsole.setCommandHandler(Command.SESSION_STORAGE_CLIPBOARD_EXPORT, function (_, inc, sendResponse) {
+      var data = '';
       var storageData = read(sessionStorage).reduce(function (res, _ref3) {
         var key = _ref3.key,
             value = _ref3.value;
@@ -1986,13 +1995,16 @@
       }, {});
 
       try {
-        var data = JSON.stringify(storageData, null, 2);
+        data = JSON.stringify(storageData, null, 2);
         navigator.clipboard.writeText(data);
+      } catch (error) {}
+
+      if (data) {
         sendResponse(Command.TEXTDATA_SHOW, {
           title: 'SessionStorage contents',
           data: data
         });
-      } catch (error) {}
+      }
     });
     EDConsole.setCommandHandler(Command.SESSION_STORAGE_BULK_SET, function (_, data, sendResponse) {
       if (data instanceof Array) {
@@ -2148,6 +2160,23 @@
           var _this$_openArgs = _this._openArgs,
               method = _this$_openArgs.method,
               url = _this$_openArgs.url;
+          var data;
+
+          switch (_this.responseType) {
+            case '':
+            case 'text':
+              data = _this.responseText;
+              break;
+
+            case 'json':
+              data = JSON.stringify(_this.response, null, 2);
+              break;
+
+            default:
+              data = " -- Response of type \"".concat(_this.responseType, "\" -- ");
+              break;
+          }
+
           EDConsole.sendCommand(Command.XHR_UPDATE, {
             index: _this._index,
             type: 'xhr',
@@ -2156,7 +2185,7 @@
             headers: _this._headers,
             body: String(_this._body),
             error: _this._error && _this._error.textContent,
-            responseText: _this.responseText,
+            responseText: data,
             responseType: _this.responseType,
             responseURL: _this.responseURL,
             responseHeaders: prepareHeaders(_this.getAllResponseHeaders()),
@@ -2510,6 +2539,7 @@
       DOM_NODE_COPY_QUERY: 'dom-node-copy-query',
       DOM_NODE_COPY_HTML: 'dom-node-copy-html',
       DOM_NODE_COPY_TEXT: 'dom-node-copy-text',
+      DOM_NODE_ASSIGN_VARIABLE: 'dom-node-assign-variable',
       TEXTDATA_SHOW: 'textdata-show'
     };
     var container = document.createElement('div');
@@ -2628,15 +2658,20 @@
     var lastSelectedNode = null;
     var lastSelectedQuery = null;
 
+    var generateLastSelectedNodeData = function generateLastSelectedNodeData() {
+      return _objectSpread2({
+        selectors: lastSelectedQuery,
+        attributes: generateAttributeList(lastSelectedNode),
+        styles: generateStyleList(lastSelectedNode),
+        variable: lastSelectedNode._edconsole_varname
+      }, getNodeDimensions(lastSelectedNode));
+    };
+
     var mouseoverHandler = function mouseoverHandler(_ref) {
       var node = _ref.target;
       lastSelectedNode = node;
       lastSelectedQuery = buildSelector(node);
-      EDConsole.sendCommand(Command.DOM_NODE_LOOKUP_RESPONSE, _objectSpread2({
-        selectors: lastSelectedQuery,
-        attributes: generateAttributeList(node),
-        styles: generateStyleList(node)
-      }, getNodeDimensions(node)));
+      EDConsole.sendCommand(Command.DOM_NODE_LOOKUP_RESPONSE, generateLastSelectedNodeData());
 
       var _node$getBoundingClie = node.getBoundingClientRect(),
           top = _node$getBoundingClie.top,
@@ -2717,11 +2752,7 @@
       if (node) {
         lastSelectedNode = node;
         lastSelectedQuery = buildSelector(node);
-        data = _objectSpread2({
-          selectors: lastSelectedQuery,
-          attributes: generateAttributeList(node),
-          styles: generateStyleList(node)
-        }, getNodeDimensions(node));
+        data = generateLastSelectedNodeData();
       }
 
       sendResponse(Command.DOM_QUERY_SELECTOR_RESPONSE, data);
@@ -2771,39 +2802,76 @@
       }, sendResponse);
     });
     EDConsole.setCommandHandler(Command.DOM_NODE_COPY_QUERY, function (_, inc, sendResponse) {
+      var data = '';
+
       if (lastSelectedQuery) {
         try {
-          var data = lastSelectedQuery.join(' > ');
+          data = lastSelectedQuery.join(' > ');
           navigator.clipboard.writeText(data);
+        } catch (error) {}
+
+        if (data) {
           sendResponse(Command.TEXTDATA_SHOW, {
             title: 'HTML Element query selector',
             data: data
           });
-        } catch (error) {}
+        }
       }
     });
     EDConsole.setCommandHandler(Command.DOM_NODE_COPY_HTML, function (_, inc, sendResponse) {
+      var data = '';
+      var title = 'HTML Element outerHTML';
+
       if (lastSelectedNode) {
         try {
-          var data = lastSelectedNode.outerHTML;
+          data = lastSelectedNode.outerHTML;
+
+          if (!data) {
+            data = lastSelectedNode.innerHTML;
+            title = 'HTML Element innerHTML';
+          }
+
           navigator.clipboard.writeText(data);
+        } catch (error) {}
+
+        if (data) {
           sendResponse(Command.TEXTDATA_SHOW, {
-            title: 'HTML Element outerHTML',
+            title: title,
             data: data
           });
-        } catch (error) {}
+        }
       }
     });
     EDConsole.setCommandHandler(Command.DOM_NODE_COPY_TEXT, function (_, inc, sendResponse) {
+      var data = '';
+
       if (lastSelectedNode) {
         try {
-          var data = lastSelectedNode.innerText;
+          data = lastSelectedNode.innerText;
           navigator.clipboard.writeText(data);
+        } catch (error) {}
+
+        if (data) {
           sendResponse(Command.TEXTDATA_SHOW, {
             title: 'HTML Element innerText',
             data: data
           });
-        } catch (error) {}
+        }
+      }
+    });
+    var varIndex = 1;
+    EDConsole.setCommandHandler(Command.DOM_NODE_ASSIGN_VARIABLE, function (_, inc, sendResponse) {
+      var name;
+
+      if (lastSelectedNode) {
+        name = "temp".concat(varIndex++);
+        window[name] = lastSelectedNode;
+        Object.defineProperty(lastSelectedNode, '_edconsole_varname', {
+          value: name,
+          configurable: true,
+          enumerable: false
+        });
+        sendResponse(Command.DOM_QUERY_SELECTOR_RESPONSE, generateLastSelectedNodeData());
       }
     });
     EDConsole.registerPlugin(PLUGIN_NAME);

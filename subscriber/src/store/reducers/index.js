@@ -1,6 +1,7 @@
 import { combineReducers } from 'redux';
 import { createReducers } from '@actualwave/redux-create-reducer';
 
+import * as command from './command';
 import * as console from './console';
 import * as cookies from './cookies';
 import * as localStorage from './local-storage';
@@ -16,6 +17,7 @@ import * as textdata from './textdata';
 
 const reducer = combineReducers(
   createReducers({
+    command,
     console,
     cookies,
     localStorage,

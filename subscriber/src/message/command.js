@@ -48,6 +48,7 @@ export const Command = {
   DOM_NODE_COPY_QUERY: 'dom-node-copy-query',
   DOM_NODE_COPY_HTML: 'dom-node-copy-html',
   DOM_NODE_COPY_TEXT: 'dom-node-copy-text',
+  DOM_NODE_ASSIGN_VARIABLE: 'dom-node-assign-variable',
 
   PP_ZOOM_SET: 'pixel-perfect-zoom-set',
   PP_RULER_SHOW: 'pixel-perfect-ruler-show',

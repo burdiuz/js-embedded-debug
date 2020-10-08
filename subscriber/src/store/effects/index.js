@@ -1,3 +1,4 @@
+import './command';
 import './console';
 import './cookies';
 import './domelement';

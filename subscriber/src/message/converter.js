@@ -1,4 +1,5 @@
-import { consoleLogReceived, evalCommandReceived } from 'store/actions/console';
+import { evalCommandReceived } from 'store/actions/command';
+import { consoleLogReceived } from 'store/actions/console';
 import { cookiesUpdate } from 'store/actions/cookies';
 import { localStorageUpdate } from 'store/actions/local-storage';
 import { sessionStorageUpdate } from 'store/actions/session-storage';

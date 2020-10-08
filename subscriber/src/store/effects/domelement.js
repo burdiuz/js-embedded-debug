@@ -8,6 +8,7 @@ import {
   DOM_NODE_COPY_QUERY,
   DOM_NODE_COPY_HTML,
   DOM_NODE_COPY_TEXT,
+  DOM_NODE_ASSIGN_VARIABLE,
 } from 'store/actions/domelement';
 import { Command } from 'message/command';
 import { getServiceInstance } from 'communication';
@@ -58,4 +59,10 @@ take(DOM_NODE_COPY_TEXT, async () => {
   const comm = getServiceInstance();
 
   comm.send(Command.DOM_NODE_COPY_TEXT);
+});
+
+take(DOM_NODE_ASSIGN_VARIABLE, async () => {
+  const comm = getServiceInstance();
+
+  comm.send(Command.DOM_NODE_ASSIGN_VARIABLE);
 });

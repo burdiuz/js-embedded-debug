@@ -1,14 +1,16 @@
 import React, { useState } from 'react';
+import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { Input, Button } from 'antd';
 
+import { commandHistoryAdd } from 'store/actions/command';
+import { getCommandHistory } from 'store/selectors/command';
+
 const { TextArea } = Input;
 
-const commands = [];
-let commandIndex = 0;
-
-const CommandInput = ({ onSend }) => {
+const CommandInput = ({ history, send }) => {
   const [text, setText] = useState('');
+  const [commandIndex, setCommandIndex] = useState(0);
   const [multi, setMulti] = useState(false);
 
   return (
@@ -23,8 +25,9 @@ const CommandInput = ({ onSend }) => {
           <div style={{ width: '100%', textAlign: 'right', marginTop: '5px' }}>
             <Button onClick={() => setMulti(false)}>Single line</Button>
             <Button
+              disabled={!text}
               onClick={() => {
-                onSend(text);
+                send(text);
                 setText('');
               }}
               style={{ marginLeft: '10px' }}
@@ -45,10 +48,14 @@ const CommandInput = ({ onSend }) => {
           addonAfter={
             <span
               onClick={() => {
-                onSend(text);
+                if (!text) {
+                  return;
+                }
+
+                send(text);
                 setText('');
               }}
-              style={{ cursor: 'pointer' }}
+              style={{ cursor: 'pointer', color: text ? '#000' : '#999' }}
             >
               Execute
             </span>
@@ -57,23 +64,28 @@ const CommandInput = ({ onSend }) => {
           onKeyUp={({ keyCode }) => {
             switch (keyCode) {
               case 13:
-                onSend(text);
+                if (!text) {
+                  return;
+                }
+
+                send(text);
                 setText('');
-                commands.push(text);
-                commandIndex = commands.length;
+                setCommandIndex(history.length + 1);
                 break;
               case 38:
-                if (commands.length) {
-                  commandIndex =
-                    commandIndex <= 0 ? commands.length - 1 : commandIndex - 1;
-                  setText(commands[commandIndex]);
+                if (history.length) {
+                  setCommandIndex(
+                    commandIndex <= 0 ? history.length - 1 : commandIndex - 1,
+                  );
+                  setText(history[commandIndex]);
                 }
                 break;
               case 40:
-                if (commands.length) {
-                  commandIndex =
-                    commandIndex >= commands.length - 1 ? 0 : commandIndex + 1;
-                  setText(commands[commandIndex]);
+                if (history.length) {
+                  setCommandIndex(
+                    commandIndex >= history.length - 1 ? 0 : commandIndex + 1,
+                  );
+                  setText(history[commandIndex]);
                 }
                 break;
             }
@@ -85,7 +97,17 @@ const CommandInput = ({ onSend }) => {
 };
 
 CommandInput.propTypes = {
-  onSend: PropTypes.func.isRequired,
+  send: PropTypes.func.isRequired,
 };
 
-export default CommandInput;
+export default connect(
+  (state) => ({
+    history: getCommandHistory(state),
+  }),
+  (dispatch, { send }) => ({
+    send: (text) => {
+      send(text);
+      dispatch(commandHistoryAdd(text));
+    },
+  }),
+)(CommandInput);

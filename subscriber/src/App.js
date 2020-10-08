@@ -1,7 +1,8 @@
 import React from 'react';
 import { Provider } from 'react-redux';
+import { PersistGate } from 'redux-persist/integration/react';
 
-import store from './store';
+import { store, persistor } from './store';
 import MainView from './components/MainView';
 import './App.css';
 
@@ -14,6 +15,7 @@ import createCommandDispatcher from './message/converter';
 communicationServiceFactory({
   messagePort: { source: window, target: window.opener || window.top },
 });
+
 getServiceInstance().initialize(
   createCommandDispatcher((action) => store.dispatch(action)),
 );
@@ -21,7 +23,9 @@ getServiceInstance().initialize(
 const App = () => {
   return (
     <Provider store={store}>
-      <MainView />
+      <PersistGate loading={null} persistor={persistor}>
+        <MainView />
+      </PersistGate>
     </Provider>
   );
 };

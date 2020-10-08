@@ -12,6 +12,7 @@
     DOM_NODE_COPY_QUERY: 'dom-node-copy-query',
     DOM_NODE_COPY_HTML: 'dom-node-copy-html',
     DOM_NODE_COPY_TEXT: 'dom-node-copy-text',
+    DOM_NODE_ASSIGN_VARIABLE: 'dom-node-assign-variable',
 
     TEXTDATA_SHOW: 'textdata-show',
   };
@@ -140,16 +141,22 @@
   let lastSelectedNode = null;
   let lastSelectedQuery = null;
 
+  const generateLastSelectedNodeData = () => ({
+    selectors: lastSelectedQuery,
+    attributes: generateAttributeList(lastSelectedNode),
+    styles: generateStyleList(lastSelectedNode),
+    variable: lastSelectedNode._edconsole_varname,
+    ...getNodeDimensions(lastSelectedNode),
+  });
+
   const mouseoverHandler = ({ target: node }) => {
     lastSelectedNode = node;
     lastSelectedQuery = buildSelector(node);
 
-    EDConsole.sendCommand(Command.DOM_NODE_LOOKUP_RESPONSE, {
-      selectors: lastSelectedQuery,
-      attributes: generateAttributeList(node),
-      styles: generateStyleList(node),
-      ...getNodeDimensions(node),
-    });
+    EDConsole.sendCommand(
+      Command.DOM_NODE_LOOKUP_RESPONSE,
+      generateLastSelectedNodeData(),
+    );
 
     const { top, left, width, height } = node.getBoundingClientRect();
 
@@ -212,12 +219,7 @@
       lastSelectedNode = node;
       lastSelectedQuery = buildSelector(node);
 
-      data = {
-        selectors: lastSelectedQuery,
-        attributes: generateAttributeList(node),
-        styles: generateStyleList(node),
-        ...getNodeDimensions(node),
-      };
+      data = generateLastSelectedNodeData();
     }
 
     sendResponse(Command.DOM_QUERY_SELECTOR_RESPONSE, data);
@@ -269,16 +271,21 @@
   EDConsole.setCommandHandler(
     Command.DOM_NODE_COPY_QUERY,
     (_, inc, sendResponse) => {
+      let data = '';
+
       if (lastSelectedQuery) {
         try {
-          const data = lastSelectedQuery.join(' > ');
+          data = lastSelectedQuery.join(' > ');
 
           navigator.clipboard.writeText(data);
+        } catch (error) {}
+
+        if (data) {
           sendResponse(Command.TEXTDATA_SHOW, {
             title: 'HTML Element query selector',
             data,
           });
-        } catch (error) {}
+        }
       }
     },
   );
@@ -286,16 +293,24 @@
   EDConsole.setCommandHandler(
     Command.DOM_NODE_COPY_HTML,
     (_, inc, sendResponse) => {
+      let data = '';
+      let title = 'HTML Element outerHTML';
+
       if (lastSelectedNode) {
         try {
-          const data = lastSelectedNode.outerHTML;
+          data = lastSelectedNode.outerHTML;
+
+          if (!data) {
+            data = lastSelectedNode.innerHTML;
+            title = 'HTML Element innerHTML';
+          }
 
           navigator.clipboard.writeText(data);
-          sendResponse(Command.TEXTDATA_SHOW, {
-            title: 'HTML Element outerHTML',
-            data,
-          });
         } catch (error) {}
+
+        if (data) {
+          sendResponse(Command.TEXTDATA_SHOW, { title, data });
+        }
       }
     },
   );
@@ -303,16 +318,45 @@
   EDConsole.setCommandHandler(
     Command.DOM_NODE_COPY_TEXT,
     (_, inc, sendResponse) => {
+      let data = '';
+
       if (lastSelectedNode) {
         try {
-          const data = lastSelectedNode.innerText;
+          data = lastSelectedNode.innerText;
 
           navigator.clipboard.writeText(data);
+        } catch (error) {}
+
+        if (data) {
           sendResponse(Command.TEXTDATA_SHOW, {
             title: 'HTML Element innerText',
             data,
           });
-        } catch (error) {}
+        }
+      }
+    },
+  );
+
+  let varIndex = 1;
+
+  EDConsole.setCommandHandler(
+    Command.DOM_NODE_ASSIGN_VARIABLE,
+    (_, inc, sendResponse) => {
+      let name;
+
+      if (lastSelectedNode) {
+        name = `temp${varIndex++}`;
+        window[name] = lastSelectedNode;
+        Object.defineProperty(lastSelectedNode, '_edconsole_varname', {
+          value: name,
+          configurable: true,
+          enumerable: false,
+        });
+
+        sendResponse(
+          Command.DOM_QUERY_SELECTOR_RESPONSE,
+          generateLastSelectedNodeData(),
+        );
       }
     },
   );

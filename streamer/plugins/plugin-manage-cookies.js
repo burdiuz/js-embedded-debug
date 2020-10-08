@@ -51,17 +51,18 @@
   EDConsole.setCommandHandler(
     Command.COOKIES_CLIPBOARD_EXPORT,
     (_, inc, sendResponse) => {
+      let data = '';
       const cookies = readCookies();
 
       try {
-        const data = JSON.stringify(cookies, null, 2);
+        data = JSON.stringify(cookies, null, 2);
 
         navigator.clipboard.writeText(data);
-        sendResponse(Command.TEXTDATA_SHOW, {
-          title: 'Cookies',
-          data,
-        });
       } catch (error) {}
+
+      if (data) {
+        sendResponse(Command.TEXTDATA_SHOW, { title: 'Cookies', data });
+      }
     },
   );
 

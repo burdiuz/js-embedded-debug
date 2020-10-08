@@ -56,20 +56,24 @@
   EDConsole.setCommandHandler(
     Command.LOCAL_STORAGE_CLIPBOARD_EXPORT,
     (_, inc, sendResponse) => {
+      let data = '';
       const storageData = read(localStorage).reduce(
         (res, { key, value }) => ({ ...res, [key]: value }),
         {},
       );
 
       try {
-        const data = JSON.stringify(storageData, null, 2);
+        data = JSON.stringify(storageData, null, 2);
 
         navigator.clipboard.writeText(data);
+      } catch (error) {}
+
+      if (data) {
         sendResponse(Command.TEXTDATA_SHOW, {
           title: 'LocalStorage contents',
           data,
         });
-      } catch (error) {}
+      }
     },
   );
 
@@ -115,20 +119,24 @@
   EDConsole.setCommandHandler(
     Command.SESSION_STORAGE_CLIPBOARD_EXPORT,
     (_, inc, sendResponse) => {
+      let data = '';
       const storageData = read(sessionStorage).reduce(
         (res, { key, value }) => ({ ...res, [key]: value }),
         {},
       );
 
       try {
-        const data = JSON.stringify(storageData, null, 2);
+        data = JSON.stringify(storageData, null, 2);
 
         navigator.clipboard.writeText(data);
+      } catch (error) {}
+
+      if (data) {
         sendResponse(Command.TEXTDATA_SHOW, {
           title: 'SessionStorage contents',
           data,
         });
-      } catch (error) {}
+      }
     },
   );
 

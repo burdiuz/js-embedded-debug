@@ -25,6 +25,20 @@
 
       this.addEventListener('readystatechange', (event) => {
         const { method, url } = this._openArgs;
+        let data;
+
+        switch (this.responseType) {
+          case '':
+          case 'text':
+            data = this.responseText;
+            break;
+          case 'json':
+            data = JSON.stringify(this.response, null, 2);
+            break;
+          default:
+            data = ` -- Response of type "${this.responseType}" -- `;
+            break;
+        }
 
         EDConsole.sendCommand(Command.XHR_UPDATE, {
           index: this._index,
@@ -34,7 +48,7 @@
           headers: this._headers,
           body: String(this._body),
           error: this._error && this._error.textContent,
-          responseText: this.responseText,
+          responseText: data,
           responseType: this.responseType,
           responseURL: this.responseURL,
           responseHeaders: prepareHeaders(this.getAllResponseHeaders()),
@@ -159,7 +173,7 @@
           status: result.status,
           statusText: result.statusText,
           state: State.DONE,
-        })
+        });
 
         EDConsole.sendCommand(Command.XHR_UPDATE, cmd);
 

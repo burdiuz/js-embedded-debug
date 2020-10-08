@@ -8,6 +8,7 @@ export const DOM_NODE_COMPUTED_STYLE_RESPONSE = 'domNodeComputedStyleResponse';
 export const DOM_NODE_COPY_QUERY = 'domNodeCopyQuery';
 export const DOM_NODE_COPY_HTML = 'domNodeCopyHtml';
 export const DOM_NODE_COPY_TEXT = 'domNodeCopyText';
+export const DOM_NODE_ASSIGN_VARIABLE = 'domNodeAssignVariable';
 
 export const domNodeLookup = () => ({ type: DOM_NODE_LOOKUP });
 
@@ -51,4 +52,8 @@ export const domNodeCopyHtml = () => ({
 
 export const domNodeCopyText = () => ({
   type: DOM_NODE_COPY_TEXT,
+});
+
+export const domNodeAssignVariable = () => ({
+  type: DOM_NODE_ASSIGN_VARIABLE,
 });

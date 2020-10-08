@@ -17,7 +17,7 @@ data.
     </script>
     <script src="<path to copied edconsole-bundle.js>"></script>
 ```
-4. Once page your project loaded use Ctrl+Shift+ArrowUp to open console in new tab/window or Ctrl+Shift+ArrowDown to open console in a frame.
+4. Once page of your project loaded use Ctrl+Shift+ArrowUp to open console in new tab/window or Ctrl+Shift+ArrowDown to open console in a frame.
 
 ## Streamer
 I've planned tree ways of delivering data between streamer and subscriber -- via MessagePort, WebSocket and SharedWorker,
@@ -45,7 +45,7 @@ with `npm run build` command.
 * **plugin-log-location** - Show location/hash, allows going back and forth in history, reload page.
 * **plugin-log-redux** - Show Redux actions.
 * **plugin-log-websocket** - Show WebSocket connections and incoming/outgoing text data.
-* **plugin-log-xhr** - Show outgoing XHR requests started by XmlHTTPRequest or fetch().
+* **plugin-log-xhr** - Show outgoing XHR requests started by XmlHttpRequest or fetch().
 * **plugin-manage-cookies** - View/Edit cookies
 * **plugin-manage-domelement** - View/Edit attributes and styles of HTML elements on Web Page.
-* **plugin-manage-storage** - View/Edit contnets of LocalStorage and SessionStorage.
+* **plugin-manage-storage** - View/Edit contents of LocalStorage and SessionStorage.
