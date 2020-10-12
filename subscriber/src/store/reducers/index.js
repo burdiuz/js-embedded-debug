@@ -14,6 +14,7 @@ import * as domelement from './domelement';
 import * as pixelperfect from './pixel-perfect';
 import * as connection from './connection';
 import * as textdata from './textdata';
+import * as injections from './injections';
 
 const reducer = combineReducers(
   createReducers({
@@ -30,6 +31,7 @@ const reducer = combineReducers(
     pixelperfect,
     connection,
     textdata,
+    injections,
   }),
 );
 

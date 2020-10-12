@@ -69,4 +69,6 @@ export const Command = {
   REDUX_ACTION: 'redux-action',
 
   TEXTDATA_SHOW: 'textdata-show',
+
+  INJECTION_EXECUTE: 'injection-execute',
 };

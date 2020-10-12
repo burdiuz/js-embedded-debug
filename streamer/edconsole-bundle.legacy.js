@@ -1899,6 +1899,9 @@
 
   (function (EDConsole) {
     var PLUGIN_NAME = 'manage-storage';
+    var HIDDEN_KEYS = {
+      '@EDConsole-Storage-root': true
+    };
     var Command = {
       READ_LOCAL_STORAGE: 'read-local-storage',
       READ_LOCAL_STORAGE_RESPONSE: 'read-local-storage/response',
@@ -1920,6 +1923,11 @@
 
       for (var index = 0; index < storage.length; index++) {
         var key = storage.key(index);
+
+        if (HIDDEN_KEYS[key]) {
+          continue;
+        }
+
         list.push({
           key: key,
           value: storage.getItem(key)
@@ -2872,6 +2880,101 @@
           enumerable: false
         });
         sendResponse(Command.DOM_QUERY_SELECTOR_RESPONSE, generateLastSelectedNodeData());
+      }
+    });
+    EDConsole.registerPlugin(PLUGIN_NAME);
+  })(window.EDConsole);
+
+  (function (EDConsole) {
+    var PLUGIN_NAME = 'manage-inject';
+    var Command = {
+      INJECTION_EXECUTE: 'injection-execute'
+    };
+    var Type = {
+      JS: 'js',
+      CSS: 'css',
+      HTML: 'html'
+    };
+    var Target = {
+      HEAD: 'HEAD',
+      BODY: 'BODY',
+      SELECTOR: 'Selector'
+    };
+    var Operation = {
+      APPEND: 'Append',
+      PREPEND: 'Prepend',
+      REPLACE: 'Replace',
+      CONTENT: 'Content'
+    };
+
+    var getTargetNode = function getTargetNode(target, query) {
+      switch (target) {
+        case Target.HEAD:
+          return document.querySelector('head');
+
+        case Target.SELECTOR:
+          return document.querySelector(query);
+
+        case Target.BODY:
+        default:
+          return document.body;
+      }
+    };
+
+    var getInjectionNode = function getInjectionNode(type, data) {
+      var node;
+
+      switch (type) {
+        case Type.CSS:
+          node = document.createElement('style');
+          node.innerText = data;
+          break;
+
+        case Type.JS:
+          node = document.createElement('script');
+          node.innerText = data;
+          break;
+
+        case Type.HTML:
+        default:
+          node = document.createDocumentFragment();
+          node.innerHTML = data;
+          break;
+      }
+
+      return node;
+    };
+
+    EDConsole.setCommandHandler(Command.INJECTION_EXECUTE, function (_, _ref) {
+      var type = _ref.type,
+          target = _ref.target,
+          operation = _ref.operation,
+          query = _ref.query,
+          data = _ref.data;
+      var targetNode = getTargetNode(target, query);
+
+      if (!targetNode) {
+        return;
+      }
+
+      var injectionNode = getInjectionNode(type, data);
+
+      switch (operation) {
+        case Operation.PREPEND:
+          targetNode.prepend(injectionNode);
+          break;
+
+        case Operation.REPLACE:
+          targetNode.parentNode.replaceChild(injectionNode, targetNode);
+          break;
+
+        case Operation.CONTENT:
+          targetNode.innerHTML = '';
+          targetNode.append(injectionNode);
+          break;
+
+        case Operation.APPEND:
+          targetNode.append(injectionNode);
       }
     });
     EDConsole.registerPlugin(PLUGIN_NAME);

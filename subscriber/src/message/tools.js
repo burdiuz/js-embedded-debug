@@ -6,7 +6,8 @@ export const Tools = {
   LOG_XHR: 'log-xhr',
   MANAGE_COOKIES: 'manage-cookies',
   MANAGE_DOMELEMENT: 'manage-domelement',
-  MANAGE_INJECTCSS: 'manage-injectcss',
+  MANAGE_INJECT: 'manage-inject',
   MANAGE_STORAGE: 'manage-storage',
   PIXEL_PERFECT: 'pixel-perfect',
+  INJECT: 'inject',
 };

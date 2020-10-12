@@ -1,5 +1,10 @@
 ((EDConsole) => {
   const PLUGIN_NAME = 'manage-storage';
+
+  const HIDDEN_KEYS = {
+    '@EDConsole-Storage-root': true,
+  };
+
   const Command = {
     READ_LOCAL_STORAGE: 'read-local-storage',
     READ_LOCAL_STORAGE_RESPONSE: 'read-local-storage/response',
@@ -23,6 +28,11 @@
 
     for (let index = 0; index < storage.length; index++) {
       const key = storage.key(index);
+
+      if (HIDDEN_KEYS[key]) {
+        continue;
+      }
+
       list.push({ key, value: storage.getItem(key) });
     }
 

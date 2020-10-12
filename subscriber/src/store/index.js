@@ -13,7 +13,7 @@ export const store = createStore(
     {
       storage,
       key: '@EDConsole-Storage-root',
-      whitelist: ['command'],
+      whitelist: ['command', 'injections'],
     },
     reducer,
   ),

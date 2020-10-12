@@ -21,15 +21,12 @@ import { renderReduxTab } from './redux';
 import { renderSessionStorageTab } from './session-storage';
 import { renderWebSocketTab } from './websocket';
 import { renderXhrTab } from './xhr';
+import { renderInjectTab } from './inject';
 import TextData from './TextData';
 
 import logo from '../logo.svg';
 
 const { TabPane } = Tabs;
-
-/*
- TODO: Make injection to tell console which modules are active to show only tabs which will get the communication
-*/
 
 const ConnectionInfo = memo(({ connected }) =>
   connected ? (
@@ -58,6 +55,7 @@ const MainView = ({
   enableRedux,
   enableLocation,
   enablePixelPerfect,
+  enableInject,
 }) => {
   const [tab, setTab] = useState('console');
 
@@ -85,6 +83,7 @@ const MainView = ({
         {enableRedux && renderReduxTab()}
         {enableLocation && renderLocationTab()}
         {enablePixelPerfect && renderPixelPerfectTab()}
+        {enableInject && renderInjectTab()}
         <TabPane tab="Info" key="info">
           <div className="App">
             <header className="App-header">
@@ -122,6 +121,7 @@ export default connect(
     enableRedux: isToolConnected(state, { tool: Tools.LOG_REDUX }),
     enableLocation: isToolConnected(state, { tool: Tools.LOG_LOCATION }),
     enablePixelPerfect: isToolConnected(state, { tool: Tools.PIXEL_PERFECT }),
+    enableInject: isToolConnected(state, { tool: Tools.INJECT }),
   }),
   {
     startTest: connectionTestStart,

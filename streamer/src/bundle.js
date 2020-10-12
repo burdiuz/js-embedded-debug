@@ -11,3 +11,4 @@ import '../plugins/plugin-log-redux';
 import '../plugins/plugin-log-xhr';
 import '../plugins/plugin-log-websocket';
 import '../plugins/plugin-manage-domelement';
+import '../plugins/plugin-manage-inject';
