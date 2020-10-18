@@ -37,7 +37,12 @@ const CookiesTabPane = ({
   }
 
   return (
-    <StorageView list={list} save={cookieSet} remove={cookieRemove}>
+    <StorageView
+      size="small"
+      list={list}
+      save={cookieSet}
+      remove={cookieRemove}
+    >
       <div
         style={{
           flex: '0 0 auto',

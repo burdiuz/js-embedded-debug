@@ -55,9 +55,14 @@ export const Command = {
   PP_RULER_HIDE: 'pixel-perfect-ruler-hide',
   PP_GRID_SHOW: 'pixel-perfect-grid-show',
   PP_GRID_HIDE: 'pixel-perfect-grid-hide',
+  PP_COLUMNS_SHOW: 'pixel-perfect-columns-show',
+  PP_COLUMNS_HIDE: 'pixel-perfect-columns-hide',
   PP_IMAGE_SHOW: 'pixel-perfect-image-show',
   PP_IMAGE_HIDE: 'pixel-perfect-image-hide',
   PP_IMAGE_SETTINGS: 'pixel-perfect-image-settings',
+  PP_WINDOW_SIZE: 'pixel-perfect-window-size',
+  PP_WINDOW_SET_SIZE: 'pixel-perfect-window-set-size',
+  PP_MOUSE_POSITION: 'pixel-perfect-mouse-position',
 
   XHR_UPDATE: 'network-update',
 

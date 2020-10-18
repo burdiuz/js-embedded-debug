@@ -121,7 +121,7 @@ export default connect(
     enableRedux: isToolConnected(state, { tool: Tools.LOG_REDUX }),
     enableLocation: isToolConnected(state, { tool: Tools.LOG_LOCATION }),
     enablePixelPerfect: isToolConnected(state, { tool: Tools.PIXEL_PERFECT }),
-    enableInject: isToolConnected(state, { tool: Tools.INJECT }),
+    enableInject: isToolConnected(state, { tool: Tools.MANAGE_INJECT }),
   }),
   {
     startTest: connectionTestStart,

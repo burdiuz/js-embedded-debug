@@ -43,7 +43,12 @@ const SessionStorageTabPane = ({
   }
 
   return (
-    <StorageView list={list} save={storageSet} remove={storageRemove}>
+    <StorageView
+      size="small"
+      list={list}
+      save={storageSet}
+      remove={storageRemove}
+    >
       <div
         style={{
           flex: '0 0 auto',
@@ -53,9 +58,9 @@ const SessionStorageTabPane = ({
           paddingRight: '5px',
         }}
       >
-      <Button onClick={storageRead}>Sync</Button>
-      <Button onClick={storageCopy}>Copy</Button>
-      <Button onClick={() => setShowImport(true)}>Import</Button>
+        <Button onClick={storageRead}>Sync</Button>
+        <Button onClick={storageCopy}>Copy</Button>
+        <Button onClick={() => setShowImport(true)}>Import</Button>
         <NewItem save={storageSet} style={{ flex: 1 }} />
       </div>
     </StorageView>

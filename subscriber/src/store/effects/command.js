@@ -18,5 +18,10 @@ take(EVAL_COMMAND_SEND, async ({ payload }) => {
 take(EVAL_COMMAND_RESPONSE, async ({ payload }) => {
   const msg = await select(getConsoleInstance);
 
+  if (!msg) {
+    console.log('Log received but Console not ready yet.');
+    return;
+  }
+
   msg.pushRendered('log', payload);
 });

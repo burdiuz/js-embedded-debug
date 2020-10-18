@@ -26,9 +26,11 @@ export const Item = memo(({ index, name, value, size, save, remove }) => {
         }
       />
       <Button
+        ghost
         type="primary"
         size={size}
         onClick={() => save(name, currentValue, index)}
+        style={{ margin: '0 5px' }}
       >
         Update
       </Button>
@@ -36,7 +38,6 @@ export const Item = memo(({ index, name, value, size, save, remove }) => {
         danger
         size={size}
         onClick={() => remove(name, index)}
-        style={{ marginLeft: '5px' }}
       >
         Remove
       </Button>

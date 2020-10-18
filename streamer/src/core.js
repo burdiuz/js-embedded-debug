@@ -1,4 +1,6 @@
-import EventDispatcher from './libs/event-dispatcher';
+import debounce from 'lodash/debounce';
+import throttle from 'lodash/throttle';
+import EventDispatcher from '@actualwave/event-dispatcher';
 import * as LogDataRenderer from '@actualwave/log-data-renderer';
 import * as Message from '../../subscriber/src/message/message';
 
@@ -27,6 +29,10 @@ const EDConsole = {
   Message,
   EventDispatcher,
   LogDataRenderer,
+  lodash: {
+    debounce,
+    throttle,
+  },
   getConsolePath: () => EDConsoleConfig.consoleHref,
   registerPlugin: (pluginName) => {
     plugins.push(pluginName);

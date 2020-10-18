@@ -4,7 +4,7 @@ export const getCurrentPongDelay = ({ connection: { pingTime, pongTime } }) =>
 export const hasConnectionTestStarted = ({ connection: { started } }) =>
   started;
 
-export const isConnectionActive = (state) => getCurrentPongDelay(state) < 2;
+export const isConnectionActive = (state) => getCurrentPongDelay(state) < 6;
 
 export const getConnectedTools = ({ connection: { toolList } }) => toolList;
 

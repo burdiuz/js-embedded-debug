@@ -9,5 +9,4 @@ export const Tools = {
   MANAGE_INJECT: 'manage-inject',
   MANAGE_STORAGE: 'manage-storage',
   PIXEL_PERFECT: 'pixel-perfect',
-  INJECT: 'inject',
 };

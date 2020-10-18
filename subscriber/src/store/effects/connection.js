@@ -16,7 +16,7 @@ take(CONNECTION_PING, async () => {
 take(CONNECTION_TEST_START, async () => {
   setInterval(() => {
     put(connectionPing());
-  }, 1000);
+  }, 5000);
 
   put(connectionPing());
 });

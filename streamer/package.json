@@ -11,7 +11,8 @@
   "license": "MIT",
   "dependencies": {
     "@actualwave/event-dispatcher": "^1.2.2",
-    "@actualwave/log-data-renderer": "0.0.12"
+    "@actualwave/log-data-renderer": "0.0.12",
+    "lodash": "^4.17.20"
   },
   "devDependencies": {
     "@babel/core": "^7.11.6",

@@ -3,359 +3,39 @@
   factory();
 }((function () { 'use strict';
 
-  function _typeof(obj) {
-    "@babel/helpers - typeof";
-
-    if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") {
-      _typeof = function (obj) {
-        return typeof obj;
-      };
-    } else {
-      _typeof = function (obj) {
-        return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
-      };
-    }
-
-    return _typeof(obj);
+  /**
+   * Checks if `value` is the
+   * [language type](http://www.ecma-international.org/ecma-262/7.0/#sec-ecmascript-language-types)
+   * of `Object`. (e.g. arrays, functions, objects, regexes, `new Number(0)`, and `new String('')`)
+   *
+   * @static
+   * @memberOf _
+   * @since 0.1.0
+   * @category Lang
+   * @param {*} value The value to check.
+   * @returns {boolean} Returns `true` if `value` is an object, else `false`.
+   * @example
+   *
+   * _.isObject({});
+   * // => true
+   *
+   * _.isObject([1, 2, 3]);
+   * // => true
+   *
+   * _.isObject(_.noop);
+   * // => true
+   *
+   * _.isObject(null);
+   * // => false
+   */
+  function isObject(value) {
+    var type = typeof value;
+    return value != null && (type == 'object' || type == 'function');
   }
 
-  function _classCallCheck(instance, Constructor) {
-    if (!(instance instanceof Constructor)) {
-      throw new TypeError("Cannot call a class as a function");
-    }
-  }
+  var isObject_1 = isObject;
 
-  function _defineProperties(target, props) {
-    for (var i = 0; i < props.length; i++) {
-      var descriptor = props[i];
-      descriptor.enumerable = descriptor.enumerable || false;
-      descriptor.configurable = true;
-      if ("value" in descriptor) descriptor.writable = true;
-      Object.defineProperty(target, descriptor.key, descriptor);
-    }
-  }
-
-  function _createClass(Constructor, protoProps, staticProps) {
-    if (protoProps) _defineProperties(Constructor.prototype, protoProps);
-    if (staticProps) _defineProperties(Constructor, staticProps);
-    return Constructor;
-  }
-
-  function _defineProperty(obj, key, value) {
-    if (key in obj) {
-      Object.defineProperty(obj, key, {
-        value: value,
-        enumerable: true,
-        configurable: true,
-        writable: true
-      });
-    } else {
-      obj[key] = value;
-    }
-
-    return obj;
-  }
-
-  function ownKeys(object, enumerableOnly) {
-    var keys = Object.keys(object);
-
-    if (Object.getOwnPropertySymbols) {
-      var symbols = Object.getOwnPropertySymbols(object);
-      if (enumerableOnly) symbols = symbols.filter(function (sym) {
-        return Object.getOwnPropertyDescriptor(object, sym).enumerable;
-      });
-      keys.push.apply(keys, symbols);
-    }
-
-    return keys;
-  }
-
-  function _objectSpread2(target) {
-    for (var i = 1; i < arguments.length; i++) {
-      var source = arguments[i] != null ? arguments[i] : {};
-
-      if (i % 2) {
-        ownKeys(Object(source), true).forEach(function (key) {
-          _defineProperty(target, key, source[key]);
-        });
-      } else if (Object.getOwnPropertyDescriptors) {
-        Object.defineProperties(target, Object.getOwnPropertyDescriptors(source));
-      } else {
-        ownKeys(Object(source)).forEach(function (key) {
-          Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key));
-        });
-      }
-    }
-
-    return target;
-  }
-
-  function _inherits(subClass, superClass) {
-    if (typeof superClass !== "function" && superClass !== null) {
-      throw new TypeError("Super expression must either be null or a function");
-    }
-
-    subClass.prototype = Object.create(superClass && superClass.prototype, {
-      constructor: {
-        value: subClass,
-        writable: true,
-        configurable: true
-      }
-    });
-    if (superClass) _setPrototypeOf(subClass, superClass);
-  }
-
-  function _getPrototypeOf(o) {
-    _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) {
-      return o.__proto__ || Object.getPrototypeOf(o);
-    };
-    return _getPrototypeOf(o);
-  }
-
-  function _setPrototypeOf(o, p) {
-    _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) {
-      o.__proto__ = p;
-      return o;
-    };
-
-    return _setPrototypeOf(o, p);
-  }
-
-  function _isNativeReflectConstruct() {
-    if (typeof Reflect === "undefined" || !Reflect.construct) return false;
-    if (Reflect.construct.sham) return false;
-    if (typeof Proxy === "function") return true;
-
-    try {
-      Date.prototype.toString.call(Reflect.construct(Date, [], function () {}));
-      return true;
-    } catch (e) {
-      return false;
-    }
-  }
-
-  function _assertThisInitialized(self) {
-    if (self === void 0) {
-      throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
-    }
-
-    return self;
-  }
-
-  function _possibleConstructorReturn(self, call) {
-    if (call && (typeof call === "object" || typeof call === "function")) {
-      return call;
-    }
-
-    return _assertThisInitialized(self);
-  }
-
-  function _createSuper(Derived) {
-    var hasNativeReflectConstruct = _isNativeReflectConstruct();
-
-    return function _createSuperInternal() {
-      var Super = _getPrototypeOf(Derived),
-          result;
-
-      if (hasNativeReflectConstruct) {
-        var NewTarget = _getPrototypeOf(this).constructor;
-
-        result = Reflect.construct(Super, arguments, NewTarget);
-      } else {
-        result = Super.apply(this, arguments);
-      }
-
-      return _possibleConstructorReturn(this, result);
-    };
-  }
-
-  function _superPropBase(object, property) {
-    while (!Object.prototype.hasOwnProperty.call(object, property)) {
-      object = _getPrototypeOf(object);
-      if (object === null) break;
-    }
-
-    return object;
-  }
-
-  function set(target, property, value, receiver) {
-    if (typeof Reflect !== "undefined" && Reflect.set) {
-      set = Reflect.set;
-    } else {
-      set = function set(target, property, value, receiver) {
-        var base = _superPropBase(target, property);
-
-        var desc;
-
-        if (base) {
-          desc = Object.getOwnPropertyDescriptor(base, property);
-
-          if (desc.set) {
-            desc.set.call(receiver, value);
-            return true;
-          } else if (!desc.writable) {
-            return false;
-          }
-        }
-
-        desc = Object.getOwnPropertyDescriptor(receiver, property);
-
-        if (desc) {
-          if (!desc.writable) {
-            return false;
-          }
-
-          desc.value = value;
-          Object.defineProperty(receiver, property, desc);
-        } else {
-          _defineProperty(receiver, property, value);
-        }
-
-        return true;
-      };
-    }
-
-    return set(target, property, value, receiver);
-  }
-
-  function _set(target, property, value, receiver, isStrict) {
-    var s = set(target, property, value, receiver || target);
-
-    if (!s && isStrict) {
-      throw new Error('failed to set property');
-    }
-
-    return value;
-  }
-
-  function _slicedToArray(arr, i) {
-    return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest();
-  }
-
-  function _toConsumableArray(arr) {
-    return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread();
-  }
-
-  function _arrayWithoutHoles(arr) {
-    if (Array.isArray(arr)) return _arrayLikeToArray(arr);
-  }
-
-  function _arrayWithHoles(arr) {
-    if (Array.isArray(arr)) return arr;
-  }
-
-  function _iterableToArray(iter) {
-    if (typeof Symbol !== "undefined" && Symbol.iterator in Object(iter)) return Array.from(iter);
-  }
-
-  function _iterableToArrayLimit(arr, i) {
-    if (typeof Symbol === "undefined" || !(Symbol.iterator in Object(arr))) return;
-    var _arr = [];
-    var _n = true;
-    var _d = false;
-    var _e = undefined;
-
-    try {
-      for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) {
-        _arr.push(_s.value);
-
-        if (i && _arr.length === i) break;
-      }
-    } catch (err) {
-      _d = true;
-      _e = err;
-    } finally {
-      try {
-        if (!_n && _i["return"] != null) _i["return"]();
-      } finally {
-        if (_d) throw _e;
-      }
-    }
-
-    return _arr;
-  }
-
-  function _unsupportedIterableToArray(o, minLen) {
-    if (!o) return;
-    if (typeof o === "string") return _arrayLikeToArray(o, minLen);
-    var n = Object.prototype.toString.call(o).slice(8, -1);
-    if (n === "Object" && o.constructor) n = o.constructor.name;
-    if (n === "Map" || n === "Set") return Array.from(o);
-    if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen);
-  }
-
-  function _arrayLikeToArray(arr, len) {
-    if (len == null || len > arr.length) len = arr.length;
-
-    for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i];
-
-    return arr2;
-  }
-
-  function _nonIterableSpread() {
-    throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
-  }
-
-  function _nonIterableRest() {
-    throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
-  }
-
-  function _createForOfIteratorHelper(o, allowArrayLike) {
-    var it;
-
-    if (typeof Symbol === "undefined" || o[Symbol.iterator] == null) {
-      if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") {
-        if (it) o = it;
-        var i = 0;
-
-        var F = function () {};
-
-        return {
-          s: F,
-          n: function () {
-            if (i >= o.length) return {
-              done: true
-            };
-            return {
-              done: false,
-              value: o[i++]
-            };
-          },
-          e: function (e) {
-            throw e;
-          },
-          f: F
-        };
-      }
-
-      throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
-    }
-
-    var normalCompletion = true,
-        didErr = false,
-        err;
-    return {
-      s: function () {
-        it = o[Symbol.iterator]();
-      },
-      n: function () {
-        var step = it.next();
-        normalCompletion = step.done;
-        return step;
-      },
-      e: function (e) {
-        didErr = true;
-        err = e;
-      },
-      f: function () {
-        try {
-          if (!normalCompletion && it.return != null) it.return();
-        } finally {
-          if (didErr) throw err;
-        }
-      }
-    };
-  }
+  var commonjsGlobal = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
 
   function getDefaultExportFromCjs (x) {
   	return x && x.__esModule && Object.prototype.hasOwnProperty.call(x, 'default') ? x['default'] : x;
@@ -375,6 +55,528 @@
   	throw new Error('Dynamic requires are not currently supported by @rollup/plugin-commonjs');
   }
 
+  /** Detect free variable `global` from Node.js. */
+
+  var freeGlobal = typeof commonjsGlobal == 'object' && commonjsGlobal && commonjsGlobal.Object === Object && commonjsGlobal;
+  var _freeGlobal = freeGlobal;
+
+  /** Detect free variable `self`. */
+
+  var freeSelf = typeof self == 'object' && self && self.Object === Object && self;
+  /** Used as a reference to the global object. */
+
+  var root = _freeGlobal || freeSelf || Function('return this')();
+  var _root = root;
+
+  /**
+   * Gets the timestamp of the number of milliseconds that have elapsed since
+   * the Unix epoch (1 January 1970 00:00:00 UTC).
+   *
+   * @static
+   * @memberOf _
+   * @since 2.4.0
+   * @category Date
+   * @returns {number} Returns the timestamp.
+   * @example
+   *
+   * _.defer(function(stamp) {
+   *   console.log(_.now() - stamp);
+   * }, _.now());
+   * // => Logs the number of milliseconds it took for the deferred invocation.
+   */
+
+  var now = function () {
+    return _root.Date.now();
+  };
+
+  var now_1 = now;
+
+  /** Built-in value references. */
+
+  var Symbol$1 = _root.Symbol;
+  var _Symbol = Symbol$1;
+
+  /** Used for built-in method references. */
+
+  var objectProto = Object.prototype;
+  /** Used to check objects for own properties. */
+
+  var hasOwnProperty = objectProto.hasOwnProperty;
+  /**
+   * Used to resolve the
+   * [`toStringTag`](http://ecma-international.org/ecma-262/7.0/#sec-object.prototype.tostring)
+   * of values.
+   */
+
+  var nativeObjectToString = objectProto.toString;
+  /** Built-in value references. */
+
+  var symToStringTag = _Symbol ? _Symbol.toStringTag : undefined;
+  /**
+   * A specialized version of `baseGetTag` which ignores `Symbol.toStringTag` values.
+   *
+   * @private
+   * @param {*} value The value to query.
+   * @returns {string} Returns the raw `toStringTag`.
+   */
+
+  function getRawTag(value) {
+    var isOwn = hasOwnProperty.call(value, symToStringTag),
+        tag = value[symToStringTag];
+
+    try {
+      value[symToStringTag] = undefined;
+      var unmasked = true;
+    } catch (e) {}
+
+    var result = nativeObjectToString.call(value);
+
+    if (unmasked) {
+      if (isOwn) {
+        value[symToStringTag] = tag;
+      } else {
+        delete value[symToStringTag];
+      }
+    }
+
+    return result;
+  }
+
+  var _getRawTag = getRawTag;
+
+  /** Used for built-in method references. */
+  var objectProto$1 = Object.prototype;
+  /**
+   * Used to resolve the
+   * [`toStringTag`](http://ecma-international.org/ecma-262/7.0/#sec-object.prototype.tostring)
+   * of values.
+   */
+
+  var nativeObjectToString$1 = objectProto$1.toString;
+  /**
+   * Converts `value` to a string using `Object.prototype.toString`.
+   *
+   * @private
+   * @param {*} value The value to convert.
+   * @returns {string} Returns the converted string.
+   */
+
+  function objectToString(value) {
+    return nativeObjectToString$1.call(value);
+  }
+
+  var _objectToString = objectToString;
+
+  /** `Object#toString` result references. */
+
+  var nullTag = '[object Null]',
+      undefinedTag = '[object Undefined]';
+  /** Built-in value references. */
+
+  var symToStringTag$1 = _Symbol ? _Symbol.toStringTag : undefined;
+  /**
+   * The base implementation of `getTag` without fallbacks for buggy environments.
+   *
+   * @private
+   * @param {*} value The value to query.
+   * @returns {string} Returns the `toStringTag`.
+   */
+
+  function baseGetTag(value) {
+    if (value == null) {
+      return value === undefined ? undefinedTag : nullTag;
+    }
+
+    return symToStringTag$1 && symToStringTag$1 in Object(value) ? _getRawTag(value) : _objectToString(value);
+  }
+
+  var _baseGetTag = baseGetTag;
+
+  /**
+   * Checks if `value` is object-like. A value is object-like if it's not `null`
+   * and has a `typeof` result of "object".
+   *
+   * @static
+   * @memberOf _
+   * @since 4.0.0
+   * @category Lang
+   * @param {*} value The value to check.
+   * @returns {boolean} Returns `true` if `value` is object-like, else `false`.
+   * @example
+   *
+   * _.isObjectLike({});
+   * // => true
+   *
+   * _.isObjectLike([1, 2, 3]);
+   * // => true
+   *
+   * _.isObjectLike(_.noop);
+   * // => false
+   *
+   * _.isObjectLike(null);
+   * // => false
+   */
+  function isObjectLike(value) {
+    return value != null && typeof value == 'object';
+  }
+
+  var isObjectLike_1 = isObjectLike;
+
+  /** `Object#toString` result references. */
+
+  var symbolTag = '[object Symbol]';
+  /**
+   * Checks if `value` is classified as a `Symbol` primitive or object.
+   *
+   * @static
+   * @memberOf _
+   * @since 4.0.0
+   * @category Lang
+   * @param {*} value The value to check.
+   * @returns {boolean} Returns `true` if `value` is a symbol, else `false`.
+   * @example
+   *
+   * _.isSymbol(Symbol.iterator);
+   * // => true
+   *
+   * _.isSymbol('abc');
+   * // => false
+   */
+
+  function isSymbol(value) {
+    return typeof value == 'symbol' || isObjectLike_1(value) && _baseGetTag(value) == symbolTag;
+  }
+
+  var isSymbol_1 = isSymbol;
+
+  /** Used as references for various `Number` constants. */
+
+  var NAN = 0 / 0;
+  /** Used to match leading and trailing whitespace. */
+
+  var reTrim = /^\s+|\s+$/g;
+  /** Used to detect bad signed hexadecimal string values. */
+
+  var reIsBadHex = /^[-+]0x[0-9a-f]+$/i;
+  /** Used to detect binary string values. */
+
+  var reIsBinary = /^0b[01]+$/i;
+  /** Used to detect octal string values. */
+
+  var reIsOctal = /^0o[0-7]+$/i;
+  /** Built-in method references without a dependency on `root`. */
+
+  var freeParseInt = parseInt;
+  /**
+   * Converts `value` to a number.
+   *
+   * @static
+   * @memberOf _
+   * @since 4.0.0
+   * @category Lang
+   * @param {*} value The value to process.
+   * @returns {number} Returns the number.
+   * @example
+   *
+   * _.toNumber(3.2);
+   * // => 3.2
+   *
+   * _.toNumber(Number.MIN_VALUE);
+   * // => 5e-324
+   *
+   * _.toNumber(Infinity);
+   * // => Infinity
+   *
+   * _.toNumber('3.2');
+   * // => 3.2
+   */
+
+  function toNumber(value) {
+    if (typeof value == 'number') {
+      return value;
+    }
+
+    if (isSymbol_1(value)) {
+      return NAN;
+    }
+
+    if (isObject_1(value)) {
+      var other = typeof value.valueOf == 'function' ? value.valueOf() : value;
+      value = isObject_1(other) ? other + '' : other;
+    }
+
+    if (typeof value != 'string') {
+      return value === 0 ? value : +value;
+    }
+
+    value = value.replace(reTrim, '');
+    var isBinary = reIsBinary.test(value);
+    return isBinary || reIsOctal.test(value) ? freeParseInt(value.slice(2), isBinary ? 2 : 8) : reIsBadHex.test(value) ? NAN : +value;
+  }
+
+  var toNumber_1 = toNumber;
+
+  /** Error message constants. */
+
+  var FUNC_ERROR_TEXT = 'Expected a function';
+  /* Built-in method references for those with the same name as other `lodash` methods. */
+
+  var nativeMax = Math.max,
+      nativeMin = Math.min;
+  /**
+   * Creates a debounced function that delays invoking `func` until after `wait`
+   * milliseconds have elapsed since the last time the debounced function was
+   * invoked. The debounced function comes with a `cancel` method to cancel
+   * delayed `func` invocations and a `flush` method to immediately invoke them.
+   * Provide `options` to indicate whether `func` should be invoked on the
+   * leading and/or trailing edge of the `wait` timeout. The `func` is invoked
+   * with the last arguments provided to the debounced function. Subsequent
+   * calls to the debounced function return the result of the last `func`
+   * invocation.
+   *
+   * **Note:** If `leading` and `trailing` options are `true`, `func` is
+   * invoked on the trailing edge of the timeout only if the debounced function
+   * is invoked more than once during the `wait` timeout.
+   *
+   * If `wait` is `0` and `leading` is `false`, `func` invocation is deferred
+   * until to the next tick, similar to `setTimeout` with a timeout of `0`.
+   *
+   * See [David Corbacho's article](https://css-tricks.com/debouncing-throttling-explained-examples/)
+   * for details over the differences between `_.debounce` and `_.throttle`.
+   *
+   * @static
+   * @memberOf _
+   * @since 0.1.0
+   * @category Function
+   * @param {Function} func The function to debounce.
+   * @param {number} [wait=0] The number of milliseconds to delay.
+   * @param {Object} [options={}] The options object.
+   * @param {boolean} [options.leading=false]
+   *  Specify invoking on the leading edge of the timeout.
+   * @param {number} [options.maxWait]
+   *  The maximum time `func` is allowed to be delayed before it's invoked.
+   * @param {boolean} [options.trailing=true]
+   *  Specify invoking on the trailing edge of the timeout.
+   * @returns {Function} Returns the new debounced function.
+   * @example
+   *
+   * // Avoid costly calculations while the window size is in flux.
+   * jQuery(window).on('resize', _.debounce(calculateLayout, 150));
+   *
+   * // Invoke `sendMail` when clicked, debouncing subsequent calls.
+   * jQuery(element).on('click', _.debounce(sendMail, 300, {
+   *   'leading': true,
+   *   'trailing': false
+   * }));
+   *
+   * // Ensure `batchLog` is invoked once after 1 second of debounced calls.
+   * var debounced = _.debounce(batchLog, 250, { 'maxWait': 1000 });
+   * var source = new EventSource('/stream');
+   * jQuery(source).on('message', debounced);
+   *
+   * // Cancel the trailing debounced invocation.
+   * jQuery(window).on('popstate', debounced.cancel);
+   */
+
+  function debounce(func, wait, options) {
+    var lastArgs,
+        lastThis,
+        maxWait,
+        result,
+        timerId,
+        lastCallTime,
+        lastInvokeTime = 0,
+        leading = false,
+        maxing = false,
+        trailing = true;
+
+    if (typeof func != 'function') {
+      throw new TypeError(FUNC_ERROR_TEXT);
+    }
+
+    wait = toNumber_1(wait) || 0;
+
+    if (isObject_1(options)) {
+      leading = !!options.leading;
+      maxing = 'maxWait' in options;
+      maxWait = maxing ? nativeMax(toNumber_1(options.maxWait) || 0, wait) : maxWait;
+      trailing = 'trailing' in options ? !!options.trailing : trailing;
+    }
+
+    function invokeFunc(time) {
+      var args = lastArgs,
+          thisArg = lastThis;
+      lastArgs = lastThis = undefined;
+      lastInvokeTime = time;
+      result = func.apply(thisArg, args);
+      return result;
+    }
+
+    function leadingEdge(time) {
+      // Reset any `maxWait` timer.
+      lastInvokeTime = time; // Start the timer for the trailing edge.
+
+      timerId = setTimeout(timerExpired, wait); // Invoke the leading edge.
+
+      return leading ? invokeFunc(time) : result;
+    }
+
+    function remainingWait(time) {
+      var timeSinceLastCall = time - lastCallTime,
+          timeSinceLastInvoke = time - lastInvokeTime,
+          timeWaiting = wait - timeSinceLastCall;
+      return maxing ? nativeMin(timeWaiting, maxWait - timeSinceLastInvoke) : timeWaiting;
+    }
+
+    function shouldInvoke(time) {
+      var timeSinceLastCall = time - lastCallTime,
+          timeSinceLastInvoke = time - lastInvokeTime; // Either this is the first call, activity has stopped and we're at the
+      // trailing edge, the system time has gone backwards and we're treating
+      // it as the trailing edge, or we've hit the `maxWait` limit.
+
+      return lastCallTime === undefined || timeSinceLastCall >= wait || timeSinceLastCall < 0 || maxing && timeSinceLastInvoke >= maxWait;
+    }
+
+    function timerExpired() {
+      var time = now_1();
+
+      if (shouldInvoke(time)) {
+        return trailingEdge(time);
+      } // Restart the timer.
+
+
+      timerId = setTimeout(timerExpired, remainingWait(time));
+    }
+
+    function trailingEdge(time) {
+      timerId = undefined; // Only invoke if we have `lastArgs` which means `func` has been
+      // debounced at least once.
+
+      if (trailing && lastArgs) {
+        return invokeFunc(time);
+      }
+
+      lastArgs = lastThis = undefined;
+      return result;
+    }
+
+    function cancel() {
+      if (timerId !== undefined) {
+        clearTimeout(timerId);
+      }
+
+      lastInvokeTime = 0;
+      lastArgs = lastCallTime = lastThis = timerId = undefined;
+    }
+
+    function flush() {
+      return timerId === undefined ? result : trailingEdge(now_1());
+    }
+
+    function debounced() {
+      var time = now_1(),
+          isInvoking = shouldInvoke(time);
+      lastArgs = arguments;
+      lastThis = this;
+      lastCallTime = time;
+
+      if (isInvoking) {
+        if (timerId === undefined) {
+          return leadingEdge(lastCallTime);
+        }
+
+        if (maxing) {
+          // Handle invocations in a tight loop.
+          clearTimeout(timerId);
+          timerId = setTimeout(timerExpired, wait);
+          return invokeFunc(lastCallTime);
+        }
+      }
+
+      if (timerId === undefined) {
+        timerId = setTimeout(timerExpired, wait);
+      }
+
+      return result;
+    }
+
+    debounced.cancel = cancel;
+    debounced.flush = flush;
+    return debounced;
+  }
+
+  var debounce_1 = debounce;
+
+  /** Error message constants. */
+
+  var FUNC_ERROR_TEXT$1 = 'Expected a function';
+  /**
+   * Creates a throttled function that only invokes `func` at most once per
+   * every `wait` milliseconds. The throttled function comes with a `cancel`
+   * method to cancel delayed `func` invocations and a `flush` method to
+   * immediately invoke them. Provide `options` to indicate whether `func`
+   * should be invoked on the leading and/or trailing edge of the `wait`
+   * timeout. The `func` is invoked with the last arguments provided to the
+   * throttled function. Subsequent calls to the throttled function return the
+   * result of the last `func` invocation.
+   *
+   * **Note:** If `leading` and `trailing` options are `true`, `func` is
+   * invoked on the trailing edge of the timeout only if the throttled function
+   * is invoked more than once during the `wait` timeout.
+   *
+   * If `wait` is `0` and `leading` is `false`, `func` invocation is deferred
+   * until to the next tick, similar to `setTimeout` with a timeout of `0`.
+   *
+   * See [David Corbacho's article](https://css-tricks.com/debouncing-throttling-explained-examples/)
+   * for details over the differences between `_.throttle` and `_.debounce`.
+   *
+   * @static
+   * @memberOf _
+   * @since 0.1.0
+   * @category Function
+   * @param {Function} func The function to throttle.
+   * @param {number} [wait=0] The number of milliseconds to throttle invocations to.
+   * @param {Object} [options={}] The options object.
+   * @param {boolean} [options.leading=true]
+   *  Specify invoking on the leading edge of the timeout.
+   * @param {boolean} [options.trailing=true]
+   *  Specify invoking on the trailing edge of the timeout.
+   * @returns {Function} Returns the new throttled function.
+   * @example
+   *
+   * // Avoid excessively updating the position while scrolling.
+   * jQuery(window).on('scroll', _.throttle(updatePosition, 100));
+   *
+   * // Invoke `renewToken` when the click event is fired, but not more than once every 5 minutes.
+   * var throttled = _.throttle(renewToken, 300000, { 'trailing': false });
+   * jQuery(element).on('click', throttled);
+   *
+   * // Cancel the trailing throttled invocation.
+   * jQuery(window).on('popstate', throttled.cancel);
+   */
+
+  function throttle(func, wait, options) {
+    var leading = true,
+        trailing = true;
+
+    if (typeof func != 'function') {
+      throw new TypeError(FUNC_ERROR_TEXT$1);
+    }
+
+    if (isObject_1(options)) {
+      leading = 'leading' in options ? !!options.leading : leading;
+      trailing = 'trailing' in options ? !!options.trailing : trailing;
+    }
+
+    return debounce_1(func, wait, {
+      'leading': leading,
+      'maxWait': wait,
+      'trailing': trailing
+    });
+  }
+
+  var throttle_1 = throttle;
+
   var hasOwn_1 = createCommonjsModule(function (module, exports) {
 
     Object.defineProperty(exports, '__esModule', {
@@ -386,91 +588,90 @@
     exports.hasOwn = hasOwn;
     exports.default = hasOwn;
   });
-  var hasOwn = /*@__PURE__*/getDefaultExportFromCjs(hasOwn_1);
 
-  /* eslint-disable import/prefer-default-export */
+  var eventDispatcher = createCommonjsModule(function (module, exports) {
 
-  var isObject = function isObject(value) {
-    return _typeof(value) === 'object' && value !== null;
-  };
-  /**
-   * Created by Oleg Galaburda on 09.02.16.
-   *
-   */
+    Object.defineProperty(exports, '__esModule', {
+      value: true
+    });
 
-
-  var Event = /*#__PURE__*/function () {
-    function Event(type) {
-      var data = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
-
-      _classCallCheck(this, Event);
-
-      this.type = type;
-      this.data = data;
-      this.defaultPrevented = false;
+    function _interopDefault(ex) {
+      return ex && typeof ex === 'object' && 'default' in ex ? ex['default'] : ex;
     }
 
-    _createClass(Event, [{
-      key: "toJSON",
-      value: function toJSON() {
+    var hasOwn = _interopDefault(hasOwn_1);
+    /**
+     *      
+     */
+
+    /* eslint-disable import/prefer-default-export */
+
+
+    const isObject = value => typeof value === 'object' && value !== null;
+    /**
+     * Created by Oleg Galaburda on 09.02.16.
+     *      
+     */
+
+
+    class Event {
+      constructor(type, data = null) {
+        this.type = type;
+        this.data = data;
+        this.defaultPrevented = false;
+      }
+
+      toJSON() {
         return {
           type: this.type,
           data: this.data
         };
       }
-    }, {
-      key: "isDefaultPrevented",
-      value: function isDefaultPrevented() {
+
+      isDefaultPrevented() {
         return this.defaultPrevented;
       }
-    }, {
-      key: "preventDefault",
-      value: function preventDefault() {
+
+      preventDefault() {
         this.defaultPrevented = true;
       }
-    }]);
 
-    return Event;
-  }();
-
-  var getEvent = function getEvent(eventOrType, optionalData) {
-    var event = eventOrType;
-
-    if (!isObject(eventOrType)) {
-      event = new Event(String(eventOrType), optionalData);
     }
 
-    return event;
-  };
-  /**
-   * Created by Oleg Galaburda on 09.02.16.
-   *
-   */
+    const getEvent = (eventOrType, optionalData) => {
+      let event = eventOrType;
+
+      if (!isObject(eventOrType)) {
+        event = new Event(String(eventOrType), optionalData);
+      }
+
+      return event;
+    };
+    /**
+     * Created by Oleg Galaburda on 09.02.16.
+     *      
+     */
 
 
-  var ListenersRunner = /*#__PURE__*/function () {
-    function ListenersRunner(listeners, onStopped, onComplete) {
-      var _this = this;
+    class ListenersRunner {
+      constructor(listeners, onStopped, onComplete) {
+        this.index = -1;
+        this.immediatelyStopped = false;
 
-      _classCallCheck(this, ListenersRunner);
+        this.stopImmediatePropagation = () => {
+          this.immediatelyStopped = true;
+        };
 
-      this.index = -1;
-      this.immediatelyStopped = false;
+        this.listeners = listeners;
+        this.onStopped = onStopped;
+        this.onComplete = onComplete;
+      }
 
-      this.stopImmediatePropagation = function () {
-        _this.immediatelyStopped = true;
-      };
-
-      this.listeners = listeners;
-      this.onStopped = onStopped;
-      this.onComplete = onComplete;
-    }
-
-    _createClass(ListenersRunner, [{
-      key: "run",
-      value: function run(event, target) {
-        var listener;
-        var listeners = this.listeners;
+      run(event, target) {
+        let listener;
+        const {
+          listeners
+        } = this;
         this.augmentEvent(event); // TODO this has to be handled in separate object ListenersRunner that should be
         // created for each call() call and asked for index validation on each listener remove.
 
@@ -483,60 +684,49 @@
         this.clearEvent(event);
         this.onComplete(this);
       }
-    }, {
-      key: "augmentEvent",
-      value: function augmentEvent(eventObject) {
-        var event = eventObject;
+
+      augmentEvent(eventObject) {
+        const event = eventObject;
         event.stopPropagation = this.onStopped;
         event.stopImmediatePropagation = this.stopImmediatePropagation;
       }
       /* eslint class-methods-use-this: "off" */
 
-    }, {
-      key: "clearEvent",
-      value: function clearEvent(eventObject) {
-        var event = eventObject;
+
+      clearEvent(eventObject) {
+        const event = eventObject;
         delete event.stopPropagation;
         delete event.stopImmediatePropagation;
       }
-    }, {
-      key: "listenerRemoved",
-      value: function listenerRemoved(listeners, index) {
+
+      listenerRemoved(listeners, index) {
         if (listeners === this.listeners && index <= this.index) {
           this.index--;
         }
       }
-    }]);
 
-    return ListenersRunner;
-  }();
-  /**
-   * Created by Oleg Galaburda on 09.02.16.
-   *
-   */
-
-
-  var EventListeners = /*#__PURE__*/function () {
-    function EventListeners() {
-      var _this2 = this;
-
-      _classCallCheck(this, EventListeners);
-
-      this._listeners = {};
-      this._runners = [];
-
-      this.removeRunner = function (runner) {
-        _this2._runners.splice(_this2._runners.indexOf(runner), 1);
-      };
     }
+    /**
+     * Created by Oleg Galaburda on 09.02.16.
+     *      
+     */
 
-    _createClass(EventListeners, [{
-      key: "createList",
-      value: function createList(eventType, priorityOpt) {
-        var priority = parseInt(priorityOpt, 10);
-        var target = this.getPrioritiesByKey(eventType);
-        var key = String(priority);
-        var value;
+
+    class EventListeners {
+      constructor() {
+        this._listeners = {};
+        this._runners = [];
+
+        this.removeRunner = runner => {
+          this._runners.splice(this._runners.indexOf(runner), 1);
+        };
+      }
+
+      createList(eventType, priorityOpt) {
+        const priority = parseInt(priorityOpt, 10);
+        const target = this.getPrioritiesByKey(eventType);
+        const key = String(priority);
+        let value;
 
         if (hasOwn(target, key)) {
           value = target[key];
@@ -547,10 +737,9 @@
 
         return value;
       }
-    }, {
-      key: "getPrioritiesByKey",
-      value: function getPrioritiesByKey(key) {
-        var value;
+
+      getPrioritiesByKey(key) {
+        let value;
 
         if (hasOwn(this._listeners, key)) {
           value = this._listeners[key];
@@ -561,21 +750,19 @@
 
         return value;
       }
-    }, {
-      key: "add",
-      value: function add(eventType, handler, priority) {
-        var handlers = this.createList(eventType, priority);
+
+      add(eventType, handler, priority) {
+        const handlers = this.createList(eventType, priority);
 
         if (handlers.indexOf(handler) < 0) {
           handlers.push(handler);
         }
       }
-    }, {
-      key: "has",
-      value: function has(eventType) {
-        var priority;
-        var result = false;
-        var priorities = this.getPrioritiesByKey(eventType);
+
+      has(eventType) {
+        let priority;
+        let result = false;
+        const priorities = this.getPrioritiesByKey(eventType);
 
         if (priorities) {
           for (priority in priorities) {
@@ -588,21 +775,20 @@
 
         return result;
       }
-    }, {
-      key: "remove",
-      value: function remove(eventType, handler) {
-        var _this3 = this;
 
-        var priorities = this.getPrioritiesByKey(eventType);
+      remove(eventType, handler) {
+        const priorities = this.getPrioritiesByKey(eventType);
 
         if (priorities) {
-          var list = Object.getOwnPropertyNames(priorities);
-          var length = list.length;
+          const list = Object.getOwnPropertyNames(priorities);
+          const {
+            length
+          } = list;
 
-          var _loop = function _loop(index) {
-            var priority = list[index];
-            var handlers = priorities[priority];
-            var handlerIndex = handlers.indexOf(handler);
+          for (let index = 0; index < length; index++) {
+            const priority = list[index];
+            const handlers = priorities[priority];
+            const handlerIndex = handlers.indexOf(handler);
 
             if (handlerIndex >= 0) {
               handlers.splice(handlerIndex, 1);
@@ -611,107 +797,86 @@
                 delete priorities[priority];
               }
 
-              _this3._runners.forEach(function (runner) {
+              this._runners.forEach(runner => {
                 runner.listenerRemoved(handlers, handlerIndex);
               });
             }
-          };
-
-          for (var index = 0; index < length; index++) {
-            _loop(index);
           }
         }
       }
-    }, {
-      key: "removeAll",
-      value: function removeAll(eventType) {
+
+      removeAll(eventType) {
         delete this._listeners[eventType];
       }
-    }, {
-      key: "createRunner",
-      value: function createRunner(handlers, onStopped) {
-        var runner = new ListenersRunner(handlers, onStopped, this.removeRunner);
+
+      createRunner(handlers, onStopped) {
+        const runner = new ListenersRunner(handlers, onStopped, this.removeRunner);
 
         this._runners.push(runner);
 
         return runner;
       }
-    }, {
-      key: "call",
-      value: function call(event, target) {
-        var priorities = this.getPrioritiesByKey(event.type);
-        var stopped = false;
 
-        var stopPropagation = function stopPropagation() {
+      call(event, target) {
+        const priorities = this.getPrioritiesByKey(event.type);
+        let stopped = false;
+
+        const stopPropagation = () => {
           stopped = true;
         };
 
         if (priorities) {
           // getOwnPropertyNames() or keys()?
-          var list = Object.getOwnPropertyNames(priorities).sort(function (a, b) {
-            return a - b;
-          });
-          var length = list.length;
+          const list = Object.getOwnPropertyNames(priorities).sort((a, b) => a - b);
+          const {
+            length
+          } = list;
 
-          for (var index = 0; index < length; index++) {
+          for (let index = 0; index < length; index++) {
             if (stopped) break;
-            var handlers = priorities[list[index]]; // in case if all handlers of priority were removed while event
+            const handlers = priorities[list[index]]; // in case if all handlers of priority were removed while event
             // was dispatched and handlers become undefined.
 
             if (handlers) {
-              var runner = this.createRunner(handlers, stopPropagation);
+              const runner = this.createRunner(handlers, stopPropagation);
               runner.run(event, target);
               if (runner.immediatelyStopped) break;
             }
           }
         }
       }
-    }]);
 
-    return EventListeners;
-  }();
-  /**
-   * Created by Oleg Galaburda on 09.02.16.
-   *
-   */
-
-
-  var EventDispatcher = /*#__PURE__*/function () {
-    function EventDispatcher() {
-      var eventPreprocessor = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
-
-      _classCallCheck(this, EventDispatcher);
-
-      this._eventPreprocessor = eventPreprocessor;
-      this._listeners = new EventListeners();
     }
+    /**
+     * Created by Oleg Galaburda on 09.02.16.
+     *      
+     */
 
-    _createClass(EventDispatcher, [{
-      key: "addEventListener",
-      value: function addEventListener(eventType, listener) {
-        var priority = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 0;
 
+    class EventDispatcher {
+      constructor(eventPreprocessor = null) {
+        this._eventPreprocessor = eventPreprocessor;
+        this._listeners = new EventListeners();
+      }
+
+      addEventListener(eventType, listener, priority = 0) {
         this._listeners.add(eventType, listener, -priority || 0);
       }
-    }, {
-      key: "hasEventListener",
-      value: function hasEventListener(eventType) {
+
+      hasEventListener(eventType) {
         return this._listeners.has(eventType);
       }
-    }, {
-      key: "removeEventListener",
-      value: function removeEventListener(eventType, listener) {
+
+      removeEventListener(eventType, listener) {
         this._listeners.remove(eventType, listener);
       }
-    }, {
-      key: "removeAllEventListeners",
-      value: function removeAllEventListeners(eventType) {
+
+      removeAllEventListeners(eventType) {
         this._listeners.removeAll(eventType);
       }
-    }, {
-      key: "dispatchEvent",
-      value: function dispatchEvent(event, data) {
-        var eventObject = getEvent(event, data);
+
+      dispatchEvent(event, data) {
+        let eventObject = getEvent(event, data);
 
         if (this._eventPreprocessor) {
           eventObject = this._eventPreprocessor.call(this, eventObject);
@@ -719,10 +884,19 @@
 
         this._listeners.call(eventObject);
       }
-    }]);
 
-    return EventDispatcher;
-  }();
+    }
+
+    const createEventDispatcher = eventPreprocessor => new EventDispatcher(eventPreprocessor);
+
+    exports.default = EventDispatcher;
+    exports.Event = Event;
+    exports.EventDispatcher = EventDispatcher;
+    exports.createEventDispatcher = createEventDispatcher;
+    exports.getEvent = getEvent;
+    exports.isObject = isObject;
+  });
+  var EventDispatcher = /*@__PURE__*/getDefaultExportFromCjs(eventDispatcher);
 
   var getClass_1 = createCommonjsModule(function (module, exports) {
 
@@ -1328,7 +1502,7 @@
   var readMessage$1 = readMessage,
       composeMessage$1 = composeMessage;
   var dispatcher = new EventDispatcher();
-  var Event$1 = Object.freeze({
+  var Event = Object.freeze({
     CONSOLE_FRAME_OPENED: 'consoleFrameOpened',
     CONSOLE_FRAME_CLOSED: 'consoleFrameClosed',
     COMMAND_RECEIVED: 'commandReceived'
@@ -1338,10 +1512,14 @@
   var plugins = [];
 
   var EDConsole = {
-    Event: Event$1,
+    Event: Event,
     Message: Message,
     EventDispatcher: EventDispatcher,
     LogDataRenderer: LogDataRenderer,
+    lodash: {
+      debounce: debounce_1,
+      throttle: throttle_1
+    },
     getConsolePath: function getConsolePath() {
       return EDConsoleConfig.consoleHref;
     },
@@ -1371,10 +1549,10 @@
       return dispatcher.removeEventListener(type, listener);
     },
     consoleOpened: function consoleOpened(contentWindow) {
-      return dispatcher.dispatchEvent(Event$1.CONSOLE_FRAME_OPENED, contentWindow);
+      return dispatcher.dispatchEvent(Event.CONSOLE_FRAME_OPENED, contentWindow);
     },
     consoleClosed: function consoleClosed(contentWindow) {
-      return dispatcher.dispatchEvent(Event$1.CONSOLE_FRAME_CLOSED, contentWindow);
+      return dispatcher.dispatchEvent(Event.CONSOLE_FRAME_CLOSED, contentWindow);
     },
     handleIncomingMessageEvent: function handleIncomingMessageEvent(event, sendResponse) {
       var message = readMessage$1(event);
@@ -1393,7 +1571,7 @@
       };
 
       handler(command, data, callback);
-      dispatcher.dispatchEvent(Event$1.COMMAND_RECEIVED, {
+      dispatcher.dispatchEvent(Event.COMMAND_RECEIVED, {
         command: command,
         data: data,
         sendResponse: callback
@@ -1451,26 +1629,27 @@
       } catch (error) {}
     };
 
+    var createMessageSubscriber = function createMessageSubscriber(target) {
+      return function (str) {
+        return target.postMessage(str, '*');
+      };
+    };
+
     var messageHandler = function messageHandler(event) {
       var target = event.source;
 
-      var messageSubscriber = function messageSubscriber(str) {
-        return target.postMessage(str, '*');
-      };
-
       if (targets.has(target)) {
-        EDConsole.handleIncomingMessageEvent(event, messageSubscriber);
+        EDConsole.handleIncomingMessageEvent(event, targets.get(target));
         return;
       }
 
       var message = Message.readMessage(event);
 
       if (message && Message.getMessageCommand(message) === Command.INIT_FRAME) {
+        var messageSubscriber = createMessageSubscriber(target);
         EDConsole.subscribeToIncomingMessages(messageSubscriber);
         targets.set(target, messageSubscriber);
-        EDConsole.sendCommandTo(messageSubscriber, Command.SET_PLUGINS_CONFIGURATION, {
-          plugins: EDConsole.getRegisteredPlugins()
-        });
+        EDConsole.handleIncomingCommand(Message.getMessageCommand(message), Message.getMessageData(message), messageSubscriber);
       }
     };
 
@@ -1815,6 +1994,360 @@
     });
     EDConsole.registerPlugin(PLUGIN_NAME);
   })(window.EDConsole);
+
+  function _typeof(obj) {
+    "@babel/helpers - typeof";
+
+    if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") {
+      _typeof = function (obj) {
+        return typeof obj;
+      };
+    } else {
+      _typeof = function (obj) {
+        return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
+      };
+    }
+
+    return _typeof(obj);
+  }
+
+  function _classCallCheck(instance, Constructor) {
+    if (!(instance instanceof Constructor)) {
+      throw new TypeError("Cannot call a class as a function");
+    }
+  }
+
+  function _defineProperties(target, props) {
+    for (var i = 0; i < props.length; i++) {
+      var descriptor = props[i];
+      descriptor.enumerable = descriptor.enumerable || false;
+      descriptor.configurable = true;
+      if ("value" in descriptor) descriptor.writable = true;
+      Object.defineProperty(target, descriptor.key, descriptor);
+    }
+  }
+
+  function _createClass(Constructor, protoProps, staticProps) {
+    if (protoProps) _defineProperties(Constructor.prototype, protoProps);
+    if (staticProps) _defineProperties(Constructor, staticProps);
+    return Constructor;
+  }
+
+  function _defineProperty(obj, key, value) {
+    if (key in obj) {
+      Object.defineProperty(obj, key, {
+        value: value,
+        enumerable: true,
+        configurable: true,
+        writable: true
+      });
+    } else {
+      obj[key] = value;
+    }
+
+    return obj;
+  }
+
+  function ownKeys(object, enumerableOnly) {
+    var keys = Object.keys(object);
+
+    if (Object.getOwnPropertySymbols) {
+      var symbols = Object.getOwnPropertySymbols(object);
+      if (enumerableOnly) symbols = symbols.filter(function (sym) {
+        return Object.getOwnPropertyDescriptor(object, sym).enumerable;
+      });
+      keys.push.apply(keys, symbols);
+    }
+
+    return keys;
+  }
+
+  function _objectSpread2(target) {
+    for (var i = 1; i < arguments.length; i++) {
+      var source = arguments[i] != null ? arguments[i] : {};
+
+      if (i % 2) {
+        ownKeys(Object(source), true).forEach(function (key) {
+          _defineProperty(target, key, source[key]);
+        });
+      } else if (Object.getOwnPropertyDescriptors) {
+        Object.defineProperties(target, Object.getOwnPropertyDescriptors(source));
+      } else {
+        ownKeys(Object(source)).forEach(function (key) {
+          Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key));
+        });
+      }
+    }
+
+    return target;
+  }
+
+  function _inherits(subClass, superClass) {
+    if (typeof superClass !== "function" && superClass !== null) {
+      throw new TypeError("Super expression must either be null or a function");
+    }
+
+    subClass.prototype = Object.create(superClass && superClass.prototype, {
+      constructor: {
+        value: subClass,
+        writable: true,
+        configurable: true
+      }
+    });
+    if (superClass) _setPrototypeOf(subClass, superClass);
+  }
+
+  function _getPrototypeOf(o) {
+    _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) {
+      return o.__proto__ || Object.getPrototypeOf(o);
+    };
+    return _getPrototypeOf(o);
+  }
+
+  function _setPrototypeOf(o, p) {
+    _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) {
+      o.__proto__ = p;
+      return o;
+    };
+
+    return _setPrototypeOf(o, p);
+  }
+
+  function _isNativeReflectConstruct() {
+    if (typeof Reflect === "undefined" || !Reflect.construct) return false;
+    if (Reflect.construct.sham) return false;
+    if (typeof Proxy === "function") return true;
+
+    try {
+      Date.prototype.toString.call(Reflect.construct(Date, [], function () {}));
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  function _assertThisInitialized(self) {
+    if (self === void 0) {
+      throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
+    }
+
+    return self;
+  }
+
+  function _possibleConstructorReturn(self, call) {
+    if (call && (typeof call === "object" || typeof call === "function")) {
+      return call;
+    }
+
+    return _assertThisInitialized(self);
+  }
+
+  function _createSuper(Derived) {
+    var hasNativeReflectConstruct = _isNativeReflectConstruct();
+
+    return function _createSuperInternal() {
+      var Super = _getPrototypeOf(Derived),
+          result;
+
+      if (hasNativeReflectConstruct) {
+        var NewTarget = _getPrototypeOf(this).constructor;
+
+        result = Reflect.construct(Super, arguments, NewTarget);
+      } else {
+        result = Super.apply(this, arguments);
+      }
+
+      return _possibleConstructorReturn(this, result);
+    };
+  }
+
+  function _superPropBase(object, property) {
+    while (!Object.prototype.hasOwnProperty.call(object, property)) {
+      object = _getPrototypeOf(object);
+      if (object === null) break;
+    }
+
+    return object;
+  }
+
+  function set(target, property, value, receiver) {
+    if (typeof Reflect !== "undefined" && Reflect.set) {
+      set = Reflect.set;
+    } else {
+      set = function set(target, property, value, receiver) {
+        var base = _superPropBase(target, property);
+
+        var desc;
+
+        if (base) {
+          desc = Object.getOwnPropertyDescriptor(base, property);
+
+          if (desc.set) {
+            desc.set.call(receiver, value);
+            return true;
+          } else if (!desc.writable) {
+            return false;
+          }
+        }
+
+        desc = Object.getOwnPropertyDescriptor(receiver, property);
+
+        if (desc) {
+          if (!desc.writable) {
+            return false;
+          }
+
+          desc.value = value;
+          Object.defineProperty(receiver, property, desc);
+        } else {
+          _defineProperty(receiver, property, value);
+        }
+
+        return true;
+      };
+    }
+
+    return set(target, property, value, receiver);
+  }
+
+  function _set(target, property, value, receiver, isStrict) {
+    var s = set(target, property, value, receiver || target);
+
+    if (!s && isStrict) {
+      throw new Error('failed to set property');
+    }
+
+    return value;
+  }
+
+  function _slicedToArray(arr, i) {
+    return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest();
+  }
+
+  function _toConsumableArray(arr) {
+    return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread();
+  }
+
+  function _arrayWithoutHoles(arr) {
+    if (Array.isArray(arr)) return _arrayLikeToArray(arr);
+  }
+
+  function _arrayWithHoles(arr) {
+    if (Array.isArray(arr)) return arr;
+  }
+
+  function _iterableToArray(iter) {
+    if (typeof Symbol !== "undefined" && Symbol.iterator in Object(iter)) return Array.from(iter);
+  }
+
+  function _iterableToArrayLimit(arr, i) {
+    if (typeof Symbol === "undefined" || !(Symbol.iterator in Object(arr))) return;
+    var _arr = [];
+    var _n = true;
+    var _d = false;
+    var _e = undefined;
+
+    try {
+      for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) {
+        _arr.push(_s.value);
+
+        if (i && _arr.length === i) break;
+      }
+    } catch (err) {
+      _d = true;
+      _e = err;
+    } finally {
+      try {
+        if (!_n && _i["return"] != null) _i["return"]();
+      } finally {
+        if (_d) throw _e;
+      }
+    }
+
+    return _arr;
+  }
+
+  function _unsupportedIterableToArray(o, minLen) {
+    if (!o) return;
+    if (typeof o === "string") return _arrayLikeToArray(o, minLen);
+    var n = Object.prototype.toString.call(o).slice(8, -1);
+    if (n === "Object" && o.constructor) n = o.constructor.name;
+    if (n === "Map" || n === "Set") return Array.from(o);
+    if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen);
+  }
+
+  function _arrayLikeToArray(arr, len) {
+    if (len == null || len > arr.length) len = arr.length;
+
+    for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i];
+
+    return arr2;
+  }
+
+  function _nonIterableSpread() {
+    throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
+  }
+
+  function _nonIterableRest() {
+    throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
+  }
+
+  function _createForOfIteratorHelper(o, allowArrayLike) {
+    var it;
+
+    if (typeof Symbol === "undefined" || o[Symbol.iterator] == null) {
+      if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") {
+        if (it) o = it;
+        var i = 0;
+
+        var F = function () {};
+
+        return {
+          s: F,
+          n: function () {
+            if (i >= o.length) return {
+              done: true
+            };
+            return {
+              done: false,
+              value: o[i++]
+            };
+          },
+          e: function (e) {
+            throw e;
+          },
+          f: F
+        };
+      }
+
+      throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
+    }
+
+    var normalCompletion = true,
+        didErr = false,
+        err;
+    return {
+      s: function () {
+        it = o[Symbol.iterator]();
+      },
+      n: function () {
+        var step = it.next();
+        normalCompletion = step.done;
+        return step;
+      },
+      e: function (e) {
+        didErr = true;
+        err = e;
+      },
+      f: function () {
+        try {
+          if (!normalCompletion && it.return != null) it.return();
+        } finally {
+          if (didErr) throw err;
+        }
+      }
+    };
+  }
 
   (function (EDConsole) {
     var PLUGIN_NAME = 'manage-cookies';
@@ -2921,24 +3454,39 @@
       }
     };
 
+    var converter = document.createElement('span');
+
     var getInjectionNode = function getInjectionNode(type, data) {
       var node;
 
       switch (type) {
         case Type.CSS:
           node = document.createElement('style');
+          node.setAttribute('type', 'text/css');
           node.innerText = data;
           break;
 
         case Type.JS:
           node = document.createElement('script');
+          node.setAttribute('type', 'text/javascript');
           node.innerText = data;
           break;
 
         case Type.HTML:
         default:
+          converter.innerHTML = data;
           node = document.createDocumentFragment();
-          node.innerHTML = data;
+
+          try {
+            var _node;
+
+            (_node = node).append.apply(_node, _toConsumableArray(Array.from(converter.childNodes)));
+          } catch (error) {
+            while (converter.firstChild) {
+              node.appendChild(converter.firstChild);
+            }
+          }
+
           break;
       }
 
@@ -2976,6 +3524,274 @@
         case Operation.APPEND:
           targetNode.append(injectionNode);
       }
+    });
+    EDConsole.registerPlugin(PLUGIN_NAME);
+  })(window.EDConsole);
+
+  (function (EDConsole) {
+    var Event = EDConsole.Event,
+        throttle = EDConsole.lodash.throttle;
+    var PLUGIN_NAME = 'pixel-perfect';
+    var Images = {
+      GRID_10: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAKAAAACgCAMAAAC8EZcfAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJUExURQAAAAj/AAAAAKVUrCEAAAADdFJOU///ANfKDUEAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAE1SURBVHhe7ZSxDQNADITy2X/oUDgT0FwBjSmRTvLn++fdHbMCQVmBoKxAUFYgKPu8cZoYlBUIygoEZQWCsv3Ae9izNDEoKxCUFQjKCgRl+4H3sGdpYlBWICgrEJQVCMr2A+9hz9LEoKxAUFYgKCsQlO0H3sOepYlBWYGgrEBQViAo2w+8hz1LE4OyAkFZgaCsQFC2H3gPe5YmBmUFgrICQVmBoGw/8B72LE0MygoEZQWCsgJB2X7gPexZmhiUFQjKCgRlBYKy/cB72LM0MSgrEJQVCMoKBGX7gfewZ2liUFYgKCsQlBUIyvYD72HP0sSgrEBQViAoKxCU7Qfew56liUFZgaCsQFBWICjbD7yHPUsTg7ICQVmBoKxAULYfeA97liYGZQWCsgJBWYGgbD/wHvYo7/0ArNK1AfQZhrQAAAAASUVORK5CYII=',
+      GRID_20: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAKAAAACgCAMAAAC8EZcfAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJUExURQAAAAj/AAAAAKVUrCEAAAADdFJOU///ANfKDUEAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAEtSURBVHhe7ZYhDgIBEMQ4/v9oKlaQICsY0ZpNqpqM2df7l+fuN39zBYJyBYJyBYJyBYJyBYJyBYJyBYJyBYJyBYJyr2ecJgblCgTlCgTlCgTlCgTlCgTlCgTlCgTlCgTl9gPv9Z+liUG5AkG5AkG5AkG5AkG5AkG5AkG5AkG5AkG5/cB7/WdpYlCuQFCuQFCuQFCuQFCuQFCuQFCuQFCuQFBuP/Be/1maGJQrEJQrEJQrEJQrEJQrEJQrEJQrEJQrEJTbD7zXf5YmBuUKBOUKBOUKBOUKBOUKBOUKBOUKBOUKBOX2A+/1n6WJQbkCQbkCQbkCQbkCQbkCQbkCQbkCQbkCQbn9wHv9Z2liUK5AUK5AUK5AUK5AUK5AUK5AUK5AUK5AUG4/8F7/UZ7nAxmNvkFjGEKpAAAAAElFTkSuQmCC',
+      GRID_50: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMgAAADICAMAAACahl6sAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJUExURQAAAAj/AAAAAKVUrCEAAAADdFJOU///ANfKDUEAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAEwSURBVHhe7dqhDcAwEARBf/ovOsQFZEgkWzvEyGClg78eNfv97pcfhYBCQCGiEFCIKAQUIgoBhYhCQCGiEFCIKAQUIgoBhYhCQCGiEFCIKAQUIgoBhYhCQCGiEFCIKAQUIgoBs+YSTQsUAgoRhYBCRCGgEFEIKEQUAgoRhYBCRCGgEFEIKEQUAgoRhYBCRCGgEFEIKEQUAgoRhYBCRCGgEFEIuChkH6Adr2mBQkAhohBQiCgEFCIKAYWIQkAhohBQiCgEFCIKAYWIQkAhohBQiCgEFCIKAYWIQkAhohBQiCgEFCIKAReF7AO04zUtUAgoRBQCChGFgEJEIaAQUQgoRBQCChGFgEJEIaAQUQgoRBQCChGFgEJEIaAQUQgoRBQCChGFgEJEIeCikH2AdriZF6eVMmBILgYNAAAAAElFTkSuQmCC',
+      RULER_H: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAABkCAYAAAC/zKGXAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAD6SURBVFhH7ZZPC4JAEMV3ZaFaEzr4ObtEdLUv5xfw5kHwIF7Fs3/aeXsxcsig2Nz6geI832GG57BKIcTY9/11GAYRBAFdo9EeCHAzL5VSI2ciYFzCa8Y4jo91XW+gMGAYQ2JLng/1uAT0aB9NISX1Sxo1ftf3GoaBUWt9adtWQWFYXTJT2GS6rpNPd4ZwtDPm80qapvnBZGzJ43AYGCmZNE0PUBj8S2YN50wURaeqqvw6Z6bMJvPlw8BIO1MUxQ4Kg5/JrOGcKctyC4XBz2RsyeNwGBjDMDxnWbaHwuBnMv9/szneb3w9GVvyOBwGRkomz3MNhcGjZIS4AbBzy89QxI43AAAAAElFTkSuQmCC',
+      RULER_V: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGQAAAAKCAYAAABCHPt+AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAFESURBVFhH7dRNS4RAGAdwx6OiePAiHgQP3vwCfqguER0z6NALQUQQfSDBuxc9CB49CAamFfjS5D6728zaUBsLA80PxP8j8jg6MyJJkiZ8CJxAwzCEsixvJsU0zaOqqu6hnCGEwmmaQihniqKcdl13BeVs6b6/XsPjO/86Pk3TjpumuYVydojn0tdUVT1p2/YGytkhniuP4wjlSpIkTxCZyrIkPspa3/efu26jrusLiExRFN1BJNDjS9P0ASJTnufEYlmjx1cUxSVEpjiOHyES9n3fLMuuIRLw4pMhrliW9Q5xA8/czm9N1/UeIoHuZxjG4n20IAieIRLofrZt74xvieu6rxAJdD/Hcd4gMvm+/wKRsO/7ep7XQSTgftvfwXfw1iJWActP+v3Gv+sHZ4ETCK/+M8gCB8QO4YyYEM6ICeGKJH0A5lSbFWrGfocAAAAASUVORK5CYII='
+    };
+    var Command = {
+      INIT_FRAME: 'init-frame',
+      PP_ZOOM_SET: 'pixel-perfect-zoom-set',
+      PP_RULER_SHOW: 'pixel-perfect-ruler-show',
+      PP_RULER_HIDE: 'pixel-perfect-ruler-hide',
+      PP_GRID_SHOW: 'pixel-perfect-grid-show',
+      PP_GRID_HIDE: 'pixel-perfect-grid-hide',
+      PP_COLUMNS_SHOW: 'pixel-perfect-columns-show',
+      PP_COLUMNS_HIDE: 'pixel-perfect-columns-hide',
+      PP_IMAGE_SHOW: 'pixel-perfect-image-show',
+      PP_IMAGE_HIDE: 'pixel-perfect-image-hide',
+      PP_IMAGE_SETTINGS: 'pixel-perfect-image-settings',
+      PP_WINDOW_SIZE: 'pixel-perfect-window-size',
+      PP_WINDOW_SET_SIZE: 'pixel-perfect-window-set-size',
+      PP_MOUSE_POSITION: 'pixel-perfect-mouse-position'
+    };
+    var container = document.createElement('div');
+    Object.assign(container.style, {
+      position: 'fixed',
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0,
+      width: '100%',
+      height: '100%',
+      zIndex: 10000000,
+      pointerEvents: 'none'
+    });
+
+    var createEl = function createEl() {
+      var style = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+      var tag = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'div';
+      var el = document.createElement(tag);
+      Object.assign(el.style, _objectSpread2({
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        width: '100%',
+        height: '100%'
+      }, style));
+      return el;
+    };
+
+    var grid = createEl({
+      opacity: '0.4'
+    });
+    var bgrid = createEl({
+      display: 'grid',
+      gridGap: '0 0'
+    });
+    var image = createEl({}, 'img');
+    var rulerX = createEl({
+      backgroundImage: "url(\"".concat(Images.RULER_H, "\")"),
+      backgroundRepeat: 'no-repeat repeat'
+    });
+    var rulerY = createEl({
+      backgroundImage: "url(\"".concat(Images.RULER_V, "\")"),
+      backgroundRepeat: 'repeat no-repeat'
+    });
+    var gridVisible = false;
+    var rulersVisible = false;
+    var bgridVisible = false;
+    var imageVisible = false;
+
+    var show = function show() {
+      return document.body.appendChild(container);
+    };
+
+    var hide = function hide() {
+      container.remove();
+      grid.remove();
+      bgrid.remove();
+      image.remove();
+      rulerX.remove();
+      rulerY.remove();
+    };
+
+    var showGrid = function showGrid(type) {
+      Object.assign(grid.style, {
+        backgroundImage: "url(\"".concat(Images[type], "\")"),
+        backgroundRepeat: 'repeat repeat'
+      });
+      container.appendChild(grid);
+    };
+
+    var showRulers = function showRulers() {
+      container.appendChild(rulerX);
+      container.appendChild(rulerY);
+    };
+
+    var showBGrid = function showBGrid(cols, margin) {
+      bgrid.innerHTML = '';
+      var style = '';
+
+      for (var index = 1; index <= cols; index++) {
+        style = "".concat(style, " 1fr");
+        var col = document.createElement('div');
+        Object.assign(col.style, {
+          backgroundColor: index % 2 ? '#0088ff66' : '#00000007',
+          gridColumn: "".concat(index, " / ").concat(index + 1)
+        });
+        bgrid.appendChild(col);
+      }
+
+      bgrid.style.gridTemplateColumns = style;
+
+      if (!margin || margin.charAt(0) === '0') {
+        bgrid.style.margin = ' 0 ';
+        bgrid.style.width = '100%';
+        bgrid.style.height = '100%';
+      } else {
+        bgrid.style.removeProperty('width');
+        bgrid.style.removeProperty('height');
+        bgrid.style.margin = "0 ".concat(margin);
+      }
+
+      container.appendChild(bgrid);
+    };
+
+    window.addEventListener('resize', throttle(function () {
+      var width = window.innerWidth;
+      var height = window.innerHeight;
+      EDConsole.sendCommand(Command.PP_WINDOW_SIZE, {
+        width: width,
+        height: height
+      });
+    }, 500));
+    window.addEventListener('mousemove', throttle(function (event) {
+      var x = event.pageX;
+      var y = event.pageY;
+      EDConsole.sendCommand(Command.PP_MOUSE_POSITION, {
+        x: x,
+        y: y
+      });
+    }, 500));
+    EDConsole.addEventListener(Event.COMMAND_RECEIVED, function (_ref) {
+      var _ref$data = _ref.data,
+          command = _ref$data.command,
+          sendResponse = _ref$data.sendResponse;
+
+      if (command === Command.INIT_FRAME) {
+        sendResponse(Command.PP_WINDOW_SIZE, {
+          width: window.innerWidth,
+          height: window.innerHeight
+        });
+      }
+    });
+    EDConsole.setCommandHandler(Command.PP_ZOOM_SET, function (_, _ref2) {
+      var value = _ref2.value;
+      document.body.style.zoom = value;
+    });
+
+    var hideIf = function hideIf() {
+      if (!gridVisible && !rulersVisible && !bgridVisible && !imageVisible) {
+        hide();
+      }
+    };
+
+    var hideRule = function hideRule() {
+      rulersVisible = false;
+      rulerX.remove();
+      rulerY.remove();
+      hideIf();
+    };
+
+    EDConsole.setCommandHandler(Command.PP_RULER_SHOW, function (_, _ref3) {
+      var rulerType = _ref3.rulerType;
+
+      if (rulerType) {
+        rulersVisible = true;
+        showRulers();
+        show();
+      } else {
+        hideRule();
+      }
+    });
+    EDConsole.setCommandHandler(Command.PP_RULER_HIDE, hideRule);
+
+    var hideGrid = function hideGrid() {
+      gridVisible = false;
+      grid.remove();
+      hideIf();
+    };
+
+    EDConsole.setCommandHandler(Command.PP_GRID_SHOW, function (_, _ref4) {
+      var gridType = _ref4.gridType;
+
+      if (gridType) {
+        gridVisible = true;
+        showGrid(gridType);
+        show();
+      } else {
+        hideGrid();
+      }
+    });
+    EDConsole.setCommandHandler(Command.PP_GRID_HIDE, hideGrid);
+
+    var hideColumns = function hideColumns() {
+      bgridVisible = false;
+      bgrid.remove();
+      hideIf();
+    };
+
+    EDConsole.setCommandHandler(Command.PP_COLUMNS_SHOW, function (_, _ref5) {
+      var columns = _ref5.columns,
+          margin = _ref5.margin;
+      var count = Number.parseInt(columns, 10);
+
+      if (count) {
+        bgridVisible = true;
+        showBGrid(count, margin);
+        show();
+      } else {
+        hideColumns();
+      }
+    });
+    EDConsole.setCommandHandler(Command.PP_COLUMNS_HIDE, hideColumns);
+
+    var applyImageSettings = function applyImageSettings(_ref6) {
+      var scale = _ref6.scale,
+          opacity = _ref6.opacity,
+          offsetX = _ref6.offsetX,
+          offsetY = _ref6.offsetY;
+      var x = offsetX ? "".concat(offsetX, "px") : '0';
+      var y = offsetY ? "".concat(offsetY, "px") : '0';
+      Object.assign(image.style, {
+        transform: "translate(".concat(x, ", ").concat(y, ") scale(").concat(scale, ")"),
+        transformOrigin: 'top left',
+        opacity: opacity
+      });
+    };
+
+    EDConsole.setCommandHandler(Command.PP_IMAGE_SHOW, function (_, payload) {
+      var data = payload.data;
+      image.src = data;
+      applyImageSettings(payload);
+      container.appendChild(image);
+      show();
+    });
+    EDConsole.setCommandHandler(Command.PP_IMAGE_HIDE, function () {
+      image.src = '';
+      image.remove();
+      hideIf();
+    });
+    EDConsole.setCommandHandler(Command.PP_IMAGE_SETTINGS, function (_, payload) {
+      return applyImageSettings(payload);
+    });
+    EDConsole.setCommandHandler(Command.PP_WINDOW_SET_SIZE, function (_, _ref7) {
+      var width = _ref7.width,
+          height = _ref7.height;
+      window.resizeTo(width, height);
     });
     EDConsole.registerPlugin(PLUGIN_NAME);
   })(window.EDConsole);

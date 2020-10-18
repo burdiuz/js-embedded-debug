@@ -1,4 +1,8 @@
 ((EDConsole) => {
+  const {
+    Event,
+    lodash: { throttle },
+  } = EDConsole;
   const PLUGIN_NAME = 'pixel-perfect';
   const Images = {
     GRID_10:
@@ -13,13 +17,20 @@
       'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGQAAAAKCAYAAABCHPt+AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAFESURBVFhH7dRNS4RAGAdwx6OiePAiHgQP3vwCfqguER0z6NALQUQQfSDBuxc9CB49CAamFfjS5D6728zaUBsLA80PxP8j8jg6MyJJkiZ8CJxAwzCEsixvJsU0zaOqqu6hnCGEwmmaQihniqKcdl13BeVs6b6/XsPjO/86Pk3TjpumuYVydojn0tdUVT1p2/YGytkhniuP4wjlSpIkTxCZyrIkPspa3/efu26jrusLiExRFN1BJNDjS9P0ASJTnufEYlmjx1cUxSVEpjiOHyES9n3fLMuuIRLw4pMhrliW9Q5xA8/czm9N1/UeIoHuZxjG4n20IAieIRLofrZt74xvieu6rxAJdD/Hcd4gMvm+/wKRsO/7ep7XQSTgftvfwXfw1iJWActP+v3Gv+sHZ4ETCK/+M8gCB8QO4YyYEM6ICeGKJH0A5lSbFWrGfocAAAAASUVORK5CYII=',
   };
   const Command = {
+    INIT_FRAME: 'init-frame',
     PP_ZOOM_SET: 'pixel-perfect-zoom-set',
     PP_RULER_SHOW: 'pixel-perfect-ruler-show',
     PP_RULER_HIDE: 'pixel-perfect-ruler-hide',
     PP_GRID_SHOW: 'pixel-perfect-grid-show',
     PP_GRID_HIDE: 'pixel-perfect-grid-hide',
+    PP_COLUMNS_SHOW: 'pixel-perfect-columns-show',
+    PP_COLUMNS_HIDE: 'pixel-perfect-columns-hide',
     PP_IMAGE_SHOW: 'pixel-perfect-image-show',
     PP_IMAGE_HIDE: 'pixel-perfect-image-hide',
+    PP_IMAGE_SETTINGS: 'pixel-perfect-image-settings',
+    PP_WINDOW_SIZE: 'pixel-perfect-window-size',
+    PP_WINDOW_SET_SIZE: 'pixel-perfect-window-set-size',
+    PP_MOUSE_POSITION: 'pixel-perfect-mouse-position',
   };
 
   const container = document.createElement('div');
@@ -32,7 +43,6 @@
     width: '100%',
     height: '100%',
     zIndex: 10000000,
-    backgroundColor: '#ffffff33',
     pointerEvents: 'none',
   });
 
@@ -48,7 +58,6 @@
       height: '100%',
       ...style,
     });
-    container.appendChild(el);
 
     return el;
   };
@@ -58,7 +67,7 @@
     display: 'grid',
     gridGap: '0 0',
   });
-  const image = createEl();
+  const image = createEl({}, 'img');
   const rulerX = createEl({
     backgroundImage: `url("${Images.RULER_H}")`,
     backgroundRepeat: 'no-repeat repeat',
@@ -67,6 +76,11 @@
     backgroundImage: `url("${Images.RULER_V}")`,
     backgroundRepeat: 'repeat no-repeat',
   });
+
+  let gridVisible = false;
+  let rulersVisible = false;
+  let bgridVisible = false;
+  let imageVisible = false;
 
   const show = () => document.body.appendChild(container);
 
@@ -93,19 +107,17 @@
     container.appendChild(rulerY);
   };
 
-  const showBGrid = (cols) => {
+  const showBGrid = (cols, margin) => {
     bgrid.innerHTML = '';
     let style = '';
+
     for (let index = 1; index <= cols; index++) {
       style = `${style} 1fr`;
-      if (!(index % 2)) {
-        continue;
-      }
 
       const col = document.createElement('div');
 
       Object.assign(col.style, {
-        backgroundColor: '#0088ff66',
+        backgroundColor: index % 2 ? '#0088ff66' : '#00000007',
         gridColumn: `${index} / ${index + 1}`,
       });
 
@@ -113,30 +125,163 @@
     }
 
     bgrid.style.gridTemplateColumns = style;
+    if (!margin || margin.charAt(0) === '0') {
+      bgrid.style.margin = ' 0 ';
+      bgrid.style.width = '100%';
+      bgrid.style.height = '100%';
+    } else {
+      bgrid.style.removeProperty('width');
+      bgrid.style.removeProperty('height');
+      bgrid.style.margin = `0 ${margin}`;
+    }
+
     container.appendChild(bgrid);
   };
 
-  EDConsole.setCommandHandler(Command.PP_ZOOM_SET, ({ value }) => {
+  window.addEventListener(
+    'resize',
+    throttle(() => {
+      const width = window.innerWidth;
+      const height = window.innerHeight;
+
+      EDConsole.sendCommand(Command.PP_WINDOW_SIZE, { width, height });
+    }, 500),
+  );
+
+  window.addEventListener(
+    'mousemove',
+    throttle((event) => {
+      const x = event.pageX;
+      const y = event.pageY;
+
+      EDConsole.sendCommand(Command.PP_MOUSE_POSITION, { x, y });
+    }, 500),
+  );
+
+  EDConsole.addEventListener(
+    Event.COMMAND_RECEIVED,
+    ({ data: { command, sendResponse } }) => {
+      if (command === Command.INIT_FRAME) {
+        sendResponse(Command.PP_WINDOW_SIZE, {
+          width: window.innerWidth,
+          height: window.innerHeight,
+        });
+      }
+    },
+  );
+
+  EDConsole.setCommandHandler(Command.PP_ZOOM_SET, (_, { value }) => {
     document.body.style.zoom = value;
   });
 
-  EDConsole.setCommandHandler(Command.PP_RULER_SHOW, () => {});
+  const hideIf = () => {
+    if (!gridVisible && !rulersVisible && !bgridVisible && !imageVisible) {
+      hide();
+    }
+  };
 
-  EDConsole.setCommandHandler(Command.PP_RULER_HIDE, () => {});
+  const hideRule = () => {
+    rulersVisible = false;
+    rulerX.remove();
+    rulerY.remove();
 
-  EDConsole.setCommandHandler(Command.PP_GRID_SHOW, () => {});
+    hideIf();
+  };
 
-  EDConsole.setCommandHandler(Command.PP_GRID_HIDE, () => {});
+  EDConsole.setCommandHandler(Command.PP_RULER_SHOW, (_, { rulerType }) => {
+    if (rulerType) {
+      rulersVisible = true;
+      showRulers();
+      show();
+    } else {
+      hideRule();
+    }
+  });
 
-  EDConsole.setCommandHandler(Command.PP_IMAGE_SHOW, () => {});
+  EDConsole.setCommandHandler(Command.PP_RULER_HIDE, hideRule);
 
-  EDConsole.setCommandHandler(Command.PP_IMAGE_HIDE, () => {});
+  const hideGrid = () => {
+    gridVisible = false;
+    grid.remove();
+
+    hideIf();
+  };
+
+  EDConsole.setCommandHandler(Command.PP_GRID_SHOW, (_, { gridType }) => {
+    if (gridType) {
+      gridVisible = true;
+      showGrid(gridType);
+      show();
+    } else {
+      hideGrid();
+    }
+  });
+
+  EDConsole.setCommandHandler(Command.PP_GRID_HIDE, hideGrid);
+
+  const hideColumns = () => {
+    bgridVisible = false;
+    bgrid.remove();
+
+    hideIf();
+  };
+
+  EDConsole.setCommandHandler(
+    Command.PP_COLUMNS_SHOW,
+    (_, { columns, margin }) => {
+      const count = Number.parseInt(columns, 10);
+
+      if (count) {
+        bgridVisible = true;
+        showBGrid(count, margin);
+        show();
+      } else {
+        hideColumns();
+      }
+    },
+  );
+
+  EDConsole.setCommandHandler(Command.PP_COLUMNS_HIDE, hideColumns);
+
+  const applyImageSettings = ({ scale, opacity, offsetX, offsetY }) => {
+    const x = offsetX ? `${offsetX}px` : '0';
+    const y = offsetY ? `${offsetY}px` : '0';
+
+    Object.assign(image.style, {
+      transform: `translate(${x}, ${y}) scale(${scale})`,
+      transformOrigin: 'top left',
+      opacity: opacity,
+    });
+  };
+
+  EDConsole.setCommandHandler(Command.PP_IMAGE_SHOW, (_, payload) => {
+    const { data } = payload;
+
+    image.src = data;
+
+    applyImageSettings(payload);
+
+    container.appendChild(image);
+    show();
+  });
+
+  EDConsole.setCommandHandler(Command.PP_IMAGE_HIDE, () => {
+    image.src = '';
+    image.remove();
+
+    hideIf();
+  });
+
+  EDConsole.setCommandHandler(Command.PP_IMAGE_SETTINGS, (_, payload) =>
+    applyImageSettings(payload),
+  );
+
+  EDConsole.setCommandHandler(
+    Command.PP_WINDOW_SET_SIZE,
+    (_, { width, height }) => {
+      window.resizeTo(width, height);
+    },
+  );
 
   EDConsole.registerPlugin(PLUGIN_NAME);
-/*
-  showGrid('GRID_50');
-  showBGrid(12);
-  showRulers();
-  show();
-  */
 })(window.EDConsole);

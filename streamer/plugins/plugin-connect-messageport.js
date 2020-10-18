@@ -23,26 +23,27 @@
     } catch (error) {}
   };
 
+  const createMessageSubscriber = (target) => (str) =>
+    target.postMessage(str, '*');
+
   const messageHandler = (event) => {
     const { source: target } = event;
-    const messageSubscriber = (str) => target.postMessage(str, '*');
     if (targets.has(target)) {
-      EDConsole.handleIncomingMessageEvent(event, messageSubscriber);
+      EDConsole.handleIncomingMessageEvent(event, targets.get(target));
       return;
     }
 
     const message = Message.readMessage(event);
 
     if (message && Message.getMessageCommand(message) === Command.INIT_FRAME) {
+      const messageSubscriber = createMessageSubscriber(target);
       EDConsole.subscribeToIncomingMessages(messageSubscriber);
       targets.set(target, messageSubscriber);
 
-      EDConsole.sendCommandTo(
+      EDConsole.handleIncomingCommand(
+        Message.getMessageCommand(message),
+        Message.getMessageData(message),
         messageSubscriber,
-        Command.SET_PLUGINS_CONFIGURATION,
-        {
-          plugins: EDConsole.getRegisteredPlugins(),
-        },
       );
     }
   };

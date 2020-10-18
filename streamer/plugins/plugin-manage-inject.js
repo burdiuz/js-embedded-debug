@@ -36,22 +36,34 @@
     }
   };
 
+  const converter = document.createElement('span');
+
   const getInjectionNode = (type, data) => {
     let node;
 
     switch (type) {
       case Type.CSS:
         node = document.createElement('style');
+        node.setAttribute('type', 'text/css');
         node.innerText = data;
         break;
       case Type.JS:
         node = document.createElement('script');
+        node.setAttribute('type', 'text/javascript');
         node.innerText = data;
         break;
       case Type.HTML:
       default:
+        converter.innerHTML = data;
         node = document.createDocumentFragment();
-        node.innerHTML = data;
+
+        try {
+          node.append(...Array.from(converter.childNodes));
+        } catch (error) {
+          while (converter.firstChild) {
+            node.appendChild(converter.firstChild);
+          }
+        }
         break;
     }
 

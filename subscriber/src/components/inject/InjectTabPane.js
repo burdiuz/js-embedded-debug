@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { Fragment, useState } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Button, Input, Radio, Divider } from 'antd';
@@ -33,9 +33,9 @@ const Operation = {
 
 const InjectionAdd = ({ execute, save, cancel }) => {
   const [title, setTitle] = useState('');
-  const [type, setType] = useState('js');
-  const [target, setTarget] = useState('body');
-  const [operation, setOperation] = useState('append');
+  const [type, setType] = useState(Type.JS);
+  const [target, setTarget] = useState(Target.BODY);
+  const [operation, setOperation] = useState(Operation.APPEND);
   const [query, setQuery] = useState('');
   const [data, setData] = useState('');
 
@@ -156,15 +156,17 @@ const InjectionAdd = ({ execute, save, cancel }) => {
       >
         <Button
           type="primary"
+          disabled={!data}
           onClick={() => save({ title, type, target, operation, query, data })}
         >
           Execute &amp; Save
         </Button>
         <Button
-          style={{ margin: '0 5px' }}
+          disabled={!data}
           onClick={() =>
             execute({ title, type, target, operation, query, data })
           }
+          style={{ margin: '0 5px' }}
         >
           Execute
         </Button>
@@ -196,16 +198,17 @@ const InjectionList = ({ list, add, execute, remove }) => {
           overflowY: 'auto',
         }}
       >
-        {list.length ? null : 'No injections stored, please add one.'}
+        {list.length ? null : (
+          <div style={{ margin: '20px' }}>
+            No injections stored, please add one.
+          </div>
+        )}
         {list.map((item, index) => {
           const { title, type, target, operation, query, data } = item;
 
           return (
-            <>
-              <div
-                key={`${index}/${title}/${type}${target}${operation}`}
-                style={{ display: 'flex', alignItems: 'center' }}
-              >
+            <Fragment key={`${index}/${title}/${type}${target}${operation}`}>
+              <div style={{ display: 'flex', alignItems: 'center' }}>
                 <div
                   style={{
                     fontSize: '2rem',
@@ -244,6 +247,7 @@ const InjectionList = ({ list, add, execute, remove }) => {
                   </div>
                 </div>
                 <Button
+                  size="small"
                   type="primary"
                   ghost
                   style={{ margin: '0 5px' }}
@@ -251,12 +255,12 @@ const InjectionList = ({ list, add, execute, remove }) => {
                 >
                   Execute
                 </Button>
-                <Button danger onClick={() => remove(index)}>
+                <Button size="small" danger onClick={() => remove(index)}>
                   Remove
                 </Button>
               </div>
               <Divider />
-            </>
+            </Fragment>
           );
         })}
       </div>

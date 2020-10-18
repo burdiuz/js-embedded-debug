@@ -12,7 +12,7 @@ export default [
     plugins: [
       resolve(),
       commonjs({
-        include: 'node_modules/**',
+        include: ['node_modules/**', 'plugins/**'],
       }),
     ],
   },
@@ -22,7 +22,7 @@ export default [
     plugins: [
       resolve(),
       commonjs({
-        include: 'node_modules/**',
+        include: ['node_modules/**', 'plugins/**'],
       }),
     ],
   },
@@ -32,7 +32,7 @@ export default [
     plugins: [
       resolve(),
       commonjs({
-        include: 'node_modules/**',
+        include: ['node_modules/**', 'plugins/**'],
       }),
       babel({ babelHelpers: 'bundled' }),
     ],

@@ -17,6 +17,10 @@ import {
 } from 'store/actions/domelement';
 import { connectionPong, connectedToolsSet } from 'store/actions/connection';
 import { textdataSet } from 'store/actions/textdata';
+import {
+  pixelPerfectWindowSize,
+  pixelPerfectMousePosition,
+} from 'store/actions/pixel-perfect';
 
 import { Command } from './command';
 import { getMessageCommand, getMessageData } from './message';
@@ -77,6 +81,12 @@ const converter = (dispatch) => (message) => {
       break;
     case Command.TEXTDATA_SHOW:
       dispatch(textdataSet(data));
+      break;
+    case Command.PP_WINDOW_SIZE:
+      dispatch(pixelPerfectWindowSize(data));
+      break;
+    case Command.PP_MOUSE_POSITION:
+      dispatch(pixelPerfectMousePosition(data));
       break;
   }
 };
