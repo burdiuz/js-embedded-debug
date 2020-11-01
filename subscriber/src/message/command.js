@@ -15,6 +15,7 @@ export const Command = {
   LOCATION_RELOAD: 'location-reload',
   HISTORY_BACK: 'history-back',
   HISTORY_FORWARD: 'history-forward',
+  HISTORY_UPDATE: 'history-update',
 
   READ_COOKIES: 'read-cookies',
   READ_COOKIES_RESPONSE: 'read-cookies/response',

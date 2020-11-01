@@ -16,7 +16,6 @@ const XhrTabPane = ({ list, clear }) => {
       <NewXhrRequest
         data={request}
         cancel={() => setRequest(null)}
-        send={(data) => console.log(data)}
       />
     );
   }

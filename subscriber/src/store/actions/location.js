@@ -16,6 +16,11 @@ export const locationUpdateReceived = (info) => ({
   payload: info,
 });
 
+export const locationHistoryChanged = (change) => ({
+  type: LOCATION_HISTORY_CHANGED,
+  payload: change,
+});
+
 export const locationSet = (str) => ({
   type: LOCATION_SET,
   payload: str,

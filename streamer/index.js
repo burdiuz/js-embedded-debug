@@ -150,8 +150,6 @@ const parseIncomingMessage = (jsonData) => {
     handleReadyStateChange(event) {
       const [, url] = this._openArgs;
 
-      console.log(this._openArgs);
-
       sendCommand(Command.XHR, {
         index: this._index,
         url,

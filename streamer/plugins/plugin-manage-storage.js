@@ -2,7 +2,7 @@
   const PLUGIN_NAME = 'manage-storage';
 
   const HIDDEN_KEYS = {
-    '@EDConsole-Storage-root': true,
+    'persist:@EDConsole-Storage-root': true,
   };
 
   const Command = {

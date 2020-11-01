@@ -153,10 +153,9 @@
     lastSelectedNode = node;
     lastSelectedQuery = buildSelector(node);
 
-    EDConsole.sendCommand(
-      Command.DOM_NODE_LOOKUP_RESPONSE,
-      generateLastSelectedNodeData(),
-    );
+    const data = generateLastSelectedNodeData();
+
+    EDConsole.sendCommand(Command.DOM_NODE_LOOKUP_RESPONSE, data);
 
     const { top, left, width, height } = node.getBoundingClientRect();
 
@@ -258,6 +257,7 @@
     Command.DOM_NODE_SET_STYLE,
     (_, { selector, prop }, sendResponse) => {
       const node = document.querySelector(selector);
+
       if (!node) {
         return;
       }

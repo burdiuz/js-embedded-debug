@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
 import { Button, Input, Divider, Breadcrumb } from 'antd';
-import { AimOutlined, CheckOutlined, CopyOutlined } from '@ant-design/icons';
+import { AimOutlined, CheckOutlined } from '@ant-design/icons';
 import { connect } from 'react-redux';
 import {
   domNodeLookup,
@@ -37,19 +37,28 @@ const Prop = ({ name, value: baseValue, change }) => {
     }
   }, [edit]);
 
+  useEffect(() => {
+    setEdit(false);
+    setValue(baseValue);
+  }, [baseValue]);
+
   return (
-    <div style={{ display: 'flex' }} onClick={() => setEdit(true)}>
+    <div
+      style={{ display: 'flex', height: '24px', flex: '0 0 24px' }}
+      onClick={() => setEdit(true)}
+    >
       <div
         style={{
           flex: '1 1 150px',
           fontWeight: 'bold',
           textAlign: 'right',
           marginRight: '5px',
+          whiteSpace: 'nowrap',
         }}
       >
         {name}:
       </div>
-      <div style={{ flex: '4 1 200px', display: 'flex' }}>
+      <div style={{ flex: '4 1 200px', display: 'flex', position: 'relative' }}>
         {edit ? (
           <>
             <Input
@@ -58,25 +67,42 @@ const Prop = ({ name, value: baseValue, change }) => {
               size="small"
               onChange={({ target: { value } }) => setValue(value)}
               onPressEnter={() => {
+                setEdit(false);
+
                 if (value !== baseValue) {
                   change([name, value]);
                 }
-                setEdit(false);
               }}
             />
             <Button
               icon={<CheckOutlined />}
               size="small"
-              onClick={() => {
+              onMouseUp={() => {
+                setEdit(false);
+
                 if (value !== baseValue) {
                   change([name, value]);
                 }
-                setEdit(false);
               }}
             />
           </>
         ) : (
-          value
+          <div
+            style={{
+              position: 'absolute',
+              left: '0',
+              right: '0',
+              top: '0',
+              bottom: '0',
+              width: '100%',
+              height: '100%',
+              overflow: 'hidden',
+              whiteSpace: 'nowrap',
+              textOverflow: 'ellipsis',
+            }}
+          >
+            {value}
+          </div>
         )}
       </div>
     </div>
@@ -120,6 +146,7 @@ const PropListInfo = ({
         nameFlex="1 1 150px"
         valueFlex="4 1 200px"
         save={(key, value) => change([key, value])}
+        style={{ height: '24px', flex: '0 0 24px' }}
       />
       {list.length ? '' : emptyMessage}
       {list.map(([name, value]) => (

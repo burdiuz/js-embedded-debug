@@ -5,7 +5,10 @@ import { localStorageUpdate } from 'store/actions/local-storage';
 import { sessionStorageUpdate } from 'store/actions/session-storage';
 import { xhrUpdateReceived } from 'store/actions/xhr';
 import { reduxActionReceived } from 'store/actions/redux';
-import { locationUpdateReceived } from 'store/actions/location';
+import {
+  locationUpdateReceived,
+  locationHistoryChanged,
+} from 'store/actions/location';
 import {
   websocketCreated,
   websocketUpdated,
@@ -57,6 +60,9 @@ const converter = (dispatch) => (message) => {
       break;
     case Command.READ_LOCATION_RESPONSE:
       dispatch(locationUpdateReceived(data));
+      break;
+    case Command.HISTORY_UPDATE:
+      dispatch(locationHistoryChanged(data));
       break;
     case Command.WEBSOCKET_CREATED:
       dispatch(websocketCreated(data));

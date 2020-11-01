@@ -1879,26 +1879,19 @@
       LOCATION_SET_HASH: 'location-set-hash',
       LOCATION_RELOAD: 'location-reload',
       HISTORY_BACK: 'history-back',
-      HISTORY_FORWARD: 'history-forward'
+      HISTORY_FORWARD: 'history-forward',
+      HISTORY_UPDATE: 'history-update'
     };
-    EDConsole.setCommandHandler(Command.LOCATION_SET, function (_, _ref) {
-      var value = _ref.value;
-      window.location.href = value;
-    });
-    EDConsole.setCommandHandler(Command.LOCATION_SET_HASH, function (_, _ref2) {
-      var value = _ref2.value;
-      window.location.hash = value;
-    });
-    EDConsole.setCommandHandler(Command.LOCATION_RELOAD, function () {
-      return window.location.reload();
-    });
-    EDConsole.setCommandHandler(Command.HISTORY_BACK, function () {
-      return window.history.back();
-    });
-    EDConsole.setCommandHandler(Command.HISTORY_FORWARD, function () {
-      return window.history.forward();
-    });
-    EDConsole.setCommandHandler(Command.READ_LOCATION, function (_, data, sendResponse) {
+    var HistoryAction = {
+      EXTERNAL: 'External',
+      BACK: 'Back',
+      FORWARD: 'Forward',
+      GO: 'Go',
+      PUSH_STATE: 'PushState',
+      REPLACE_STATE: 'ReplaceState'
+    };
+
+    var sendLocation = function sendLocation(send) {
       var _window$location = window.location,
           hash = _window$location.hash,
           host = _window$location.host,
@@ -1911,7 +1904,7 @@
           protocol = _window$location.protocol,
           search = _window$location.search,
           username = _window$location.username;
-      sendResponse(Command.READ_LOCATION_RESPONSE, {
+      send(Command.READ_LOCATION_RESPONSE, {
         hash: hash,
         host: host,
         hostname: hostname,
@@ -1924,6 +1917,38 @@
         search: search,
         username: username
       });
+    };
+
+    var sendLocationAll = function sendLocationAll() {
+      return sendLocation(function () {
+        return EDConsole.sendCommand.apply(EDConsole, arguments);
+      });
+    };
+
+    EDConsole.setCommandHandler(Command.LOCATION_SET, function (_, _ref, sendResponse) {
+      var value = _ref.value;
+      window.location.href = value;
+      sendLocation(sendResponse);
+    });
+    EDConsole.setCommandHandler(Command.LOCATION_SET_HASH, function (_, _ref2, sendResponse) {
+      var value = _ref2.value;
+      window.location.hash = value;
+      sendLocation(sendResponse);
+    });
+    EDConsole.setCommandHandler(Command.LOCATION_RELOAD, function (_, data, sendResponse) {
+      window.location.reload();
+      sendLocation(sendResponse);
+    });
+    EDConsole.setCommandHandler(Command.HISTORY_BACK, function (_, data, sendResponse) {
+      window.history.back();
+      sendLocation(sendResponse);
+    });
+    EDConsole.setCommandHandler(Command.HISTORY_FORWARD, function (_, data, sendResponse) {
+      window.history.forward();
+      sendLocation(sendResponse);
+    });
+    EDConsole.setCommandHandler(Command.READ_LOCATION, function (_, data, sendResponse) {
+      return sendLocation(sendResponse);
     });
     var _window = window,
         historyObj = _window.history;
@@ -1932,65 +1957,89 @@
         backFn = historyObj.back,
         forwardFn = historyObj.forward,
         goFn = historyObj.go;
+    var lastAsyncTimestamp;
+    var lastAsyncAction;
+    var lastAsyncParams;
 
-    historyObj.back = function () {
-      console.log('History Back');
+    var setLastAsyncAction = function setLastAsyncAction(type) {
+      var params = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+      lastAsyncTimestamp = Date.now();
+      lastAsyncAction = type;
+      lastAsyncParams = params;
+    };
 
-      for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
-        args[_key] = arguments[_key];
+    var dropLastAsyncAction = function dropLastAsyncAction() {
+      lastAsyncTimestamp = 0;
+      lastAsyncAction = HistoryAction.EXTERNAL;
+      lastAsyncParams = {};
+    };
+
+    var getHistoryAction = function getHistoryAction(action, url, state) {
+      var title = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : '';
+      return {
+        action: action,
+        params: {},
+        url: url,
+        title: title,
+        state: state
+      };
+    };
+
+    var sendHistoryUpdateAll = function sendHistoryUpdateAll(action, url, state) {
+      var title = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : '';
+      var params = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : {};
+      EDConsole.sendCommand(Command.HISTORY_UPDATE, getHistoryAction(action, url, state, title, params));
+      dropLastAsyncAction();
+    };
+
+    var sendLastAsyncUpdateAll = function sendLastAsyncUpdateAll(url, state) {
+      if (Date.now() - lastAsyncTimestamp > 1000) {
+        dropLastAsyncAction();
       }
 
-      backFn.apply(historyObj, args);
+      sendHistoryUpdateAll(lastAsyncAction, url, state, '', lastAsyncParams);
+    };
+
+    historyObj.back = function () {
+      // console.log('History Back');
+      setLastAsyncAction(HistoryAction.BACK);
+      backFn.call(historyObj);
     };
 
     historyObj.forward = function () {
-      console.log('History Forward');
-
-      for (var _len2 = arguments.length, args = new Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
-        args[_key2] = arguments[_key2];
-      }
-
-      forwardFn.apply(historyObj, args);
+      // console.log('History Forward');
+      setLastAsyncAction(HistoryAction.FORWARD);
+      forwardFn.call(historyObj);
     };
 
-    historyObj.go = function () {
-      var _console;
-
-      for (var _len3 = arguments.length, args = new Array(_len3), _key3 = 0; _key3 < _len3; _key3++) {
-        args[_key3] = arguments[_key3];
-      }
-
-      (_console = console).log.apply(_console, ['History Go'].concat(args));
-
-      goFn.apply(historyObj, args);
+    historyObj.go = function (steps) {
+      // console.log('History Go', steps);
+      setLastAsyncAction(HistoryAction.GO, {
+        steps: steps
+      });
+      goFn.call(historyObj, steps);
     };
 
-    historyObj.pushState = function () {
-      var _console2;
-
-      for (var _len4 = arguments.length, args = new Array(_len4), _key4 = 0; _key4 < _len4; _key4++) {
-        args[_key4] = arguments[_key4];
-      }
-
-      (_console2 = console).log.apply(_console2, ['History Push'].concat(args));
-
-      pushStateFn.apply(historyObj, args);
+    historyObj.pushState = function (state, title, url) {
+      // console.log('History Push', state, title, url);
+      pushStateFn.call(historyObj, state, title, url);
+      sendLocationAll();
+      sendHistoryUpdateAll(HistoryAction.PUSH_STATE, url, state, title);
     };
 
-    historyObj.replaceState = function () {
-      var _console3;
-
-      for (var _len5 = arguments.length, args = new Array(_len5), _key5 = 0; _key5 < _len5; _key5++) {
-        args[_key5] = arguments[_key5];
-      }
-
-      (_console3 = console).log.apply(_console3, ['History Replace'].concat(args));
-
-      replaceStateFn.apply(historyObj, args);
+    historyObj.replaceState = function (state, title, url) {
+      // console.log('History Replace', state, title, url);
+      replaceStateFn.call(historyObj, state, title, url);
+      sendLocationAll();
+      sendHistoryUpdateAll(HistoryAction.REPLACE_STATE, url, state, title);
     };
 
     window.addEventListener('popstate', function (event) {
-      console.log('History Pop', event);
+      var url = String(window.location);
+      var state = event.state; // console.log('History Pop', state, url);
+
+      sendLocationAll();
+      sendLastAsyncUpdateAll(url, state);
     });
     EDConsole.registerPlugin(PLUGIN_NAME);
   })(window.EDConsole);
@@ -3212,7 +3261,8 @@
       var node = _ref.target;
       lastSelectedNode = node;
       lastSelectedQuery = buildSelector(node);
-      EDConsole.sendCommand(Command.DOM_NODE_LOOKUP_RESPONSE, generateLastSelectedNodeData());
+      var data = generateLastSelectedNodeData();
+      EDConsole.sendCommand(Command.DOM_NODE_LOOKUP_RESPONSE, data);
 
       var _node$getBoundingClie = node.getBoundingClientRect(),
           top = _node$getBoundingClie.top,

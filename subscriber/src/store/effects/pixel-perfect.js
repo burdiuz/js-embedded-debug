@@ -57,6 +57,11 @@ take(PIXEL_PERFECT_COLUMNS_SHOW, async ({ payload: { columns, margin } }) => {
 take(PIXEL_PERFECT_SHOW_IMAGE, async ({ payload }) => {
   const comm = getServiceInstance();
 
+  if (!payload) {
+    comm.send(Command.PP_IMAGE_HIDE);
+    return;
+  }
+
   const scale = select(getImageScale);
   const opacity = select(getImageOpacity);
   const offsetX = select(getImageOffsetX);

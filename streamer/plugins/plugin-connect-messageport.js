@@ -23,11 +23,20 @@
     } catch (error) {}
   };
 
-  const createMessageSubscriber = (target) => (str) =>
-    target.postMessage(str, '*');
+  const createMessageSubscriber = (target) => (str) => {
+    if (target) {
+      target.postMessage(str, '*');
+    }
+  };
 
   const messageHandler = (event) => {
     const { source: target } = event;
+
+    if (!target) {
+      console.log('Message event came with null source.');
+      return;
+    }
+
     if (targets.has(target)) {
       EDConsole.handleIncomingMessageEvent(event, targets.get(target));
       return;

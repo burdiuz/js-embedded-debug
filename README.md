@@ -45,7 +45,7 @@ with `npm run build` command.
 * **plugin-log-location** - Show location/hash, allows going back and forth in history, reload page.
 * **plugin-log-redux** - Show Redux actions.
 * **plugin-log-websocket** - Show WebSocket connections and incoming/outgoing text data.
-* **plugin-log-xhr** - Show outgoing XHR requests started by XmlHttpRequest or fetch().
+* **plugin-log-xhr** - Show outgoing XHR requests started by XMLHttpRequest or fetch().
 * **plugin-manage-cookies** - View/Edit cookies
 * **plugin-manage-domelement** - View/Edit attributes and styles of HTML elements on Web Page.
 * **plugin-manage-storage** - View/Edit contents of LocalStorage and SessionStorage.

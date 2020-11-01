@@ -12,8 +12,8 @@ const { TextArea } = Input;
 
 const s = (...args) => JSON.stringify(...args);
 
-const generateXmlHttpRequest = (method, url, headers, body) => `(() => {
-  const req = new XmlHttpRequest();
+const generateXMLHttpRequest = (method, url, headers, body) => `(() => {
+  const req = new XMLHttpRequest();
   ${headers
     .map(({ key, value }) => `req.setRequestHeader(${s(key)}, ${s(value)})`)
     .join('\n')}
@@ -33,7 +33,7 @@ const generateFetch = (method, url, headers, body) => `fetch(${s(url)}, {
 })`;
 
 const generateCode = ({ type, method, url, headers, body }) => {
-  const fn = type === 'fetch' ? generateFetch : generateXmlHttpRequest;
+  const fn = type === 'fetch' ? generateFetch : generateXMLHttpRequest;
 
   return fn(method, url, headers, body);
 };
@@ -58,7 +58,6 @@ const NewXhrRequest = ({ data, send, cancel, disaplyCode }) => {
       data.headers ? data.headers.map(([key, value]) => ({ key, value })) : [],
     );
     setBody(data.body || '');
-    console.log(data);
   }, [data]);
 
   return (
@@ -83,7 +82,7 @@ const NewXhrRequest = ({ data, send, cancel, disaplyCode }) => {
           onChange={({ target: { value } }) => setType(value)}
         >
           <Radio.Button value="fetch">fetch()</Radio.Button>
-          <Radio.Button value="xhr">XmlHttpRequest</Radio.Button>
+          <Radio.Button value="xhr">XMLHttpRequest</Radio.Button>
         </Radio.Group>
         <Select
           value={method}
